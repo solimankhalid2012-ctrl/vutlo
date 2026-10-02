@@ -9,6 +9,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { getVideoInfo, getPlaylist, queueDownload, getJob, getJobRecord, cancelJob, ytdlpStatus, queueDepth } from "./services/ytdlpService.js";
 import { planAllowsQuality, QUALITY_DENIED } from "./services/planGate.js";
@@ -444,6 +445,31 @@ app.use("/files", express.static(path.join(__dirname, "../downloads"), {
   dotfiles: "deny",
   setHeaders: (res) => res.setHeader("X-Content-Type-Options", "nosniff"),
 }));
+
+// ── 🧩 الواجهة المبنية (dist) ──
+// في التطوير تعمل الواجهة على Vite (5173) وهذا السطر لا يُستخدم.
+// في الإنتاج/خدمة Windows: عملية واحدة تخدم الواجهة والـAPI معاً، فيكفي
+// منفذ واحد. المسارات غير المعروفة ترجع index.html (توجيه SPA) —
+// أما /api فترجع JSON 404 لأن /api مُعالَج أعلاه.
+const DIST_DIR = path.join(__dirname, "../dist");
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR, {
+    index: "index.html",
+    maxAge: "1h",
+    setHeaders: (res, p) => {
+      // الأصول المبنية بالهاش ⇒ تخزين طويل وآمن
+      if (p.includes(`${path.sep}assets${path.sep}`)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      } else {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  }));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/files")) return next();
+    res.sendFile(path.join(DIST_DIR, "index.html"));
+  });
+}
 
 // ── 🧹 404 + معالج أخطاء موحّد (JSON دائماً تحت /api) ──
 app.use("/api", (req, res) =>

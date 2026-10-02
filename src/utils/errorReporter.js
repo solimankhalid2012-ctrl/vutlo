@@ -88,14 +88,82 @@ function report(kind, message, stack, extra) {
 
 /** يُستدعى من ErrorBoundary لإبلاغ أخطاء الرندر غير الملتقطة. */
 export function reportRenderError(error, componentStack = "") {
-  report("react-render-error", error?.message || String(error), error?.stack || componentStack, {
+  report("react-render-error", error?.message || String(error), error?.stack, {
     componentStack: String(componentStack || "").slice(0, 400),
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🔬 تتبّع اختياري: أضف ?trace=1 إلى الرابط لإظهار لوحة تعرض أخطاء
+//    المتصفح غير الملتقطة مع الملف والسطر داخل الصفحة نفسها.
+//    السبب: خطأ "Uncaught (in promise) SyntaxError" في كونسول DevTools
+//    يظهر سطره الأول فقط، فنضطر للتخمين من دون تحديد المصدر.
+//    لا شيء يعمل ولا يُرسل ما لم يُطلب صراحةً عبر ?trace=1.
+// ══════════════════════════════════════════════════════════════
+function installTracer() {
+  if (typeof window === "undefined") return;
+  if (!/[?&]trace=1\b/.test(window.location.search)) return;
+
+  const items = [];
+  let box = null;
+
+  const ensureBox = () => {
+    if (box) return box;
+    box = document.createElement("div");
+    box.style.cssText = [
+      "position:fixed", "inset:auto 8px 8px 8px", "z-index:2147483647",
+      "max-height:45vh", "overflow:auto", "background:#1b1b1f", "color:#ffd7d7",
+      "border:1px solid #7f1d1d", "border-radius:10px", "padding:10px 12px",
+      "font:12px/1.5 ui-monospace,Menlo,Consolas,monospace", "direction:ltr",
+      "textAlign:left", "box-shadow:0 8px 32px rgba(0,0,0,.5)",
+    ].join(";");
+    document.body.appendChild(box);
+    return box;
+  };
+
+  const render = () => {
+    const el = ensureBox();
+    el.innerHTML = "";
+    const head = document.createElement("div");
+    head.style.cssText = "color:#9ca3af;margin-bottom:6px";
+    head.textContent = `trace: ${items.length} error(s) — remove ?trace=1 to hide`;
+    el.appendChild(head);
+    items.forEach((it, i) => {
+      const d = document.createElement("div");
+      d.style.cssText = "border-top:1px solid #3f3f46;padding:6px 0;white-space:pre-wrap;word-break:break-word";
+      d.textContent = `#${i + 1} ${it.kind}: ${it.message}\n${it.stack}`;
+      el.appendChild(d);
+    });
+  };
+
+  const push = (kind, message, stack) => {
+    items.push({ kind, message: clip(message), stack: clip(stack) });
+    if (items.length > 20) items.shift();
+    render();
+  };
+
+  window.addEventListener("error", (e) => {
+    const loc = [e.filename, e.lineno, e.colno].filter(Boolean).join(":");
+    push("error", `${e.message}${loc ? ` (${loc})` : ""}`, e.error?.stack || "");
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    const r = e.reason;
+    push("unhandledrejection", r?.message || r?.name || String(r), r?.stack || "");
   });
 }
 
 export function installErrorReporting() {
   if (installed || typeof window === "undefined") return;
   installed = true;
+
+  // طباعة كاملة للطرفية: سطر واحد في DevTools لا يكفي لتحديد المصدر
+  const consoleFull = (tag) => (e) => {
+    const r = e?.reason ?? e?.error ?? e;
+    // eslint-disable-next-line no-console
+    console.error(`[${tag}]`, r?.stack || r);
+  };
+  window.addEventListener("error", consoleFull("window-error"));
+  window.addEventListener("unhandledrejection", consoleFull("unhandledrejection"));
 
   window.addEventListener("error", (e) => {
     report("window-error", e.message, e.error?.stack, {
@@ -109,6 +177,8 @@ export function installErrorReporting() {
     const r = e.reason;
     report("unhandledrejection", r?.message || r?.name || String(r), r?.stack);
   });
+
+  installTracer();
 }
 
 export default installErrorReporting;
