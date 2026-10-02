@@ -25,6 +25,7 @@ import { validateEmail } from "./config/passwords.js";
 import { telegramWebhookOk, whatsappWebhookOk } from "./config/webhooks.js";
 import { ipKey, loginKey } from "./config/rateKeys.js";
 import { startRetention } from "./services/retention.js";
+import { resolveTrustProxy } from "./config/trustProxy.js";
 
 // مستخدم اختياري من توكن المستخدم (للنقاط) — لا يفشل بدونه.
 // يقرأ من middleware الموحّد (algorithms مقيدة + سر من config) بدل تكرار المنطق.
@@ -57,8 +58,10 @@ const app = express();
 // مفقود كانت الواجهة لا تصل للـAPI إطلاقاً.
 const PORT = process.env.PORT || 4001;
 
-// خلف proxy/إBalancer ⇒ بدون هذا كل الطلبات تبدو من IP واحد فيعمل الحد على الجميع
-app.set("trust proxy", 1);
+// خلف proxy/إBalancer ⇒ بدون هذا كل الطلبات تبدو من IP واحد فيعمل الحد على الجميع.
+// ⚠️ كان 1 دائماً ⇒ تجاوز كل حدود الطلبات (انظر config/trustProxy.js).
+// الافتراضي false: يُضبطه المالك صراحةً بعد التأكد أن الـproxy يكتب الترويسة.
+app.set("trust proxy", resolveTrustProxy(process.env.TRUST_PROXY));
 app.disable("x-powered-by");
 
 app.use(helmet({ crossOriginResourcePolicy: false }));

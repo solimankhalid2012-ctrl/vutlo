@@ -41,7 +41,7 @@ export function scheduleDownload({ url, runAt, options = {}, userId = null }) {
 
 /**
  * ضبط المؤقّت — يُعاد التسليح على دفعات لأن setTimeout يفيض
- * فوق ~24.8 يوماً فتُنفَّذ المهمة فوراً إذا تجاوز الجدولة ذلك الحد.
+ * فوق ~24.8 يوماً فتُنفّذ المهمة فوراً إذا تجاوز الجدولة ذلك الحد.
  */
 function arm(rec) {
   const remaining = new Date(rec.runAt).getTime() - Date.now();
@@ -67,19 +67,27 @@ async function fire(rec) {
   }
 }
 
-/** إلغاء مهمة مجدولة — async لأن التحقق يتم في القاعدة أيضاً.
- *  كان يعيد !!rec فقط، فيردّ 404 على مهمة موجودة في القاعدة لكن غير موجودة
- *  في الذاكرة (بعد إعادة تشغيل) رغم نجاح الإلغاء فعلياً. */
+/**
+ * إلغاء مهمة مجدولة — async لأن سجلها قد يكون في القاعدة فقط.
+ * كان يعيد !!rec فقط، فيردّ 404 على مهمة موجودة في القاعدة لكن غير موجودة
+ * في الذاكرة (بعد إعادة تشغيل) رغم نجاح الإلغاء فعلياً.
+ */
 export async function cancelSchedule(id, userId = undefined) {
   const rec = schedules.get(id);
-  // 🔐 المالك فقط (أو الأدمن، أو مهمة بلا مالك) يلغي — كان أي زائر.
-  if (rec && userId !== undefined && rec.userId && rec.userId !== userId) return false;
+  // ⚠️ كان فحص الملكية يقفز تماماً إن لم تكن المهمة في الذاكرة، أي لكل مهمة
+  // محفوظة من جلسة سابقة انتهت أو كانت منتهية أصلاً ⇒ أي زائر يمرّر معرّفاً
+  // صادراً فيعلّم جدولة مستخدم آخر "ملغاة" (IDOR + كاشف وجود بالمعرّف).
+  // نبحث في القاعدة عند غيابه عن الذاكرة ونطبّق قاعدة الملكية نفسها:
+  // المالك، أو الأدمن (userId === undefined)، أو مهمة بلا مالك.
+  const known = rec ?? (await db.listSchedules().catch(() => [])).find((r) => r.id === id) ?? null;
+  if (!known) return false; // غير موجودة إطلاقاً ⇒ لا نكتب شيئاً (fail-closed)
+  if (userId !== undefined && known.userId && known.userId !== userId) return false;
   if (rec) {
     if (rec.timer) clearTimeout(rec.timer);
     rec.timer = null;
     rec.status = "cancelled";
   }
-  // نتحقق من القاعدة أيضاً: مهمة محفوظة من جلسة سابقة ليست في الذاكرة،
+  // نحدّث القاعدة أيضاً: مهمة محفوظة من جلسة سابقة ليست في الذاكرة،
   // والإلغاء ينجح فعلياً فلا يجوز أن يردّ السيرفر 404.
   const saved = await db.updateSchedule(id, { status: "cancelled" }).catch(() => false);
   return !!rec || !!saved;
