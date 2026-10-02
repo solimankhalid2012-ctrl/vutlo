@@ -15,6 +15,7 @@ import {
   permissiveSelector,
   relaxFormatArgs,
   isFormatUnavailable,
+  parseProgress,
   getJob,
   listJobs,
   queueDownload,
@@ -130,6 +131,72 @@ describe("buildYtdlpArgs", () => {
   it("يقبل قصاً بصيغة mm:ss ويحوّله لثوانٍ", () => {
     const args = buildYtdlpArgs("j", { trimStart: "1:05", trimEnd: "2:30" });
     expect(after(args, "--download-sections")).toBe("*65-150");
+  });
+});
+
+describe("اختيار ترميز متوافق (تفادي AV1 داخل mp4)", () => {
+  it("يطلب avc1/mp4 أولاً لا bv* العام", () => {
+    // سببّب شكاوى "الجودة ضعيفة/الملف لا يعمل": bv* كان يختار av1 لأن حجمه
+    // أصغر، فيخرج ملف 1080p av1 داخل mp4 لا تشغّله أغلب أجهزة ويندوز/الهواتف.
+    const sel = after(buildYtdlpArgs("j1", { url: "https://youtu.be/a", format: "mp4" }), "-f");
+    expect(sel).toContain("vcodec^=avc1");
+    expect(sel).toContain("ext=mp4");
+    expect(sel).not.toMatch(/bv\*/);
+    expect(sel).toContain("[height<=1080]");
+  });
+
+  it("يفضّل m4a/AAC للصوت داخل حاوية mp4", () => {
+    // Opus داخل mp4 لا يشغّله QuickTime وبعض أجهزة أندرويد.
+    const sel = after(buildYtdlpArgs("j1", { url: "https://youtu.be/a", format: "mp4" }), "-f");
+    expect(sel).toContain("bestaudio[ext=m4a]");
+  });
+
+  it("لا يفرض قيود mp4 على webm/mkv", () => {
+    const sel = after(buildYtdlpArgs("j1", { url: "https://youtu.be/a", format: "webm" }), "-f");
+    expect(sel).not.toContain("vcodec^=avc1");
+    expect(sel).toContain("[height<=1080]");
+  });
+
+  it("المحدد المتساهل يفضّل avc1 أيضاً بدل bv*", () => {
+    expect(permissiveSelector("mp4")).toContain("vcodec^=avc1");
+    expect(permissiveSelector("mp4")).not.toMatch(/bv\*/);
+    expect(permissiveSelector("mp3")).toBe("ba/b");
+    // الاستبدال يحافظ على بقية الوسائط
+    const args = buildYtdlpArgs("j1", { url: "https://youtu.be/a", format: "mp4" });
+    const relaxed = relaxFormatArgs(args, "mp4");
+    expect(after(relaxed, "-f")).toBe(permissiveSelector("mp4"));
+    expect(after(relaxed, "--merge-output-format")).toBe("mp4");
+    expect(relaxed).toEqual(expect.arrayContaining(["--newline", "--progress"]));
+  });
+});
+
+describe("تقدّم رتيب (منع قفز النسبة للخلف)", () => {
+  const run = (job, lines) => { for (const l of lines) parseProgress(job, l); return job.progress; };
+
+  it("يتقدّم داخل التدفّق الواحد", () => {
+    const job = { progress: 0 };
+    expect(run(job, ["[download]   5.0% of 10MiB", "[download]  37.7% of 10MiB"])).toBeCloseTo(37.7);
+  });
+
+  it("لا يتراجع عند بدء تدفّق الصوت من 0% بعد انتهاء الصورة", () => {
+    // الفيديو ينتهي ~100% ثم الصوت يطبع 0%..61% ⇒ بدون الحارس تظهر 81% ثم 61%.
+    const job = { progress: 0 };
+    expect(run(job, ["[download]  81.0% of 84MiB", "[download]  61.0% of 3.2MiB"])).toBe(81);
+  });
+
+  it("يتجاهل الأسطر غير المرتبطة بالتقدّم", () => {
+    expect(parseProgress({ progress: 12 }, "[Merger] Merging formats")).toBe(false);
+    expect(parseProgress({ progress: 12 }, "")).toBe(false);
+    expect(parseProgress({ progress: 12 }, "[download] Destination: v.mp4")).toBe(false);
+    // سطر تقدّم حقيقي بلا مساحة بعد [download] — فاصل اختياري
+    const job = { progress: 0 };
+    expect(parseProgress(job, "[download]12.3% of ~84.3MiB")).toBe(true);
+    expect(job.progress).toBeCloseTo(12.3);
+  });
+
+  it("يوقف السقف عند 99% حتى تُكمل مرحلة الدمج", () => {
+    const job = { progress: 0 };
+    expect(run(job, ["[download] 100.0% of 84MiB"])).toBe(99);
   });
 });
 
@@ -257,11 +324,11 @@ describe("job store", () => {
 });
 
 describe("الشبكة الآمنة عند عدم توفّر الصيغة", () => {
-  it("المحدد المتساهل بلا تقييد ارتفاع", () => {
-    expect(permissiveSelector("mp4")).toBe("bv*+ba/b");
-    expect(permissiveSelector("mkv")).toBe("bv*+ba/b");
-    expect(permissiveSelector("webm")).toBe("bv*+ba/b");
-    expect(permissiveSelector("gif")).toBe("bv*+ba/b");
+  it("المحدد المتساهل بلا تقييد ارتفاع ومعه avc1 لـmp4", () => {
+    expect(permissiveSelector("mp4")).toBe("bestvideo[vcodec^=avc1][ext=mp4]+bestaudio/bestvideo+bestaudio/best");
+    expect(permissiveSelector("mkv")).toBe("bestvideo+bestaudio/best");
+    expect(permissiveSelector("webm")).toBe("bestvideo+bestaudio/best");
+    expect(permissiveSelector("gif")).toBe("bestvideo+bestaudio/best");
   });
 
   it("MP3 يظل صوتاً فقط في الوضع المتساهل", () => {
@@ -274,7 +341,7 @@ describe("الشبكة الآمنة عند عدم توفّر الصيغة", () =
     const relaxed = relaxFormatArgs(args, "mp4");
     const i = args.indexOf("-f");
     const j = relaxed.indexOf("-f");
-    expect(relaxed[j + 1]).toBe("bv*+ba/b");
+    expect(relaxed[j + 1]).toBe(permissiveSelector("mp4"));
     expect(relaxed.slice(0, j)).toEqual(args.slice(0, i));
     expect(relaxed.slice(j + 2)).toEqual(args.slice(i + 2));
     expect(relaxed).toHaveLength(args.length);

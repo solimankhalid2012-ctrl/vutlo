@@ -70,10 +70,13 @@ export function qualityHeight(quality) {
 /**
  * محدد متساهل بلا تقييد ارتفاع — شبكة أمان عندما لا تتوفر الصيغة/الجودة
  * المطلوبة لهذا الفيديو تحديداً (يحدث مع الفيديوهات القديمة أو القصيرة).
+ * ⚠️ كان "bv*+ba" فيختار AV1/VP9 أيضاً فنُخرج ملفاً غير قابل للتشغيل على
+ * أجهزة كثيرة ⇒ نفضّل avc1/mp4 هنا أيضاً.
  */
 export function permissiveSelector(format) {
   if (format === "mp3") return "ba/b";
-  return "bv*+ba/b";
+  if (format === "mp4") return "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio/bestvideo+bestaudio/best";
+  return "bestvideo+bestaudio/best";
 }
 
 /** يستبدل قيمة -f في مصفوفة الوسائط بمحدد متساهل (ويبقي كل شيء آخر) */
@@ -88,6 +91,21 @@ export function relaxFormatArgs(args, format) {
 /** هل فشل لأن الصيغة/الجودة المطلوبة غير متاحة لهذا الفيديو؟ */
 export function isFormatUnavailable(raw) {
   return /Requested format is not available/i.test(String(raw || ""));
+}
+
+/**
+ * يستخرج نسبة التقدّم من سطر yt-dlp ويمنع التراجع.
+ *
+ * تنزيل الفيديو والصوت يتم كتدفّقين منفصلين، وكلٌّ يطبع نسبته من 0% ⇒ بلا
+ * حارس الرتابة تقفز النسبة إلى الخلف (81% ثم 61%) وتبدو للمستخدم معطوبة.
+ * يبقى السقف 99% لأن 100% تُضبط في finishJob بعد اكتمال الدمج فعلياً.
+ */
+export function parseProgress(job, line) {
+  const m = String(line).match(/\[download\]\s*(\d+(?:\.\d+)?)%/);
+  if (!m) return false;
+  const p = Math.min(99, parseFloat(m[1]));
+  if (p > job.progress) job.progress = p;
+  return true;
 }
 
 /**
@@ -220,9 +238,23 @@ export function buildYtdlpArgs(jobId, {
     args.push("-f", `bv*[height<=${Math.min(h, 480)}]+ba/b[height<=${Math.min(h, 480)}]/b`);
     args.push("--merge-output-format", "mp4");
   } else {
-    // 🎬 فيديو: أفضل صورة ≤ الارتفاع + أفضل صوت ثم دمج
-    args.push("-f", `bv*[height<=${h}]+ba/best[height<=${h}]/b[height<=${h}]/b`);
-    args.push("--merge-output-format", ["mp4", "webm", "mkv"].includes(format) ? format : "mp4");
+    // 🎬 فيديو: أفضل صورة ≤ الارتفاع + أفضل صوت ثم دمج.
+    // ⚠️ كان "bv*[height<=H]+ba" ⇒ يختار yt-dlp ترميز AV1/VP9-efficient لأنها
+    // أصغر حجماً، فيخرج ملف 1080p بترميز av1 داخل حاوية mp4: جودته النهائية
+    // سيئة على أي جهاز لا يدعم AV1 (معظم مشغّلات Windows والهواتف)، ويبدو
+    // للمستخدم "محطّم/ضعيف". نطلب avc1 (H.264) داخل mp4 أولاً لأنها المرجع
+    // الذي يشغّله كل جهاز، ونترك البدائل خلفها.
+    const cont = ["mp4", "webm", "mkv"].includes(format) ? format : "mp4";
+    const vcodec = format === "mp4" ? "[vcodec^=avc1][ext=mp4]" : "";
+    // الصوت: m4a/AAC داخل mp4 هو الأوسع توافقاً (opus داخل mp4 لا يشغّله
+    // QuickTime وأجزاء من أندرويد). نفضّله ثم نترك ba/b behindه.
+    const audio = format === "mp4" ? "bestaudio[ext=m4a]/bestaudio" : "bestaudio";
+    args.push(
+      "-f",
+      // 1) avc1/mp4 + m4a (الأوسع توافقاً)  2) أي ترميز بنفس الارتفاع  3) best المدمج
+      `bestvideo${vcodec}[height<=${h}]+${audio}/bestvideo[height<=${h}]+${audio}/best[height<=${h}]`,
+    );
+    args.push("--merge-output-format", cont);
   }
 
   if (password) args.push("--video-password", password); // 🔑 روابط محمية
@@ -411,11 +443,7 @@ function runAttempt(job, args, attempt) {
   const onData = (d) => {
     const text = String(d);
     for (const line of text.split(/\r?\n/)) {
-      const m = line.match(/\[download\]\s+(\d+(?:\.\d+)?)%/);
-      if (m) {
-        job.progress = Math.min(99, parseFloat(m[1]));
-        continue;
-      }
+      if (parseProgress(job, line)) continue;
       if (/\[Merger\]|\[ExtractAudio\]|\[Metadata\]|\[Fixups\]|\[EmbedSubtitle\]|\[VideoConvertor\]/.test(line)) {
         job.stage = "processing"; // مرحلة ما بعد التحميل (دمج/صوت/ترجمة)
         continue;
