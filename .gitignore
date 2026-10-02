@@ -1,0 +1,28 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# أسرار — لا تُرفع أبداً
+.env
+.env.*
+!.env.example
+
+# قاعدة بيانات SQLite المحلية
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+
+# ملفات التحميلات المولّدة
+downloads/*
+!downloads/.gitkeep
+
+# سجلات
+*.log
+npm-debug.log*
+
+# نظام التشغيل والمحررات
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

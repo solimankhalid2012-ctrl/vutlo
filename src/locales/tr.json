@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "features": "Özellikler",
+    "pricing": "Fiyatlar",
+    "blog": "Blog",
+    "download": "İndir",
+    "history": "Geçmiş",
+    "login": "Giriş",
+    "register": "Kayıt ol",
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "privacy": "Gizlilik",
+    "terms": "Koşullar"
+  },
+  "hero": {
+    "title1": "Herhangi bir videoyu",
+    "titleGreen": "şimşek hızıyla indir",
+    "title2": "filigransız ⚡",
+    "subtitle": "YouTube, TikTok, Instagram veya 1000+ siteden bağlantı yapıştır — 500ms altında otomatik algılama, 8K'ye kadar kalite.",
+    "placeholder": "Video bağlantısını buraya yapıştır… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Bağlantıyı analiz et",
+    "analyzing": "Analiz ediliyor…",
+    "tryLabel": "Dene",
+    "badge1": "Filigran yok",
+    "badge2": "8K'ye kadar",
+    "badge3": "%100 güvenli",
+    "pasteTooltip": "Panodan yapıştır",
+    "voiceTooltip": "Sesli arama"
+  },
+  "preview": {
+    "readyTitle": "Video indirilmeye hazır ✅",
+    "noWatermark": "Otomatik filigran kaldırma",
+    "detectedIn": "Algılama süresi",
+    "quality": "Kalite seç (YZ en iyisini önerir)",
+    "format": "Biçim seç",
+    "downloadBtn": "Şimdi indir",
+    "done": "İndirme tamamlandı! 🎉",
+    "newLink": "Yeni bağlantı",
+    "cancel": "İptal",
+    "preparing": "İndiriliyor…",
+    "processing": "Birleştiriliyor ve dönüştürülüyor…",
+    "saveFile": "Dosyayı cihazına kaydet",
+    "tools": "Araçlar",
+    "freeCap": "Ücretsiz en fazla 1080p",
+    "proOnly": "Yalnızca Pro pakette",
+    "upgradeHint": "1080p üzeri kaliteler Pro pakette sunulur.",
+    "upgrade": "Yükselt"
+  },
+  "stats": {
+    "downloads": "indirme",
+    "sites": "desteklenen site",
+    "rating": "kullanıcı puanı"
+  },
+  "platforms": {
+    "title": "🌍 Favori platformlarının tümüyle çalışır"
+  },
+  "how": {
+    "title": "⚙️ Nasıl çalışır — sadece 3 adım",
+    "s1t": "Bağlantıyı yapıştır",
+    "s1d": "Herhangi bir platformdan bağlantıyı kopyala ve yukarıya yapıştır.",
+    "s2t": "Kalite ve biçim seç",
+    "s2d": "144p'den 8K'ye — MP4, MP3, WEBM veya GIF.",
+    "s3t": "İndir ve keyfini çıkar",
+    "s3d": "Otomatik devam eden 16 paralel iş parçacığı."
+  },
+  "features": {
+    "title": "🚀 30'dan fazla güçlü özellik",
+    "subtitle": "Video ve ses için her şey tek yerde — ücretsiz."
+  },
+  "cta": {
+    "title": "İndirmeye hazır mısın?",
+    "subtitle": "Kayıt yok • Limit yok • Filigran yok — hemen dene."
+  },
+  "faq": {
+    "title": "❓ Sık sorulan sorular",
+    "q1": "TikTok filigran kaldırma ücretsiz mi?",
+    "a1": "Evet, TikTok, Reels ve Shorts için otomatik ve ücretsiz.",
+    "q2": "Maksimum kalite nedir?",
+    "a2": "Kaynak destekliyorsa 8K'ye (4320p) kadar, artı 320kbps MP3 ses.",
+    "q3": "Oynatma listesi indirebilir miyim?",
+    "a3": "Evet — oynatma listesi veya kanal bağlantısı yapıştır, hepsi hazırlanır.",
+    "q4": "Yasal mı?",
+    "a4": "Yalnızca sahip olduğun veya lisanslı içerikleri indir. Şartlar ve DMCA'ya bak."
+  },
+  "footer": {
+    "tagline": "Dünyanın en akıllı video indiricisi — hızlı, güvenli, filigransız.",
+    "rights": "Tüm hakları saklıdır.",
+    "product": "Ürün",
+    "legal": "Yasal",
+    "disclaimerTitle": "⚖️ Uyarı",
+    "disclaimer": "Bu site bir yardımcı araçtır, sosyal ağ değildir. Telif hakkı ve DMCA'ya uy. İçerik barındırmıyoruz.",
+    "company": "Şirket"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — 1000+ siteden akıllı indirici, filigransız",
+    "homeDesc": "YouTube, TikTok veya Instagram bağlantısı yapıştır ve 8K'ye kadar filigransız indir. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ İndirme sayfası",
+    "subtitle": "Bağlantıyı yapıştır, seçenekleri ayarla ve indir.",
+    "advTitle": "⚙️ Gelişmiş seçenekler",
+    "pw": "🔑 Şifreli bağlantı",
+    "pwPh": "Şifre (isteğe bağlı)",
+    "trim": "✂️ İndirmeden önce kırp (isteğe bağlı)",
+    "start": "Başlangıç (saniye)",
+    "end": "Bitiş (saniye)",
+    "subs": "💬 Altyazıyı otomatik birleştir",
+    "threads": "🧵 Paralel iş parçacığı",
+    "live": "🔴 Canlı yayın desteklenir",
+    "saved": "✅ Kaydedildi — sonraki indirmeye uygulanacak",
+    "trimHint": "Saniye cinsinden — tamamı için boş bırakın"
+  },
+  "history": {
+    "title": "🕘 İndirme geçmişi",
+    "subtitle": "İndirdiğin her şey — yerel + bulut.",
+    "empty": "Henüz bir şey yok — ana sayfadan başla.",
+    "clear": "🗑️ Tümünü temizle",
+    "delete": "Sil",
+    "open": "Aç",
+    "share": "Paylaş",
+    "qr": "QR",
+    "copied": "✅ Bağlantı kopyalandı!",
+    "count": "indirme"
+  },
+  "playlist": {
+    "title": "📃 Oynatma listesi indirici",
+    "subtitle": "Oynatma listesi veya kanal bağlantısı yapıştır — hepsi tek seferde.",
+    "videos": "video",
+    "all": "Tümünü seç",
+    "none": "Tümünü kaldır"
+  },
+  "sched": {
+    "title": "⏰ İndirme zamanlayıcı",
+    "subtitle": "Saat seç, otomatik başlatalım.",
+    "when": "Çalışma zamanı",
+    "save": "Zamanla ✅",
+    "ok": "✅ Başarıyla zamanlandı",
+    "empty": "Zamanlanmış görev yok."
+  },
+  "tools": {
+    "title": "Aracını seç",
+    "hint": "Yapabileceğin her şey, indirmeden önce tek bir yerde",
+    "gifOpts": "Klip seçenekleri",
+    "gifStart": "Başlangıç (sn)",
+    "gifDur": "Süre (sn)",
+    "gifWidth": "Genişlik (px)",
+    "compressing": "Sıkıştırılıyor…",
+    "lockedFormat": "Bu araç için sabit format",
+    "playlistAll": "Tümünü seç",
+    "playlistNone": "Tümünü kaldır"
+  }
+}

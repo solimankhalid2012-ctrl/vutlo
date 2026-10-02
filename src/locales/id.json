@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "features": "Fitur",
+    "pricing": "Harga",
+    "blog": "Blog",
+    "download": "Unduh",
+    "history": "Riwayat",
+    "login": "Masuk",
+    "register": "Daftar",
+    "about": "Tentang",
+    "contact": "Kontak",
+    "privacy": "Privasi",
+    "terms": "Ketentuan"
+  },
+  "hero": {
+    "title1": "Unduh video apa pun",
+    "titleGreen": "secepat kilat",
+    "title2": "tanpa watermark ⚡",
+    "subtitle": "Tempel tautan YouTube, TikTok, Instagram atau 1000+ situs — terdeteksi otomatis dalam <500ms, kualitas hingga 8K.",
+    "placeholder": "Tempel tautan video di sini… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Analisis tautan",
+    "analyzing": "Menganalisis…",
+    "tryLabel": "Coba",
+    "badge1": "Tanpa watermark",
+    "badge2": "Hingga 8K",
+    "badge3": "100% aman",
+    "pasteTooltip": "Tempel dari papan klip",
+    "voiceTooltip": "Pencarian suara"
+  },
+  "preview": {
+    "readyTitle": "Video siap diunduh ✅",
+    "noWatermark": "Hapus watermark otomatis",
+    "detectedIn": "Terdeteksi dalam",
+    "quality": "Pilih kualitas (AI merekomendasikan)",
+    "format": "Pilih format",
+    "downloadBtn": "Unduh sekarang",
+    "done": "Unduhan selesai! 🎉",
+    "newLink": "Tautan baru",
+    "cancel": "Batal",
+    "preparing": "Mengunduh…",
+    "processing": "Menggabungkan & mengonversi…",
+    "saveFile": "Simpan file ke perangkat",
+    "tools": "Alat",
+    "freeCap": "Gratis hingga 1080p",
+    "proOnly": "Khusus paket Pro",
+    "upgradeHint": "Kualitas di atas 1080p tersedia di paket Pro.",
+    "upgrade": "Tingkatkan"
+  },
+  "stats": {
+    "downloads": "unduhan",
+    "sites": "situs didukung",
+    "rating": "rating pengguna"
+  },
+  "platforms": {
+    "title": "🌍 Bekerja dengan semua platform favoritmu"
+  },
+  "how": {
+    "title": "⚙️ Cara kerja — 3 langkah",
+    "s1t": "Tempel tautan",
+    "s1d": "Salin tautan dari platform apa pun dan tempel di atas.",
+    "s2t": "Pilih kualitas & format",
+    "s2d": "Dari 144p hingga 8K — MP4, MP3, WEBM atau GIF.",
+    "s3t": "Unduh & nikmati",
+    "s3d": "16 thread paralel dengan lanjut otomatis."
+  },
+  "features": {
+    "title": "🚀 30+ fitur canggih",
+    "subtitle": "Semua kebutuhan video & audio di satu tempat — gratis."
+  },
+  "cta": {
+    "title": "Siap mengunduh?",
+    "subtitle": "Tanpa daftar • Tanpa batas • Tanpa watermark — coba sekarang."
+  },
+  "faq": {
+    "title": "❓ Pertanyaan umum",
+    "q1": "Apakah hapus watermark TikTok gratis?",
+    "a1": "Ya, otomatis dan gratis untuk TikTok, Reels dan Shorts.",
+    "q2": "Kualitas maksimal?",
+    "a2": "Hingga 8K (4320p) jika sumber mendukung, plus MP3 320kbps.",
+    "q3": "Bisa unduh playlist?",
+    "a3": "Ya — tempel tautan playlist atau channel, semua disiapkan sekaligus.",
+    "q4": "Apakah legal?",
+    "a4": "Unduh hanya konten milikmu atau berlisensi. Lihat Syarat & DMCA."
+  },
+  "footer": {
+    "tagline": "Pengunduh video terpintar — cepat, aman, tanpa watermark.",
+    "rights": "Hak cipta dilindungi.",
+    "product": "Produk",
+    "legal": "Legal",
+    "disclaimerTitle": "⚖️ Penafian",
+    "disclaimer": "Situs ini alat utilitas, bukan medsos. Hormati hak cipta & DMCA. Tidak menghosting konten.",
+    "company": "Perusahaan"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — Pengunduh cerdas 1000+ situs, tanpa watermark",
+    "homeDesc": "Tempel tautan YouTube, TikTok atau Instagram dan unduh hingga 8K tanpa watermark. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ Halaman unduh",
+    "subtitle": "Tempel tautan, atur opsi, lalu unduh.",
+    "advTitle": "⚙️ Opsi lanjutan",
+    "pw": "🔑 Tautan berpassword",
+    "pwPh": "Password (opsional)",
+    "trim": "✂️ Potong sebelum unduh (opsional)",
+    "start": "Mulai (detik)",
+    "end": "Selesai (detik)",
+    "subs": "💬 Gabung subtitle otomatis",
+    "threads": "🧵 Thread paralel",
+    "live": "🔴 Mendukung live streaming",
+    "saved": "✅ Tersimpan — berlaku untuk unduhan berikutnya",
+    "trimHint": "Dalam detik — kosongkan untuk video penuh"
+  },
+  "history": {
+    "title": "🕘 Riwayat unduhan",
+    "subtitle": "Semua yang kamu unduh — lokal + cloud.",
+    "empty": "Belum ada — mulai dari beranda.",
+    "clear": "🗑️ Hapus semua",
+    "delete": "Hapus",
+    "open": "Buka",
+    "share": "Bagikan",
+    "qr": "QR",
+    "copied": "✅ Tautan disalin!",
+    "count": "unduhan"
+  },
+  "playlist": {
+    "title": "📃 Pengunduh playlist",
+    "subtitle": "Tempel tautan playlist/channel — semua antre sekaligus.",
+    "videos": "video",
+    "all": "Pilih semua",
+    "none": "Batalkan semua"
+  },
+  "sched": {
+    "title": "⏰ Penjadwal unduhan",
+    "subtitle": "Pilih waktu, kami mulai otomatis.",
+    "when": "Jalankan pada",
+    "save": "Jadwalkan ✅",
+    "ok": "✅ Berhasil dijadwalkan",
+    "empty": "Tidak ada tugas terjadwal."
+  },
+  "tools": {
+    "title": "Pilih alatmu",
+    "hint": "Semua yang bisa dilakukan, di satu tempat sebelum mengunduh",
+    "gifOpts": "Opsi klip",
+    "gifStart": "Mulai (detik)",
+    "gifDur": "Durasi (detik)",
+    "gifWidth": "Lebar (px)",
+    "compressing": "Mengompres…",
+    "lockedFormat": "Format tetap untuk alat ini",
+    "playlistAll": "Pilih semua",
+    "playlistNone": "Batalkan semua"
+  }
+}

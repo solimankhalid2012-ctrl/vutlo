@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Start",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "blog": "Blog",
+    "download": "Herunterladen",
+    "history": "Verlauf",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "AGB"
+  },
+  "hero": {
+    "title1": "Lade jedes Video",
+    "titleGreen": "mit Blitzgeschwindigkeit",
+    "title2": "ohne Wasserzeichen ⚡",
+    "subtitle": "Füge einen Link von YouTube, TikTok, Instagram oder 1000+ Seiten ein — Erkennung in unter 500ms, Qualität bis 8K.",
+    "placeholder": "Videolink hier einfügen… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Link analysieren",
+    "analyzing": "Analysiere…",
+    "tryLabel": "Testen",
+    "badge1": "Ohne Wasserzeichen",
+    "badge2": "Bis zu 8K",
+    "badge3": "100% sicher",
+    "pasteTooltip": "Aus Zwischenablage einfügen",
+    "voiceTooltip": "Sprachsuche"
+  },
+  "preview": {
+    "readyTitle": "Video bereit zum Download ✅",
+    "noWatermark": "Autom. Wasserzeichen-Entfernung",
+    "detectedIn": "Erkannt in",
+    "quality": "Qualität wählen (KI empfiehlt)",
+    "format": "Format wählen",
+    "downloadBtn": "Jetzt herunterladen",
+    "done": "Download fertig! 🎉",
+    "newLink": "Neuer Link",
+    "cancel": "Abbrechen",
+    "preparing": "Wird heruntergeladen…",
+    "processing": "Wird zusammengeführt und konvertiert…",
+    "saveFile": "Datei auf dem Gerät speichern",
+    "tools": "Werkzeuge",
+    "freeCap": "Kostenlos bis 1080p",
+    "proOnly": "Nur im Pro-Tarif",
+    "upgradeHint": "Qualitäten über 1080p gibt es im Pro-Tarif.",
+    "upgrade": "Upgrade"
+  },
+  "stats": {
+    "downloads": "Downloads",
+    "sites": "unterstützte Seiten",
+    "rating": "Nutzerbewertung"
+  },
+  "platforms": {
+    "title": "🌍 Funktioniert mit deinen Lieblingsplattformen"
+  },
+  "how": {
+    "title": "⚙️ So geht's — nur 3 Schritte",
+    "s1t": "Link einfügen",
+    "s1d": "Link von einer beliebigen Plattform kopieren und oben einfügen.",
+    "s2t": "Qualität & Format wählen",
+    "s2d": "Von 144p bis 8K — MP4, MP3, WEBM oder GIF.",
+    "s3t": "Laden & genießen",
+    "s3d": "16 parallele Threads mit Auto-Fortsetzung."
+  },
+  "features": {
+    "title": "🚀 Über 30 starke Funktionen",
+    "subtitle": "Alles für Video & Audio an einem Ort — kostenlos."
+  },
+  "cta": {
+    "title": "Bereit zum Download?",
+    "subtitle": "Ohne Anmeldung • Ohne Limits • Ohne Wasserzeichen — jetzt testen."
+  },
+  "faq": {
+    "title": "❓ Häufige Fragen",
+    "q1": "Ist die TikTok-Entfernung kostenlos?",
+    "a1": "Ja, automatisch und kostenlos für TikTok, Reels und Shorts.",
+    "q2": "Maximale Qualität?",
+    "a2": "Bis zu 8K (4320p) wenn die Quelle es erlaubt, plus MP3 mit 320kbps.",
+    "q3": "Playlists möglich?",
+    "a3": "Ja — Playlist- oder Kanal-Link einfügen, alles wird vorbereitet.",
+    "q4": "Ist das legal?",
+    "a4": "Nur eigene oder lizenzierte Inhalte laden. Siehe AGB & DMCA."
+  },
+  "footer": {
+    "tagline": "Der smarteste Video-Downloader — schnell, sicher, ohne Wasserzeichen.",
+    "rights": "Alle Rechte vorbehalten.",
+    "product": "Produkt",
+    "legal": "Rechtliches",
+    "disclaimerTitle": "⚖️ Hinweis",
+    "disclaimer": "Utility-Tool, kein soziales Netzwerk. Urheberrecht & DMCA beachten. Keine Inhalte gehostet.",
+    "company": "Unternehmen"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — Smarter Downloader für 1000+ Seiten, ohne Wasserzeichen",
+    "homeDesc": "YouTube-, TikTok- oder Instagram-Link einfügen und bis 8K ohne Wasserzeichen laden. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ Download-Seite",
+    "subtitle": "Link einfügen, Optionen anpassen, laden.",
+    "advTitle": "⚙️ Erweiterte Optionen",
+    "pw": "🔑 Passwortgeschützter Link",
+    "pwPh": "Passwort (optional)",
+    "trim": "✂️ Vor dem Laden zuschneiden (optional)",
+    "start": "Start (Sekunden)",
+    "end": "Ende (Sekunden)",
+    "subs": "💬 Untertitel automatisch einbetten",
+    "threads": "🧵 Parallele Threads",
+    "live": "🔴 Livestreams werden unterstützt",
+    "saved": "✅ Gespeichert — gilt für den nächsten Download",
+    "trimHint": "In Sekunden — leer lassen für das ganze Video"
+  },
+  "history": {
+    "title": "🕘 Download-Verlauf",
+    "subtitle": "Alle Downloads — lokal + Cloud.",
+    "empty": "Noch nichts — starte auf der Startseite.",
+    "clear": "🗑️ Alle löschen",
+    "delete": "Löschen",
+    "open": "Öffnen",
+    "share": "Teilen",
+    "qr": "QR",
+    "copied": "✅ Link kopiert!",
+    "count": "Downloads"
+  },
+  "playlist": {
+    "title": "📃 Playlist-Downloader",
+    "subtitle": "Playlist- oder Kanal-Link einfügen — alles auf einmal.",
+    "videos": "Videos",
+    "all": "Alle auswählen",
+    "none": "Auswahl aufheben"
+  },
+  "sched": {
+    "title": "⏰ Download-Planer",
+    "subtitle": "Zeit wählen, wir starten automatisch.",
+    "when": "Ausführen um",
+    "save": "Planen ✅",
+    "ok": "✅ Erfolgreich geplant",
+    "empty": "Keine geplanten Aufgaben."
+  },
+  "tools": {
+    "title": "Wähle dein Werkzeug",
+    "hint": "Alles Mögliche an einem Ort — vor dem Download",
+    "gifOpts": "Clip-Optionen",
+    "gifStart": "Start (Sek.)",
+    "gifDur": "Dauer (Sek.)",
+    "gifWidth": "Breite (px)",
+    "compressing": "Komprimieren…",
+    "lockedFormat": "Festes Format für dieses Werkzeug",
+    "playlistAll": "Alle auswählen",
+    "playlistNone": "Auswahl aufheben"
+  }
+}

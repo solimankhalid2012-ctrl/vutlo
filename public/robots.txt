@@ -1,0 +1,12 @@
+﻿User-agent: *
+Allow: /
+
+# ⚠️ كان /admin و /login بلا منع ⇒ فهرسة لوحة التحكم وصفحات الدخول
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /history
+
+Sitemap: https://videovaultpro.com/sitemap.xml
+

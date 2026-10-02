@@ -1,0 +1,58 @@
+// Prisma schema — VideoVault Pro
+// افتراضياً SQLite (ملف دائم، بدون تثبيت أي برنامج).
+// للإنتاج بـPostgreSQL: غيّر provider إلى "postgresql" واضبط DATABASE_URL ثم: npx prisma migrate deploy
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String     @default("") // scrypt بملح لكل مستخدم (config/passwords.js)
+  role      String     @default("user") // user | admin
+  points    Int        @default(0)      // نظام النقاط والمكافآت
+  plan      String     @default("free") // free | pro  (Pro = بلا إعلانات + فوق 1080p)
+  createdAt DateTime   @default(now())
+  downloads Download[]
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  url       String
+  title     String   @default("")
+  thumbnail String   @default("")
+  format    String   @default("mp4")
+  quality   String   @default("")
+  kind      String   @default("preview") // preview | download
+  status    String   @default("done")
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([kind])
+  @@index([createdAt])
+}
+
+model ScheduledTask {
+  id        String   @id @default(cuid())
+  url       String
+  runAt     DateTime
+  // SQLite لا يدعم نوع Json في Prisma، لذا نخزّن الخيارات كسلسلة JSON
+  options   String   @default("{}")
+  status    String   @default("pending")
+  jobId     String?
+  error     String?
+  // 🔐 مالك المهمة: يمنع أي زائر من رؤية/إلغاء جدولات غيره
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([runAt])
+  @@index([status])
+  @@index([userId])
+}

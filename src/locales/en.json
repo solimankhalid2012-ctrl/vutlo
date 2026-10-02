@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "download": "Download",
+    "history": "History",
+    "login": "Login",
+    "register": "Sign up",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "hero": {
+    "title1": "Download any video",
+    "titleGreen": "at lightning speed",
+    "title2": "with no watermark ⚡",
+    "subtitle": "Paste a link from YouTube, TikTok, Instagram or 1000+ sites — we detect the platform in under 500ms and prepare up to 8K quality.",
+    "placeholder": "Paste your video link here… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Analyze link",
+    "analyzing": "Analyzing…",
+    "tryLabel": "Try",
+    "badge1": "No watermark",
+    "badge2": "Up to 8K",
+    "badge3": "100% safe",
+    "pasteTooltip": "Paste from clipboard",
+    "voiceTooltip": "Voice search"
+  },
+  "preview": {
+    "readyTitle": "Video ready to download ✅",
+    "noWatermark": "Auto watermark removal",
+    "detectedIn": "Detected in",
+    "quality": "Choose quality (AI suggests the best for you)",
+    "format": "Choose format",
+    "downloadBtn": "Download now",
+    "done": "Download complete! 🎉",
+    "newLink": "New link",
+    "cancel": "Cancel",
+    "preparing": "Downloading…",
+    "processing": "Merging & converting…",
+    "saveFile": "Save file to your device",
+    "tools": "Tools",
+    "freeCap": "Free plan max 1080p",
+    "proOnly": "Pro plan only",
+    "upgradeHint": "Qualities above 1080p are available on the Pro plan.",
+    "upgrade": "Upgrade"
+  },
+  "stats": {
+    "downloads": "downloads",
+    "sites": "supported sites",
+    "rating": "user rating"
+  },
+  "platforms": {
+    "title": "🌍 Works with all your favorite platforms"
+  },
+  "how": {
+    "title": "⚙️ How it works — just 3 steps",
+    "s1t": "Paste the link",
+    "s1d": "Copy any video link and paste it above.",
+    "s2t": "Pick quality & format",
+    "s2d": "From 144p to 8K — MP4, MP3, WEBM or GIF.",
+    "s3t": "Download & enjoy",
+    "s3d": "16-thread parallel downloads with auto-resume."
+  },
+  "features": {
+    "title": "🚀 30+ powerful features",
+    "subtitle": "Everything you need for video & audio in one place — free."
+  },
+  "cta": {
+    "title": "Ready to download?",
+    "subtitle": "No signup • No annoying limits • No watermark — try now."
+  },
+  "faq": {
+    "title": "❓ FAQ",
+    "q1": "Is TikTok watermark removal free?",
+    "a1": "Yes, watermark removal is automatic and free for TikTok, Reels and Shorts.",
+    "q2": "What is the max quality?",
+    "a2": "Up to 8K (4320p) when the source provides it, plus 320kbps MP3 audio extraction.",
+    "q3": "Can I download playlists?",
+    "a3": "Yes — paste a playlist or channel URL and all videos are queued at once.",
+    "q4": "Is downloading legal?",
+    "a4": "Only download content you own or are licensed to use. See Terms & DMCA. We respect copyright."
+  },
+  "footer": {
+    "tagline": "The world's smartest video downloader — fast, safe, no watermark.",
+    "rights": "All rights reserved.",
+    "product": "Product",
+    "legal": "Legal",
+    "disclaimerTitle": "⚖️ Disclaimer",
+    "disclaimer": "This site is a utility tool, not a social network. Users must respect copyright & DMCA. We host no content.",
+    "company": "Company"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — Smart video downloader from 1000+ sites, no watermark",
+    "homeDesc": "Paste any YouTube, TikTok or Instagram link and download up to 8K with no watermark. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ Download page",
+    "subtitle": "Paste the link, tweak advanced options, then download.",
+    "advTitle": "⚙️ Advanced options",
+    "pw": "🔑 Password-protected link",
+    "pwPh": "Password (optional)",
+    "trim": "✂️ Trim before download (optional)",
+    "start": "Start (seconds)",
+    "end": "End (seconds)",
+    "subs": "💬 Auto-merge subtitles",
+    "threads": "🧵 Parallel threads",
+    "live": "🔴 Live stream links supported",
+    "saved": "✅ Options saved — applied to your next download",
+    "trimHint": "In seconds — leave empty for the full video"
+  },
+  "history": {
+    "title": "🕘 Download history",
+    "subtitle": "Everything you downloaded — stored locally & synced to cloud.",
+    "empty": "Nothing yet — start from the homepage.",
+    "clear": "🗑️ Clear all",
+    "delete": "Delete",
+    "open": "Open",
+    "share": "Share",
+    "qr": "QR",
+    "copied": "✅ Link copied!",
+    "count": "downloads"
+  },
+  "playlist": {
+    "title": "📃 Playlist downloader",
+    "subtitle": "Paste a playlist or channel link — all videos queued at once.",
+    "videos": "videos",
+    "all": "Select all",
+    "none": "Clear all"
+  },
+  "sched": {
+    "title": "⏰ Download scheduler",
+    "subtitle": "Pick a time and we'll start automatically.",
+    "when": "Run at",
+    "save": "Schedule ✅",
+    "ok": "✅ Scheduled successfully",
+    "empty": "No scheduled tasks."
+  },
+  "tools": {
+    "title": "Pick your tool",
+    "hint": "Everything you can do, in one place before downloading",
+    "gifOpts": "Clip options",
+    "gifStart": "Start (sec)",
+    "gifDur": "Duration (sec)",
+    "gifWidth": "Width (px)",
+    "compressing": "Compressing…",
+    "lockedFormat": "Fixed format for this tool",
+    "playlistAll": "Select all",
+    "playlistNone": "Clear all"
+  }
+}

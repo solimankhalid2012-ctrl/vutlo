@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "features": "Funciones",
+    "pricing": "Precios",
+    "blog": "Blog",
+    "download": "Descargar",
+    "history": "Historial",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos"
+  },
+  "hero": {
+    "title1": "Descarga cualquier vídeo",
+    "titleGreen": "a la velocidad del rayo",
+    "title2": "sin marca de agua ⚡",
+    "subtitle": "Pega un enlace de YouTube, TikTok, Instagram o más de 1000 sitios — detección auto en menos de 500ms y calidad hasta 8K.",
+    "placeholder": "Pega el enlace del vídeo aquí… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Analizar enlace",
+    "analyzing": "Analizando…",
+    "tryLabel": "Prueba",
+    "badge1": "Sin marca de agua",
+    "badge2": "Hasta 8K",
+    "badge3": "100% seguro",
+    "pasteTooltip": "Pegar desde el portapapeles",
+    "voiceTooltip": "Búsqueda por voz"
+  },
+  "preview": {
+    "readyTitle": "Vídeo listo para descargar ✅",
+    "noWatermark": "Eliminación auto de marca de agua",
+    "detectedIn": "Detectado en",
+    "quality": "Elige calidad (la IA recomienda)",
+    "format": "Elige formato",
+    "downloadBtn": "Descargar ahora",
+    "done": "¡Descarga completa! 🎉",
+    "newLink": "Nuevo enlace",
+    "cancel": "Cancelar",
+    "preparing": "Descargando…",
+    "processing": "Combinando y convirtiendo…",
+    "saveFile": "Guardar archivo en tu dispositivo",
+    "tools": "Herramientas",
+    "freeCap": "Gratis hasta 1080p",
+    "proOnly": "Solo plan Pro",
+    "upgradeHint": "Las calidades por encima de 1080p están en el plan Pro.",
+    "upgrade": "Mejorar"
+  },
+  "stats": {
+    "downloads": "descargas",
+    "sites": "sitios compatibles",
+    "rating": "valoración"
+  },
+  "platforms": {
+    "title": "🌍 Compatible con tus plataformas favoritas"
+  },
+  "how": {
+    "title": "⚙️ Cómo funciona — 3 pasos",
+    "s1t": "Pega el enlace",
+    "s1d": "Copia el enlace de cualquier plataforma y pégalo arriba.",
+    "s2t": "Elige calidad y formato",
+    "s2d": "De 144p a 8K — MP4, MP3, WEBM o GIF.",
+    "s3t": "Descarga y disfruta",
+    "s3d": "16 hilos paralelos con reanudación automática."
+  },
+  "features": {
+    "title": "🚀 Más de 30 funciones potentes",
+    "subtitle": "Todo para vídeo y audio en un lugar — gratis."
+  },
+  "cta": {
+    "title": "¿Listo para descargar?",
+    "subtitle": "Sin registro • Sin límites • Sin marca de agua — prueba ahora."
+  },
+  "faq": {
+    "title": "❓ Preguntas frecuentes",
+    "q1": "¿Quitar la marca de agua de TikTok es gratis?",
+    "a1": "Sí, automático y gratis para TikTok, Reels y Shorts.",
+    "q2": "¿Calidad máxima?",
+    "a2": "Hasta 8K (4320p) si la fuente lo permite, más MP3 a 320kbps.",
+    "q3": "¿Puedo descargar playlists?",
+    "a3": "Sí — pega una playlist o canal y todo se prepara a la vez.",
+    "q4": "¿Es legal?",
+    "a4": "Solo descarga contenido propio o autorizado. Ver Términos y DMCA."
+  },
+  "footer": {
+    "tagline": "El descargador de vídeos más inteligente — rápido, seguro, sin marca de agua.",
+    "rights": "Todos los derechos reservados.",
+    "product": "Producto",
+    "legal": "Legal",
+    "disclaimerTitle": "⚖️ Aviso",
+    "disclaimer": "Herramienta utilitaria, no red social. Respeta el copyright y DMCA. No alojamos contenido.",
+    "company": "Empresa"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — Descargador inteligente de 1000+ sitios, sin marca de agua",
+    "homeDesc": "Pega un enlace de YouTube, TikTok o Instagram y descarga hasta 8K sin marca de agua. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ Página de descarga",
+    "subtitle": "Pega el enlace, ajusta las opciones y descarga.",
+    "advTitle": "⚙️ Opciones avanzadas",
+    "pw": "🔑 Enlace con contraseña",
+    "pwPh": "Contraseña (opcional)",
+    "trim": "✂️ Recortar antes de descargar (opcional)",
+    "start": "Inicio (segundos)",
+    "end": "Fin (segundos)",
+    "subs": "💬 Fusionar subtítulos",
+    "threads": "🧵 Hilos paralelos",
+    "live": "🔴 Soporta directos (Live)",
+    "saved": "✅ Opciones guardadas — se aplicarán a la próxima descarga",
+    "trimHint": "En segundos — déjalo vacío para el video completo"
+  },
+  "history": {
+    "title": "🕘 Historial de descargas",
+    "subtitle": "Todo lo descargado — local y nube.",
+    "empty": "Nada aún — empieza desde el inicio.",
+    "clear": "🗑️ Borrar todo",
+    "delete": "Eliminar",
+    "open": "Abrir",
+    "share": "Compartir",
+    "qr": "QR",
+    "copied": "✅ ¡Enlace copiado!",
+    "count": "descargas"
+  },
+  "playlist": {
+    "title": "📃 Descargador de playlists",
+    "subtitle": "Pega una playlist o canal — todo en cola a la vez.",
+    "videos": "vídeos",
+    "all": "Seleccionar todo",
+    "none": "Quitar todo"
+  },
+  "sched": {
+    "title": "⏰ Programar descarga",
+    "subtitle": "Elige hora e iniciamos automáticamente.",
+    "when": "Ejecutar a las",
+    "save": "Programar ✅",
+    "ok": "✅ Programado correctamente",
+    "empty": "Sin tareas programadas."
+  },
+  "tools": {
+    "title": "Elige tu herramienta",
+    "hint": "Todo lo que puedes hacer, en un solo lugar antes de descargar",
+    "gifOpts": "Opciones del clip",
+    "gifStart": "Inicio (s)",
+    "gifDur": "Duración (s)",
+    "gifWidth": "Ancho (px)",
+    "compressing": "Comprimiendo…",
+    "lockedFormat": "Formato fijo para esta herramienta",
+    "playlistAll": "Seleccionar todo",
+    "playlistNone": "Quitar todo"
+  }
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>VideoVault Pro — تحميل الفيديو الذكي من 1000+ موقع بدون علامة مائية</title>
+    <meta
+      name="description"
+      content="الصق رابط أي فيديو من YouTube وTikTok وInstagram وX وFacebook وحمّله بجودة حتى 8K وبدون علامة مائية. MP4 وMP3 وWEBM وGIF. مجاني وسريع وآمن."
+    />
+    <meta name="theme-color" content="#0A0E0A" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- أيقونات PNG: Safari/iOS لا يقبل SVG ⇒ أيقونة شاشة رئيسية فارغة -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Fonts: Cairo (AR) + Inter (EN) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VideoVault Pro" />
+    <meta property="og:title" content="VideoVault Pro — Smart Video Downloader" />
+    <meta
+      property="og:description"
+      content="حمّل من 1000+ موقع بجودة حتى 8K وبدون علامة مائية."
+    />
+    <meta property="og:image" content="/og-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- canonical + hreflang:
+         المسار /:lang موجود لكنه يعيد التوجيه إلى "/" عبر LangRoute،
+         فروابط hreflang مثل /ar/ تنتهي دائماً بإعادة توجيه، وهي غير صالحة
+         لفهرسة Google. لذلك لا نعلن بدائل الآن. الحل الصحيح عند الحاجة:
+         جعل /ar/features يعرض النسخة العربية فعلياً بدل إعادة التوجيه. -->
+    <link rel="canonical" href="https://videovaultpro.com/" />
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "VideoVault Pro",
+        "url": "https://videovaultpro.com/",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Any",
+        "inLanguage": ["ar", "en", "he", "fr", "es", "de", "tr", "fa", "ur", "id"],
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+    <script>
+      /* ضبط اللغة/الاتجاه قبل الرسم الأول: كان <html dir="rtl"> ثابتاً،
+         فيومض كل مستخدم غير عربي بروم أحمر ثم ينقلب بعد تحميل React. */
+      (function () {
+        try {
+          var m = document.cookie.match(/(?:^|;\s*)vv-lang=([^;]+)/);
+          var l = (m ? decodeURIComponent(m[1]) : (navigator.language || "ar")).slice(0, 2).toLowerCase();
+          var rtl = ["ar", "he", "fa", "ur"].indexOf(l) !== -1;
+          document.documentElement.lang = l;
+          document.documentElement.dir = rtl ? "rtl" : "ltr";
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

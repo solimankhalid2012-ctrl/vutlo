@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { width: 300px; margin: 0; font-family: system-ui; background: #0a0e0a; color: #fff; }
+    .box { padding: 16px; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    h3 span { color: #1db954; }
+    #url { width: 100%; box-sizing: border-box; background: #14201a; border: 1px solid #1db95455; color: #fff; border-radius: 10px; padding: 9px; font-size: 12px; }
+    button { width: 100%; margin-top: 10px; background: #1db954; color: #0a0e0a; border: 0; border-radius: 10px; padding: 10px; font-weight: 800; cursor: pointer; }
+    button:hover { filter: brightness(1.1); }
+    p { font-size: 11px; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h3>⚡ Video<span>Vault</span> Pro</h3>
+    <input id="url" placeholder="Video URL…" />
+    <button id="go">⬇ Download (up to 8K, no watermark)</button>
+    <p id="hint"></p>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

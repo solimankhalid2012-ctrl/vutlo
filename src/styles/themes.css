@@ -1,0 +1,13 @@
+/* ── Themes: ليلي / نهاري تلقائي ── */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="light"] body {
+  background: linear-gradient(180deg, #f4faf6 0%, #e6f5ec 100%);
+  color: #0a0e0a;
+}
+:root[data-theme="light"] .card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(10, 14, 10, 0.08);
+  color: #0a0e0a;
+}

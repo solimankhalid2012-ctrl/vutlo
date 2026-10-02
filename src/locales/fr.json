@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "blog": "Blog",
+    "download": "Télécharger",
+    "history": "Historique",
+    "login": "Connexion",
+    "register": "Inscription",
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
+  },
+  "hero": {
+    "title1": "Téléchargez toute vidéo",
+    "titleGreen": "à la vitesse de l'éclair",
+    "title2": "sans filigrane ⚡",
+    "subtitle": "Collez un lien YouTube, TikTok, Instagram ou 1000+ sites — détection auto en moins de 500ms et qualité jusqu'à 8K.",
+    "placeholder": "Collez le lien vidéo ici… (youtube.com, tiktok.com, instagram.com …)",
+    "fetchBtn": "Analyser le lien",
+    "analyzing": "Analyse…",
+    "tryLabel": "Essayer",
+    "badge1": "Sans filigrane",
+    "badge2": "Jusqu'à 8K",
+    "badge3": "100% sûr",
+    "pasteTooltip": "Coller depuis le presse-papiers",
+    "voiceTooltip": "Recherche vocale"
+  },
+  "preview": {
+    "readyTitle": "Vidéo prête à télécharger ✅",
+    "noWatermark": "Suppression auto du filigrane",
+    "detectedIn": "Détecté en",
+    "quality": "Choisissez la qualité (l'IA recommande)",
+    "format": "Choisissez le format",
+    "downloadBtn": "Télécharger",
+    "done": "Téléchargement terminé ! 🎉",
+    "newLink": "Nouveau lien",
+    "cancel": "Annuler",
+    "preparing": "Téléchargement…",
+    "processing": "Fusion et conversion…",
+    "saveFile": "Enregistrer le fichier",
+    "tools": "Outils",
+    "freeCap": "Offert jusqu'à 1080p",
+    "proOnly": "Offre Pro uniquement",
+    "upgradeHint": "Les qualités au-delà de 1080p sont réservées à l'offre Pro.",
+    "upgrade": "Passer à Pro"
+  },
+  "stats": {
+    "downloads": "téléchargements",
+    "sites": "sites pris en charge",
+    "rating": "note utilisateurs"
+  },
+  "platforms": {
+    "title": "🌍 Compatible avec vos plateformes préférées"
+  },
+  "how": {
+    "title": "⚙️ Comment ça marche — 3 étapes",
+    "s1t": "Collez le lien",
+    "s1d": "Copiez le lien depuis n'importe quelle plateforme et collez-le ci-dessus.",
+    "s2t": "Choisissez qualité et format",
+    "s2d": "De 144p à 8K — MP4, MP3, WEBM ou GIF.",
+    "s3t": "Téléchargez",
+    "s3d": "16 threads parallèles avec reprise automatique."
+  },
+  "features": {
+    "title": "🚀 Plus de 30 fonctionnalités",
+    "subtitle": "Tout pour la vidéo et l'audio au même endroit — gratuit."
+  },
+  "cta": {
+    "title": "Prêt à télécharger ?",
+    "subtitle": "Sans inscription • Sans limites • Sans filigrane — essayez."
+  },
+  "faq": {
+    "title": "❓ Questions fréquentes",
+    "q1": "Le retrait du filigrane TikTok est-il gratuit ?",
+    "a1": "Oui, automatique et gratuit pour TikTok, Reels et Shorts.",
+    "q2": "Qualité maximale ?",
+    "a2": "Jusqu'à 8K (4320p) si la source le permet, plus MP3 à 320kbps.",
+    "q3": "Playlists possibles ?",
+    "a3": "Oui — collez un lien playlist ou chaîne, tout est préparé d'un coup.",
+    "q4": "Est-ce légal ?",
+    "a4": "Téléchargez uniquement ce que vous possédez ou autorisé. Voir CGU et DMCA."
+  },
+  "footer": {
+    "tagline": "Le téléchargeur vidéo le plus intelligent — rapide, sûr, sans filigrane.",
+    "rights": "Tous droits réservés.",
+    "product": "Produit",
+    "legal": "Légal",
+    "disclaimerTitle": "⚖️ Avertissement",
+    "disclaimer": "Outil utilitaire, pas un réseau social. Respectez le droit d'auteur et DMCA. Aucun contenu hébergé.",
+    "company": "Entreprise"
+  },
+  "seo": {
+    "homeTitle": "VideoVault Pro — Téléchargeur intelligent, 1000+ sites, sans filigrane",
+    "homeDesc": "Collez un lien YouTube, TikTok ou Instagram et téléchargez jusqu'à 8K sans filigrane. MP4, MP3, WEBM, GIF."
+  },
+  "download": {
+    "title": "⬇️ Page de téléchargement",
+    "subtitle": "Collez le lien, réglez les options puis téléchargez.",
+    "advTitle": "⚙️ Options avancées",
+    "pw": "🔑 Lien protégé par mot de passe",
+    "pwPh": "Mot de passe (optionnel)",
+    "trim": "✂️ Rogner avant de télécharger (optionnel)",
+    "start": "Début (secondes)",
+    "end": "Fin (secondes)",
+    "subs": "💬 Fusion auto des sous-titres",
+    "threads": "🧵 Threads parallèles",
+    "live": "🔴 Prend en charge les lives",
+    "saved": "✅ Options enregistrées — appliquées au prochain téléchargement",
+    "trimHint": "En secondes — laisser vide pour la vidéo entière"
+  },
+  "history": {
+    "title": "🕘 Historique des téléchargements",
+    "subtitle": "Tout ce que vous avez téléchargé — local + cloud.",
+    "empty": "Rien pour l'instant — commencez depuis l'accueil.",
+    "clear": "🗑️ Tout effacer",
+    "delete": "Supprimer",
+    "open": "Ouvrir",
+    "share": "Partager",
+    "qr": "QR",
+    "copied": "✅ Lien copié !",
+    "count": "téléchargements"
+  },
+  "playlist": {
+    "title": "📃 Téléchargeur de playlists",
+    "subtitle": "Collez un lien playlist ou chaîne — tout est préparé d'un coup.",
+    "videos": "vidéos",
+    "all": "Tout sélectionner",
+    "none": "Tout désélectionner"
+  },
+  "sched": {
+    "title": "⏰ Planificateur",
+    "subtitle": "Choisissez une heure, démarrage auto.",
+    "when": "Exécuter à",
+    "save": "Planifier ✅",
+    "ok": "✅ Planifié avec succès",
+    "empty": "Aucune tâche planifiée."
+  },
+  "tools": {
+    "title": "Choisissez votre outil",
+    "hint": "Tout ce que vous pouvez faire, au même endroit avant le téléchargement",
+    "gifOpts": "Options du clip",
+    "gifStart": "Début (s)",
+    "gifDur": "Durée (s)",
+    "gifWidth": "Largeur (px)",
+    "compressing": "Compression…",
+    "lockedFormat": "Format fixe pour cet outil",
+    "playlistAll": "Tout sélectionner",
+    "playlistNone": "Tout désélectionner"
+  }
+}
