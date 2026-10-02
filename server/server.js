@@ -25,7 +25,7 @@ import { validateEmail } from "./config/passwords.js";
 import { telegramWebhookOk, whatsappWebhookOk } from "./config/webhooks.js";
 import { ipKey, loginKey } from "./config/rateKeys.js";
 import { startRetention } from "./services/retention.js";
-import { resolveTrustProxy } from "./config/trustProxy.js";
+import { resolveTrustedHops, clientIpFromRequest } from "./config/trustProxy.js";
 
 // مستخدم اختياري من توكن المستخدم (للنقاط) — لا يفشل بدونه.
 // يقرأ من middleware الموحّد (algorithms مقيدة + سر من config) بدل تكرار المنطق.
@@ -58,11 +58,25 @@ const app = express();
 // مفقود كانت الواجهة لا تصل للـAPI إطلاقاً.
 const PORT = process.env.PORT || 4001;
 
-// خلف proxy/إBalancer ⇒ بدون هذا كل الطلبات تبدو من IP واحد فيعمل الحد على الجميع.
-// ⚠️ كان 1 دائماً ⇒ تجاوز كل حدود الطلبات (انظر config/trustProxy.js).
-// الافتراضي false: يُضبطه المالك صراحةً بعد التأكد أن الـproxy يكتب الترويسة.
-app.set("trust proxy", resolveTrustProxy(process.env.TRUST_PROXY));
+// عدد الـproxies الموثوقة. الافتراضي 0 = لا نثق بأي ترويسة (نشر مباشر).
+// مع proxy محلي (nginx على نفس الجهاز) ⇒ TRUSTED_HOPS=1.
+// الإعداد وحده ليس كافياً: نصحّح req.ip بأنفسنا أدناه، لأن إعداد Express
+// الجاهز يُعيد عنواناً يمكن للعميل تزويره (انظر config/trustProxy.js).
+const TRUSTED_HOPS = resolveTrustedHops(process.env.TRUST_PROXY);
+app.set("trust proxy", TRUSTED_HOPS);
 app.disable("x-powered-by");
+
+// 🔐 تصحيح req.ip على مستوى الطلب قبل أي مستهلك (حدود، سجل، تقارير خطأ):
+// نأخذ trustedHops عنصراً من الطرف الأيمن فقط، فأي قيمة زرعها العميل في
+// X-Forwarded-For تُlocated على يسار عنوانه الحقيقي وتُهمَل.
+app.use((req, _res, next) => {
+  Object.defineProperty(req, "ip", {
+    value: clientIpFromRequest(req, TRUSTED_HOPS),
+    configurable: true,
+    writable: true,
+  });
+  next();
+});
 
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({
@@ -449,4 +463,10 @@ await initDb();
 await restoreSchedules().catch((e) => console.error("[scheduler] فشل الاستعادة:", e.message));
 startRetention(); // حذف الملفات المنتهية (قرص + روابط عامة لا تنتهي)
 securityReport();
-app.listen(PORT, () => console.log(`✅ VideoVault API on http://localhost:${PORT} (db: ${db.mode()})`));
+// 🔐 127.0.0.1 افتراضياً: مع nginx على نفس الجهاز لا داعي لفتح المنفذ للعالم.
+//    فتحه على 0.0.0.0 يتجاوز TLS وحدود الطلبات وإعدادات الـproxy كلها، فأي-hit
+//    مباشر يتخطّى nginx. ضع HOST=0.0.0.0 فقط داخل Docker/WSL الذي لا يشارك
+//    شبكة المضيف مع الـproxy.
+const HOST = process.env.HOST || "127.0.0.1";
+app.listen(PORT, HOST, () =>
+  console.log(`✅ VideoVault API on http://${HOST}:${PORT} (db: ${db.mode()})`));

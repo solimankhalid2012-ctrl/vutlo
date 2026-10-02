@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────
+# systemd — VideoVault Pro API
+#   sudo cp deploy/videovault.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now videovault
+#   sudo journalctl -u videovault -f
+# ─────────────────────────────────────────────
+[Unit]
+Description=VideoVault Pro API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=videovault
+Group=videovault
+WorkingDirectory=/var/www/videovault
+
+# الأسرار في ملف صلاحيات 600 لا يقرأه غير مالكه
+EnvironmentFile=/var/www/videovault/.env
+
+ExecStart=/usr/bin/node server/server.js
+Restart=always
+RestartSec=5
+
+# ── حدود تحمي الخادم من استنزاف الذاكرة/العمليات ──
+LimitNOFILE=65535
+
+# ── إقلاع بدون امتيازات ──
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+#WritablePaths لتسمح بكتابة قاعدة البيانات وملفات التحميل دون فتح /
+ReadWritePaths=/var/www/videovault/prisma /var/www/videovault/downloads
+
+# ── سجل systemd بدل stdout ──
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=videovault
+
+[Install]
+WantedBy=multi-user.target
