@@ -22,7 +22,8 @@ export function currentBuildId() {
 const STORAGE_KEY = "vv-build";
 
 /**
- * @param {{reload?: () => void}} [opts] نمرّر reload للاختبار بدل location.reload.
+ * @param {{reload?: () => void, pollMs?: number}} [opts] نمرّر reload للاختبار بدل
+ *   location.reload، وpollMs لتعديل نبض المقارنة الدورية.
  * @returns {() => void} دالة تنظيف.
  */
 export function installStaleTabGuard(opts = {}) {
@@ -62,7 +63,20 @@ export function installStaleTabGuard(opts = {}) {
   };
 
   document.addEventListener("visibilitychange", checkServer);
-  return () => document.removeEventListener("visibilitychange", checkServer);
+  // النقر على النافذة لا يغيّر visibilityState، لكن حدث focus يصدر عند العودة
+  // إلى التبويب: مستخدم ينشر نسخة جديدة ثم ينقر رجوعاً إلى تبويبه المفتوح.
+  window.addEventListener("focus", checkServer);
+
+  // تبويب يبقى مركّزاً طوال الوقت لا يمرّ على visibilitychange ولا focus،
+  // فنمنحه نبضة دورية (index.html فقط بلا كاش) حتى يتعافى من النشر تلقائياً.
+  const pollMs = Number.isFinite(opts.pollMs) ? opts.pollMs : 60_000;
+  const timer = pollMs > 0 ? setInterval(checkServer, pollMs) : null;
+
+  return () => {
+    document.removeEventListener("visibilitychange", checkServer);
+    window.removeEventListener("focus", checkServer);
+    if (timer) clearInterval(timer);
+  };
 }
 
 export default installStaleTabGuard;

@@ -34,7 +34,7 @@ describe("بصمة البناء", () => {
 
   it("تسجّل البصمة عند أول زيارة بلا إعادة تحميل", () => {
     const reload = vi.fn();
-    installStaleTabGuard({ reload });
+    installStaleTabGuard({ reload, pollMs: 0 });
     expect(reload).not.toHaveBeenCalled();
     expect(window.localStorage.getItem(STORAGE_KEY)).toBe("abc12345");
   });
@@ -57,8 +57,54 @@ describe("بصمة البناء", () => {
 
   it("تغلق مستمع visibilitychange عند التنظيف", () => {
     const remove = vi.spyOn(document, "removeEventListener");
-    const dispose = installStaleTabGuard({ reload: vi.fn() });
+    const dispose = installStaleTabGuard({ reload: vi.fn(), pollMs: 0 });
     dispose();
     expect(remove).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+  });
+
+  it("تنبض الدورية وحدث focus فتعيد تحميل تبويب صديقي", async () => {
+    vi.useFakeTimers();
+    const reload = vi.fn();
+    const fetchMock = vi.fn(async () => ({
+      text: async () => '<script src="/assets/index-newsrv99.js"></script>',
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const dispose = installStaleTabGuard({ reload, pollMs: 1000 });
+
+      // 1) نبضة الدورية وهي تبويب مركّز ⇒ يعيد التحميل بلا تفاعل من المستخدم.
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(reload).toHaveBeenCalledTimes(1);
+
+      // 2) حدث focus (عودة المستخدم بالنقر بعد نشر جديد).
+      window.dispatchEvent(new Event("focus"));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(reload).toHaveBeenCalledTimes(2);
+
+      // 3) التنظيف يوقف الدورية ⇒ لا طلبات بعد التنظيف.
+      dispose();
+      const calls = fetchMock.mock.calls.length;
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(fetchMock.mock.calls.length).toBe(calls);
+    } finally {
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("لا تعيد تحميل نبضة الدورية إن كان التبويب مخفياً", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      installStaleTabGuard({ reload: vi.fn(), pollMs: 1000 });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
+    }
   });
 });
