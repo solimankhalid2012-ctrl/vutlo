@@ -51,6 +51,8 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   const isPlaylist = active.kind === "playlist";
   const isSchedule = active.kind === "schedule";
   const isBulk = isPlaylist || isSchedule;
+  // MP3 صوت فقط ⇒ الجودة لا تُطبَّق عليه (الخادم يحمّل الصوت ba/b مباشرة)
+  const audioOnly = format === "mp3";
 
   // تبديل الأداة يضبط الصيغة على صيغة صالحة لها
   useEffect(() => {
@@ -354,8 +356,8 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                     )}
                   </div>
 
-                  {/* Quality Selector — يظهر فقط للأدوات التي تدعم الجودة */}
-                  {active.qualities && (
+                  {/* Quality Selector — يظهر فقط للأدوات التي تدعم الجودة (وليس MP3: صوت فقط) */}
+                  {active.qualities && !audioOnly && (
                     <div className="mt-5">
                       <label className="block text-xs font-black text-white/60 mb-2">
                         {t("preview.quality")}
@@ -540,7 +542,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                       <span className="flex items-center justify-center gap-2 relative z-10">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         {active.icon} {t("preview.downloadBtn")} · {formatForTool(tool, format).toUpperCase()}
-                        {active.qualities && ` · ${quality}`}
+                        {active.qualities && !audioOnly && ` · ${quality}`}
                       </span>
                       <span className="absolute inset-0 bg-gradient-to-r from-emerald-light to-emerald opacity-0 group-hover:opacity-20 transition-opacity rounded-[22px]" />
                     </motion.button>

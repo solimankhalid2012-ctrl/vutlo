@@ -32,7 +32,7 @@ describe("سجل الأدوات", () => {
   });
 
   it("الأدوات الفردية لها صيغ صالحة؛ المجموعات لا", () => {
-    expect(toolById("video").formats).toEqual(["mp4", "webm", "mkv"]);
+    expect(toolById("video").formats).toEqual(["mp4", "mp3", "webm", "mkv"]);
     expect(toolById("audio").formats).toEqual(["mp3"]);
     expect(toolById("gif").formats).toEqual(["gif"]);
     expect(toolById("playlist").formats).toBeUndefined();
@@ -51,8 +51,13 @@ describe("اختيار الصيغة حسب الأداة", () => {
     expect(formatForTool("video", "mp4")).toBe("mp4");
   });
 
-  it("الفيديو يرفض صيغة لا تخصه (مثلاً mp3)", () => {
-    expect(formatForTool("video", "mp3")).toBe("mp4");
+  it("الفيديو يقبل mp3 (استخراج صوت من نفس الرابط)", () => {
+    expect(formatForTool("video", "mp3")).toBe("mp3");
+  });
+
+  it("الفيديو يرفض صيغة غريبة ويسقط لأول صيغة آمنة", () => {
+    expect(formatForTool("video", "gif")).toBe("mp4");
+    expect(formatForTool("video", undefined)).toBe("mp4");
   });
 
   it("الصوت ثابت mp3 مهما اختار المستخدم", () => {
@@ -88,9 +93,15 @@ describe("الجودة حسب الأداة", () => {
 
 describe("الصيغ المتاحة لكل أداة", () => {
   it("تطابق تعريفات الأداة", () => {
-    expect(formatsFor("video").map((f) => f.id)).toEqual(["mp4", "webm", "mkv"]);
+    expect(formatsFor("video").map((f) => f.id)).toEqual(["mp4", "mp3", "webm", "mkv"]);
     expect(formatsFor("audio").map((f) => f.id)).toEqual(["mp3"]);
     expect(formatsFor("gif").map((f) => f.id)).toEqual(["gif"]);
+  });
+
+  it("أداة الفيديو تعرض mp3 إلى جانب mp4/webm/mkv", () => {
+    const ids = formatsFor("video").map((f) => f.id);
+    expect(ids).toContain("mp3");
+    expect(ids).toEqual(expect.arrayContaining(["mp4", "mp3", "webm", "mkv"]));
   });
 
   it("لا تعيد شيئاً لأدوات المجموعات", () => {

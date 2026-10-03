@@ -10,12 +10,15 @@ export const TOOLS = [
     id: "video",
     icon: "🎬",
     kind: "video",
-    formats: ["mp4", "webm", "mkv"],
+    // mp3 هنا أيضاً: نفس رابط الفيديو، لكن المستخدم يستخرج الصوت مباشرة
+    // (yt-dlp: -f ba/b -x --audio-format mp3 --audio-quality 320K) بلا
+    // تنزيل الفيديو كاملاً ثم تحويله.
+    formats: ["mp4", "mp3", "webm", "mkv"],
     qualities: true,
     label: { ar: "فيديو", en: "Video" },
     hint: {
-      ar: "تنزيل الفيديو بجودة تصل إلى 8K",
-      en: "Download the video up to 8K",
+      ar: "تنزيل الفيديو بجودة تصل إلى 8K — أو الصوت فقط MP3",
+      en: "Download the video up to 8K — or audio only as MP3",
     },
   },
   {
