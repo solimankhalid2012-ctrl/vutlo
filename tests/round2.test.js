@@ -136,6 +136,22 @@ describe("صدق قائمة الميزات", () => {
       }
     }
   });
+  it("Features لا تعرض أي ميزة 'قريباً' إطلاقاً", () => {
+    const { readFileSync } = require("node:fs");
+    const src = readFileSync("src/pages/Features.jsx", "utf8");
+    // الصفحة تستهلك liveFeatures فقط (لا featureList) ولا شارة "قريباً"
+    expect(src).toContain("liveFeatures");
+    expect(src).not.toContain("featureList");
+    // لا شارة "قريباً" ولا شرط soon في العرض (التعليق العربي ذكر الكلمة فقط)
+    expect(src).not.toContain("🔜");
+    expect(src).not.toMatch(/soon\s*[?&|)]/);
+    for (const lang of ["ar", "en"]) {
+      const soon = featureList(lang).filter((f) => f[3]);
+      for (const [, title] of soon) {
+        expect(src, `${lang}: ${title} يجب ألا يُعرض`).not.toContain(`"${title}"`);
+      }
+    }
+  });
   it("لا يدّعي روابط مشاركة قصيرة (غير منفّذة)", () => {
     for (const lang of ["ar", "en"]) {
       const share = featureList(lang).find((f) => f[1].includes("مشاركة") || f[1].toLowerCase().includes("share"));
