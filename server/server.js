@@ -7,6 +7,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { CSP_DIRECTIVES } from "./config/csp.js";
 import rateLimit from "express-rate-limit";
 import path from "path";
 import fs from "fs";
@@ -79,7 +80,14 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use(helmet({ crossOriginResourcePolicy: false }));
+/** سياسة أمان المحتوى — انظر server/config/csp.js لشرح كل قرار. */
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: CSP_DIRECTIVES,
+  },
+}));
 app.use(cors({
   origin: (process.env.CLIENT_URL || "http://localhost:5173").split(","),
   credentials: true,
