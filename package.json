@@ -11,6 +11,8 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "lint": "eslint src server --ext .js,.jsx",
     "test": "vitest run",
+    "check:csp": "node csp-live-check.mjs",
+    "check:browser": "node browser-console-check.mjs",
     "format": "prettier --write \"src/**/*.{js,jsx,css,json}\""
   },
   "dependencies": {
