@@ -26,6 +26,7 @@ import { validateEmail } from "./config/passwords.js";
 import { telegramWebhookOk, whatsappWebhookOk } from "./config/webhooks.js";
 import { ipKey, loginKey } from "./config/rateKeys.js";
 import { startRetention } from "./services/retention.js";
+import { saveToDesktop, jobIdFromFileName } from "./services/desktopSave.js";
 import { resolveTrustedHops, clientIpFromRequest } from "./config/trustProxy.js";
 
 // مستخدم اختياري من توكن المستخدم (للنقاط) — لا يفشل بدونه.
@@ -226,6 +227,30 @@ app.delete("/api/job/:id", (req, res) => {
   res.json({ ok: true });
 });
 
+// ── 💾 POST /api/save-desktop — نسخ الملف المكتمل إلى سطح مكتب المستخدم
+// التطبيق محلي ⇒ السيرفر هو من يملك صلاحية الكتابة على القرص.
+// 🔒 لا يكفي اسم الملف: أي زائر كان يمرّر /api/convert/:file ثم يحفظ ملف
+// غيره. نستخرج معرّف المهمة من الاسم ونطلب نفس شرط الملكية في ownsJob.
+const saveDesktopLimiter = rateLimit({
+  windowMs: 60_000,
+  max: Number(process.env.SAVE_DESKTOP_MAX_PER_MIN || 30),
+  standardHeaders: true,
+});
+
+app.post("/api/save-desktop", saveDesktopLimiter, (req, res) => {
+  const fileName = String(req.body?.file || "");
+  const jobId = jobIdFromFileName(fileName);
+  if (!jobId) return res.status(400).json({ error: "اسم ملف غير صالح" });
+  const job = getJobRecord(jobId);
+  if (!job) return res.status(404).json({ error: "المهمة غير موجودة أو انتهت صلاحيتها" });
+  if (!ownsJob(job, req)) return denyJob(res, req);
+  try {
+    res.json(saveToDesktop(fileName));
+  } catch (e) {
+    res.status(e.status || 500).json({ error: publicError(e, "تعذّر الحفظ على سطح المكتب") });
+  }
+});
+
 // ── POST /api/playlist — معلومات قائمة تشغيل/قناة ──
 app.post("/api/playlist", async (req, res) => {
   try {
@@ -354,6 +379,7 @@ app.get("/api/docs", (req, res) => res.json({
     { method: "POST", path: "/download", body: { url: "string", quality: "1080p", format: "mp4|mp3|webm|mkv|gif", password: "?", trimStart: "?", trimEnd: "?", subs: "bool", threads: "1-16" }, desc: "Start a download job" },
     { method: "GET", path: "/job/:id", desc: "Job status + progress + fileUrl (مهمة خاصة تتطلب توكن صاحبها)" },
     { method: "DELETE", path: "/job/:id", desc: "Cancel a running job" },
+    { method: "POST", path: "/save-desktop", body: { file: "job_x.mp4" }, desc: "نسخ ملف مكتمل إلى سطح مكتب مستخدم هذا الجهاز (يتطلب ملكية المهمة)" },
     { method: "POST", path: "/playlist", body: { url: "string" }, desc: "Playlist/channel entries" },
     { method: "POST", path: "/schedule", body: { url: "string", runAt: "ISO datetime" }, desc: "Schedule a download" },
     { method: "GET", path: "/schedules", desc: "List scheduled tasks (الزائر: مهامه فقط)" },

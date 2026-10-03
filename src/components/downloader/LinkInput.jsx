@@ -12,7 +12,7 @@ import { toolById, formatForTool, GIF_DEFAULT } from "../../utils/tools.js";
 import { useDownload } from "../../hooks/useDownload.js";
 import { useAdvOptions } from "../../hooks/useAdvOptions.js";
 import { useLang } from "../../context/LangContext.jsx";
-import { convertJob, compressJob, gifJob, fileUrl as absFileUrl } from "../../services/api.js";
+import { convertJob, compressJob, gifJob, fileUrl as absFileUrl, saveToDesktop } from "../../services/api.js";
 import { fmtBytes } from "../../utils/formatters.js";
 import ToolSwitcher from "./ToolSwitcher.jsx";
 import AdvancedOptions from "./AdvancedOptions.jsx";
@@ -43,6 +43,8 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   const [listening, setListening] = useState(false);
   const [toolBusy, setToolBusy] = useState("");
   const [toolMsg, setToolMsg] = useState(null); // {label, fileUrl, size, savedPct}
+  const [deskMsg, setDeskMsg] = useState(null); // نتيجة الحفظ على سطح المكتب
+  const [deskBusy, setDeskBusy] = useState(false);
   const inputRef = useRef(null);
   const { adv } = useAdvOptions();
   const { status, info, job, progress, stage, error, fetchInfo, download, cancel, reset } = useDownload();
@@ -113,6 +115,30 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   useEffect(() => {
     if (compressAfterDone && status === "done" && job?.jobId && !toolBusy && !toolMsg) runTool("zip");
   }, [compressAfterDone, status, job?.jobId]);
+
+  /* ── 💾 الحفظ على سطح مكتب هذا الجهاز ──
+     التطبيق يعمل محلياً ⇒ نسخ الملف يتم عبر السيرفر (صلاحية قرص)، فيظهر الملف
+     على سطح المكتب مباشرة بلا نافذة "حفظ باسم". الملف المحفوظ = تنزيله، أو
+     ناتج أداة (MP3/GIF/ضغط) إن وُجد، والخيار الأحدث أولاً. */
+  const desktopTarget = (job?.status === "done" && job?.fileName
+    ? job.fileName
+    : toolMsg && !toolMsg.error && toolMsg.fileUrl
+      ? String(toolMsg.fileUrl).split("/").pop()
+      : "") || "";
+
+  const saveOnDesktop = async () => {
+    if (!desktopTarget || deskBusy) return;
+    setDeskBusy(true); setDeskMsg(null);
+    try {
+      const r = await saveToDesktop(desktopTarget);
+      setDeskMsg({ ok: true, text: r.path || r.fileName });
+    } catch (e) {
+      setDeskMsg({ ok: false, text: e.message || "تعذّر الحفظ على سطح المكتب" });
+    } finally {
+      setDeskBusy(false);
+      setTimeout(() => setDeskMsg(null), 8000);
+    }
+  };
 
   // 🎤 Voice Search (Web Speech API)
   const voiceSearch = () => {
@@ -362,22 +388,27 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                       <label className="block text-xs font-black text-white/60 mb-2">
                         {t("preview.quality")}
                       </label>
+{/* ⚠️ كانت motion.button + whileHover/whileTap: تحريك الزر أثناء
+                          الضغط (scale) يجعل mousedown وmouseup يقعان على
+                          عنصرين مختلفين ⇒ لا يُطلَق click ⇒ يجب ضغط الزر أكثر من
+                          مرة. الآن زر عادي بلا transform وتغيير لوني فقط،
+                          وضغطة واحدة تكفي (فأرة/لمس/لوحة مفاتيح). */}
                       <div className="flex flex-wrap gap-2">
                         {QUALITIES.map((q) => (
-                          <motion.button
+                          <button
+                            type="button"
                             key={q}
                             onClick={() => setQuality(q)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
                             title={q}
-                            className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
+                            aria-pressed={quality === q}
+                            className={`select-none touch-manipulation rounded-xl px-3 py-2 text-xs font-black transition-colors duration-150 ${
                               quality === q
                                 ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
-                                : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
+                                : "bg-white/5 text-white/70 hover:bg-emerald/15 hover:text-white hover:border-emerald/30 border border-white/10"
                             }`}
                           >
                             {q}
-                          </motion.button>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -390,20 +421,20 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                       {(active.formats || []).map((fid) => {
                         const f = FORMATS.find((x) => x.id === fid) || { id: fid, desc: "" };
                         return (
-                          <motion.button
+                          <button
+                            type="button"
                             key={f.id}
                             onClick={() => setFormat(f.id)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
                             title={f.desc}
-                            className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
+                            aria-pressed={format === f.id}
+                            className={`select-none touch-manipulation rounded-xl px-3 py-2 text-xs font-black transition-colors duration-150 ${
                               format === f.id
                                 ? "bg-gradient-to-r from-mint to-emerald text-on-accent"
-                                : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
+                                : "bg-white/5 text-white/70 hover:bg-emerald/15 hover:text-white hover:border-emerald/30 border border-white/10"
                             }`}
                           >
                             {f.id.toUpperCase()}
-                          </motion.button>
+                          </button>
                         );
                       })}
                       {active.formats?.length === 1 && (
@@ -500,6 +531,18 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                         </a>
                       )}
 
+                      {/* نسخة داخل البطاقة أيضاً — نفس زر الزاوية */}
+                      {job?.fileName && (
+                        <button
+                          type="button"
+                          onClick={saveOnDesktop}
+                          disabled={deskBusy}
+                          className="btn-ghost btn-primary-sm !text-xs"
+                        >
+                          {deskBusy ? "⏳…" : "💾"} {ar ? "سطح المكتب" : "Desktop"}
+                        </button>
+                      )}
+
                       {/* 🔧 أدوات ما بعد التحميل — بديل سريع لكل أداة */}
                       {job?.format !== "mp3" && !compressAfterDone && (
                         <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
@@ -556,6 +599,36 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
 
       {/* ── 4) الخيارات المتقدمة: قص + ترجمة + كلمة سر + خيوط (مشتركة) ── */}
       {!isBulk && !compact && <AdvancedOptions />}
+
+      {/* ── 💾 زر تحميل ثابت في الزاوية: الملف يظهر على سطح المكتب مباشرة ── */}
+      {!compact && !isBulk && desktopTarget && (
+        <div className="fixed bottom-6 end-6 z-40 flex flex-col items-end gap-2">
+          {deskMsg && (
+            <div
+              role="status"
+              className={`max-w-[70vw] break-all rounded-2xl border px-3 py-2 text-xs font-bold shadow-lg backdrop-blur ${
+                deskMsg.ok
+                  ? "border-emerald/40 bg-emerald/15 text-emerald"
+                  : "border-red-500/40 bg-red-500/10 text-red-300"
+              }`}
+            >
+              {deskMsg.ok ? "✅ حُفظ على سطح المكتب: " : "⚠️ "}
+              {deskMsg.text}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={saveOnDesktop}
+            disabled={deskBusy}
+            title={ar ? "نسخ الملف إلى سطح مكتب هذا الجهاز" : "Copy the file to this computer's Desktop"}
+            className="btn-primary !px-4 !py-3 shadow-glow disabled:opacity-60"
+          >
+            <span className="flex items-center gap-2 text-sm font-black">
+              {deskBusy ? "⏳…" : "💾"} {ar ? "حفظ على سطح المكتب" : "Save to Desktop"}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

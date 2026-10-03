@@ -94,6 +94,9 @@ export const convertJob = (jobId, target) => req("/api/convert", { method: "POST
 export const compressJob = (jobId, crf = 28) => req("/api/compress", { method: "POST", body: JSON.stringify({ jobId, crf }) });
 export const gifJob = (jobId, opts = {}) => req("/api/gif", { method: "POST", body: JSON.stringify({ jobId, ...opts }) });
 
+/** 💾 POST /api/save-desktop — ينسخ ملفاً مكتملاً إلى سطح مكتب هذا الجهاز */
+export const saveToDesktop = (file) => req("/api/save-desktop", { method: "POST", body: JSON.stringify({ file }) }).then(asObject);
+
 /** 🧑‍💻 توثيق API العام */
 export const getApiDocs = () => req("/api/docs").then(asObject);
 
