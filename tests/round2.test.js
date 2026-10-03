@@ -122,6 +122,20 @@ describe("صدق قائمة الميزات", () => {
       expect(ai[3], `${lang}: AI يجب ألا يكون live`).toBe(1);
     }
   });
+  it("الميزات غير المنفَّذة فعلاً مُعلَّمة 'قريباً' (لا تُعلن كمتاح)", () => {
+    // تدقيق 2026-10 على الكود لا على الوصف — انظر تعليل كل واحد في features.js
+    const mustBeSoon = {
+      ar: ["بدون علامة مائية", "تحميل القنوات", "تحويل الصيغ", "مدير تحميلات", "بوت Telegram", "رمز QR"],
+      en: ["No watermark", "Channels", "Format convert", "Download manager", "Telegram bot", "QR code"],
+    };
+    for (const lang of ["ar", "en"]) {
+      for (const title of mustBeSoon[lang]) {
+        const f = featureList(lang).find((x) => x[1] === title);
+        expect(f, `${lang}: ${title} يجب أن يبقى في القائمة`).toBeTruthy();
+        expect(f[3], `${lang}: ${title} يجب ألا يكون live`).toBe(1);
+      }
+    }
+  });
   it("لا يدّعي روابط مشاركة قصيرة (غير منفّذة)", () => {
     for (const lang of ["ar", "en"]) {
       const share = featureList(lang).find((f) => f[1].includes("مشاركة") || f[1].toLowerCase().includes("share"));
