@@ -2,7 +2,6 @@
   "nav": {
     "home": "Home",
     "features": "Features",
-    "pricing": "Pricing",
     "blog": "Blog",
     "download": "Download",
     "history": "History",
@@ -41,11 +40,7 @@
     "preparing": "Downloading…",
     "processing": "Merging & converting…",
     "saveFile": "Save file to your device",
-    "tools": "Tools",
-    "freeCap": "Free plan max 1080p",
-    "proOnly": "Pro plan only",
-    "upgradeHint": "Qualities above 1080p are available on the Pro plan.",
-    "upgrade": "Upgrade"
+    "tools": "Tools"
   },
   "stats": {
     "downloads": "downloads",

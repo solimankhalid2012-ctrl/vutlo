@@ -2,7 +2,6 @@
   "nav": {
     "home": "خانه",
     "features": "ویژگی‌ها",
-    "pricing": "قیمت‌ها",
     "blog": "وبلاگ",
     "download": "دانلود",
     "history": "تاریخچه",
@@ -41,11 +40,7 @@
     "preparing": "در حال دانلود…",
     "processing": "در حال ادغام و تبدیل…",
     "saveFile": "ذخیره فایل روی دستگاه",
-    "tools": "ابزارها",
-    "freeCap": "رایگان تا 1080p",
-    "proOnly": "فقط در پلن Pro",
-    "upgradeHint": "کیفیت‌های بالاتر از 1080p در پلن Pro موجود است.",
-    "upgrade": "ارتقا"
+    "tools": "ابزارها"
   },
   "stats": {
     "downloads": "دانلود",

@@ -2,7 +2,6 @@
   "nav": {
     "home": "Ana Sayfa",
     "features": "Özellikler",
-    "pricing": "Fiyatlar",
     "blog": "Blog",
     "download": "İndir",
     "history": "Geçmiş",
@@ -41,11 +40,7 @@
     "preparing": "İndiriliyor…",
     "processing": "Birleştiriliyor ve dönüştürülüyor…",
     "saveFile": "Dosyayı cihazına kaydet",
-    "tools": "Araçlar",
-    "freeCap": "Ücretsiz en fazla 1080p",
-    "proOnly": "Yalnızca Pro pakette",
-    "upgradeHint": "1080p üzeri kaliteler Pro pakette sunulur.",
-    "upgrade": "Yükselt"
+    "tools": "Araçlar"
   },
   "stats": {
     "downloads": "indirme",

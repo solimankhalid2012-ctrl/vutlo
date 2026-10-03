@@ -2,7 +2,6 @@
   "nav": {
     "home": "Start",
     "features": "Funktionen",
-    "pricing": "Preise",
     "blog": "Blog",
     "download": "Herunterladen",
     "history": "Verlauf",
@@ -41,11 +40,7 @@
     "preparing": "Wird heruntergeladen…",
     "processing": "Wird zusammengeführt und konvertiert…",
     "saveFile": "Datei auf dem Gerät speichern",
-    "tools": "Werkzeuge",
-    "freeCap": "Kostenlos bis 1080p",
-    "proOnly": "Nur im Pro-Tarif",
-    "upgradeHint": "Qualitäten über 1080p gibt es im Pro-Tarif.",
-    "upgrade": "Upgrade"
+    "tools": "Werkzeuge"
   },
   "stats": {
     "downloads": "Downloads",

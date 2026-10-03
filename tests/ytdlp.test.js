@@ -249,7 +249,7 @@ describe("تصنيف حجب يوتيوب (أساس إعادة المحاولة)"
   });
 });
 
-describe("حد الجودة حسب الخطة", () => {
+describe("استخراج ارتفاع الجودة", () => {
   it("يستخرج الارتفاع من كل صيغ الجودة", () => {
     expect(qualityHeight("1080p")).toBe(1080);
     expect(qualityHeight("2160p (4K)")).toBe(2160);
@@ -262,11 +262,10 @@ describe("حد الجودة حسب الخطة", () => {
     expect(qualityHeight("best")).toBe(1080);
   });
 
-  it("الحد المجاني 1080p: ما فوقه Pro فقط", () => {
-    const FREE_MAX = 1080;
-    expect(qualityHeight("1080p") > FREE_MAX).toBe(false);
-    expect(qualityHeight("1440p") > FREE_MAX).toBe(true);
-    expect(qualityHeight("4320p (8K)") > FREE_MAX).toBe(true);
+  it("يقبل كل الجودات بلا سقف (أُزيل حدّ الخطة)", () => {
+    expect(qualityHeight("1440p")).toBe(1440);
+    expect(qualityHeight("2160p (4K)")).toBe(2160);
+    expect(qualityHeight("4320p (8K)")).toBe(4320);
   });
 });
 

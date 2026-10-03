@@ -13,7 +13,6 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { getVideoInfo, getPlaylist, queueDownload, getJob, getJobRecord, cancelJob, ytdlpStatus, queueDepth } from "./services/ytdlpService.js";
-import { planAllowsQuality, QUALITY_DENIED } from "./services/planGate.js";
 import { convertTo, compressVideo, videoToGif, ffmpegDepth } from "./services/ffmpegService.js";
 import { scheduleDownload, cancelSchedule, listSchedulesFor, restoreSchedules } from "./services/schedulerService.js";
 import { handleTelegramUpdate } from "./services/telegramBot.js";
@@ -41,15 +40,9 @@ const optionalUser = (req) => tryUser(req);
 const publicError = (e, fallback = "فشل الطلب") =>
   e?.expose ? String(e.message) : fallback;
 
-/** حدّ الجودة حسب الخطة — مصدر واحد حتى لا تتفرّق القاعدة بين /download و/schedule.
- *  يعيد null إن كانت الجودة مسموحة، أو كائن الخطأ 402. */
-async function qualityGate(quality, req) {
-  const user = optionalUser(req);
-  const record = user?.sub ? await db.findUserById(user.sub) : null;
-  // ⚠️ توكن الأدمن (signAdmin) لا يحمل sub ⇒ كان يُعامل كضيف ويُمنع من 4K
-  const isPro = record?.plan === "pro" || record?.role === "admin" || user?.role === "admin";
-  return planAllowsQuality(quality, isPro) ? null : QUALITY_DENIED;
-}
+// ⚠️ حُذف هنا حدّ الجودة حسب الخطة مع نظام الدفع بالكامل: كان يُرجع 402
+// فوق 1080p لكل حساب غير Pro. كل الجودات (حتى 8K) متاحة الآن للجميع.
+// عمود User.plan باقٍ في القاعدة كبيانات فقط تُمنح من لوحة الأدمن.
 
 // رسائل التواصل (الإنتاج: جدول DB)
 const messages = [];
@@ -188,9 +181,7 @@ app.post("/api/download", async (req, res) => {
     if (!url) return res.status(400).json({ error: "رابط مفقود" });
     if (!["mp4", "mp3", "webm", "mkv", "gif"].includes(format))
       return res.status(400).json({ error: "صيغة غير مدعومة" });
-    // 💎 الخطة المجانية محدودة بـ 1080p — ما فوقها Pro فقط
-    const denied = await qualityGate(quality, req);
-    if (denied) return res.status(402).json(denied);
+    // ⚠️ كان هنا حدّ 1080p (402) للخطة المجانية — أُزيل مع نظام الدفع
     const user = optionalUser(req);
     res.json(await queueDownload(url, { quality, format, password, trimStart, trimEnd, subs, threads, userId: user?.sub || null }));
   } catch (e) {
@@ -251,9 +242,7 @@ app.post("/api/schedule", async (req, res) => {
     const { url, runAt, quality = "1080p", format = "mp4", ...rest } = req.body || {};
     if (!["mp4", "mp3", "webm", "mkv", "gif"].includes(format))
       return res.status(400).json({ error: "صيغة غير مدعومة" });
-    // نفس حدّ الخطة في /api/download — بدونه كانت الجدولة تتجاوز حدّ 1080p المجاني
-    const denied = await qualityGate(quality, req);
-    if (denied) return res.status(402).json(denied);
+    // ⚠️ كان هنا نفس حدّ الخطة في /api/download — أُزيل مع نظام الدفع
     const u = optionalUser(req);
     res.json(scheduleDownload({ url, runAt, options: { quality, format, ...rest }, userId: u?.sub || null }));
   } catch (e) {
@@ -359,7 +348,7 @@ app.get("/api/docs", (req, res) => res.json({
     "/api/auth/*|/api/admin/login": `${Number(process.env.LOGIN_MAX_ATTEMPTS || 5)}/15min`,
     "/api/contact": `${Number(process.env.CONTACT_MAX_PER_HOUR || 5)}/hour`,
   },
-  plan: "Free حتى 1080p • Pro (أو الأدمن) حتى 8K — الجودة الأعلى تُرفض بـ402",
+  plan: "بلا حدود جودة — كل الجودات (حتى 8K) متاحة للجميع؛ حقل plan باقٍ في الأدمن كبيانات فقط",
   endpoints: [
     { method: "POST", path: "/info", body: { url: "string" }, desc: "Video preview (title, thumbnail, duration)" },
     { method: "POST", path: "/download", body: { url: "string", quality: "1080p", format: "mp4|mp3|webm|mkv|gif", password: "?", trimStart: "?", trimEnd: "?", subs: "bool", threads: "1-16" }, desc: "Start a download job" },

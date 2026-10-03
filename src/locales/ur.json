@@ -2,7 +2,6 @@
   "nav": {
     "home": "ہوم",
     "features": "فیچرز",
-    "pricing": "قیمتیں",
     "blog": "بلاگ",
     "download": "ڈاؤن لوڈ",
     "history": "ہسٹری",
@@ -41,11 +40,7 @@
     "preparing": "ڈاؤن لوڈ ہو رہا ہے…",
     "processing": "ملائی اور تبدیلی جا رہی ہے…",
     "saveFile": "فائل آپ کے آلے میں محفوظ کریں",
-    "tools": "اوزار",
-    "freeCap": "مفت 1080p تک",
-    "proOnly": "صرفاً Pro پلان",
-    "upgradeHint": "1080p سے اوپر کی کوالٹی Pro پلان میں دستیاب ہیں۔",
-    "upgrade": "اپ گریڈ"
+    "tools": "اوزار"
   },
   "stats": {
     "downloads": "ڈاؤن لوڈز",

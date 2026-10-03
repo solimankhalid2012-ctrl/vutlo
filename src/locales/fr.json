@@ -2,7 +2,6 @@
   "nav": {
     "home": "Accueil",
     "features": "Fonctionnalités",
-    "pricing": "Tarifs",
     "blog": "Blog",
     "download": "Télécharger",
     "history": "Historique",
@@ -41,11 +40,7 @@
     "preparing": "Téléchargement…",
     "processing": "Fusion et conversion…",
     "saveFile": "Enregistrer le fichier",
-    "tools": "Outils",
-    "freeCap": "Offert jusqu'à 1080p",
-    "proOnly": "Offre Pro uniquement",
-    "upgradeHint": "Les qualités au-delà de 1080p sont réservées à l'offre Pro.",
-    "upgrade": "Passer à Pro"
+    "tools": "Outils"
   },
   "stats": {
     "downloads": "téléchargements",

@@ -2,7 +2,6 @@
   "nav": {
     "home": "בית",
     "features": "תכונות",
-    "pricing": "מחירים",
     "blog": "בלוג",
     "download": "הורד עכשיו",
     "history": "היסטוריה",
@@ -41,11 +40,7 @@
     "preparing": "מוריד…",
     "processing": "ממזג וממיר…",
     "saveFile": "שמור קובץ במחשב",
-    "tools": "כלים",
-    "freeCap": "חינם עד 1080p",
-    "proOnly": "רק בתוכנית Pro",
-    "upgradeHint": "איכויות מעל 1080p זמינות בתוכנית Pro.",
-    "upgrade": "שדרוג"
+    "tools": "כלים"
   },
   "stats": {
     "downloads": "הורדות",

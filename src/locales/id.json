@@ -2,7 +2,6 @@
   "nav": {
     "home": "Beranda",
     "features": "Fitur",
-    "pricing": "Harga",
     "blog": "Blog",
     "download": "Unduh",
     "history": "Riwayat",
@@ -41,11 +40,7 @@
     "preparing": "Mengunduh…",
     "processing": "Menggabungkan & mengonversi…",
     "saveFile": "Simpan file ke perangkat",
-    "tools": "Alat",
-    "freeCap": "Gratis hingga 1080p",
-    "proOnly": "Khusus paket Pro",
-    "upgradeHint": "Kualitas di atas 1080p tersedia di paket Pro.",
-    "upgrade": "Tingkatkan"
+    "tools": "Alat"
   },
   "stats": {
     "downloads": "unduhan",

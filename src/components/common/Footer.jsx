@@ -41,7 +41,7 @@ export default function Footer() {
       title: t("footer.product"),
       items: (
         <ul className="space-y-2.5">
-          {["features", "pricing", "download", "history", "blog"].map((k) => (
+          {["features", "download", "history", "blog"].map((k) => (
             <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
           ))}
         </ul>

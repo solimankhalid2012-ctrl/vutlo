@@ -16,7 +16,6 @@ export default function Header() {
   const NAV_ITEMS = [
     { path: "", key: "nav.home" },
     { path: "/features", key: "nav.features" },
-    { path: "/pricing", key: "nav.pricing" },
     { path: "/blog", key: "nav.blog" },
   ];
   const isActive = (path) => (path === "" ? pathname === "/" : pathname.startsWith(path));

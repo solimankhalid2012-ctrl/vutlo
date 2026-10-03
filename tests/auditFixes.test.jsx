@@ -2,16 +2,17 @@
  * اختبارات انحدار لنتائج مراجعة الملفات — كل حالة هنا كانت عطلاً حقيقياً:
  * مسار /:lang كان يتجاهل اللغة، وoptions.headers كان يُسقط Authorization،
  * وlistJobs كان يرمي circular JSON بسبب retryTimer، وإلغاء الجدولة
- * كان يردّ 404 رغم نجاحه، و/tmp كان يتجاوز حدّ 1080p المجاني.
+ * كان يردّ 404 رغم نجاحه.
+ *
+ * ⚠️ احتُذفت اختبارات بوابة الخطة (planGate/402): أُزيل نظام الدفع
+ * بالكامل عمداً، ولم يعد هناك حدّ جودة مرتبط بالخطة.
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { act } from "react";
 
 // ── 1) أدوات التنسيق ──
 import { fmtBytes } from "../src/utils/formatters.js";
-// ── 2) بوابة الخطة على الخادم ──
-import { planAllowsQuality, QUALITY_DENIED, FREE_MAX_HEIGHT } from "../server/services/planGate.js";
-// ── 3) المهام: retryTimer لا يتسرب إلى JSON ──
+// ── 2) المهام: retryTimer لا يتسرب إلى JSON ──
 import { listJobs, queueDownload, cancelJob, publicJob } from "../server/services/ytdlpService.js";
 
 const json = (data, ok = true, status = 200) => ({
@@ -46,22 +47,15 @@ describe("fmtBytes — الملفات الصغيرة", () => {
   });
 });
 
-describe("بوابة الخطة — مصدر واحد لـ /download و /schedule", () => {
-  it("المجاني محدود بـ 1080p", () => {
-    expect(FREE_MAX_HEIGHT).toBe(1080);
-    expect(planAllowsQuality("720p", false)).toBe(true);
-    expect(planAllowsQuality("1080p", false)).toBe(true);
-  });
-  it("يمنع 1440p/4K/8K على المجاني ويسمح بها على Pro", () => {
-    for (const q of ["1440p", "2160p (4K)", "4320p (8K)"]) {
-      expect(planAllowsQuality(q, false), q).toBe(false);
-      expect(planAllowsQuality(q, true), q).toBe(true);
-    }
-  });
-  it("رسالة الرفض موحّدة وتحتوي خطة وحدّ الجودة", () => {
-    expect(QUALITY_DENIED.plan).toBe("free");
-    expect(QUALITY_DENIED.maxQuality).toBe("1080p");
-    expect(QUALITY_DENIED.error).toContain("1080p");
+describe("أزيل حدّ الخطة — كل الجودات متاحة بلا 402", () => {
+  it("لا توجد بوابة خطة على الخادم", async () => {
+    const { readFileSync, existsSync } = await import("node:fs");
+    expect(existsSync("server/services/planGate.js")).toBe(false);
+    const src = readFileSync("server/server.js", "utf8");
+    expect(src).not.toMatch(/(import|from)[^\n]*planGate/);
+    expect(src).not.toMatch(/await qualityGate\(/);
+    // 402 كان يُستخدم لحجب الجودة فقط ⇒ لا يبقى أي 402 في مسار download/schedule
+    expect(src).not.toMatch(/status\(402\)/);
   });
 });
 

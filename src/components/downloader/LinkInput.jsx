@@ -12,7 +12,6 @@ import { toolById, formatForTool, GIF_DEFAULT } from "../../utils/tools.js";
 import { useDownload } from "../../hooks/useDownload.js";
 import { useAdvOptions } from "../../hooks/useAdvOptions.js";
 import { useLang } from "../../context/LangContext.jsx";
-import { currentUser } from "../../services/authApi.js";
 import { convertJob, compressJob, gifJob, fileUrl as absFileUrl } from "../../services/api.js";
 import { fmtBytes } from "../../utils/formatters.js";
 import ToolSwitcher from "./ToolSwitcher.jsx";
@@ -20,16 +19,15 @@ import AdvancedOptions from "./AdvancedOptions.jsx";
 import ScheduleBox from "./ScheduleBox.jsx";
 import PlaylistDownloader from "./PlaylistDownloader.jsx";
 
-/** أعلى جودة متاحة في الخطة المجانية */
-const FREE_MAX_HEIGHT = 1080;
-const heightOf = (q) => parseInt(String(q).match(/\d+/)?.[0] || "0", 10);
-const isPro = () => currentUser()?.plan === "pro";
-
 /**
  * LinkInput — الأداة الموحدة:
  * 1) يختار المستخدم الأداة (فيديو/صوت/GIF/ضغط/قائمة تشغيل/جدولة)
  * 2) يحلل الرابط → معاينة
  * 3) يختار الجودة/الصيغة → يحمّل (مع كل الخيارات المتقدمة في لوحة واحدة)
+ *
+ * ⚠️ كان هنا حاجب خطة (Free ≤1080p والباقي Pro) ⇒ قفل جودات ورسائل ترقية
+ * و صفحة أسعار. أُزيل نظام الدفع بالكامل: كل الجودات متاحة للجميع، ويبقى
+ * عمود plan في القاعدة (يمكن منحه من لوحة الأدمن) دون أي أثر على الحدود.
  */
 export default function LinkInput({ compact = false, initialUrl = "" }) {
   const { t, lang } = useLang();
@@ -45,7 +43,6 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   const [listening, setListening] = useState(false);
   const [toolBusy, setToolBusy] = useState("");
   const [toolMsg, setToolMsg] = useState(null); // {label, fileUrl, size, savedPct}
-  const [pro, setPro] = useState(isPro());
   const inputRef = useRef(null);
   const { adv } = useAdvOptions();
   const { status, info, job, progress, stage, error, fetchInfo, download, cancel, reset } = useDownload();
@@ -59,18 +56,6 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   useEffect(() => {
     if (active.formats && !active.formats.includes(format)) setFormat(active.formats[0]);
   }, [tool]);
-
-  // الخطة تتغير عند تسجيل/تسجيل الخروج — نزامنها
-  useEffect(() => {
-    const sync = () => setPro(isPro());
-    sync();
-    window.addEventListener("storage", sync);
-    window.addEventListener("vv-auth", sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("vv-auth", sync);
-    };
-  }, [url]);
 
   // 🔍 Instant platform detection while typing
   useEffect(() => {
@@ -99,10 +84,9 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   const handleDownload = () => {
     if (!url.trim() || isBulk) return;
     setToolMsg(null);
-    // حماية: الخطة المجانية لا تتجاوز 1080p
-    const q = pro || heightOf(quality) <= FREE_MAX_HEIGHT ? quality : "1080p";
+    // ⚠️ كان هنا سقف 1080p للخطة المجانية ⇒ أُزيل مع نظام الدفع
     download(url.trim(), {
-      quality: q,
+      quality,
       format: formatForTool(tool, format),
       extra: adv,
     });
@@ -375,37 +359,25 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                     <div className="mt-5">
                       <label className="block text-xs font-black text-white/60 mb-2">
                         {t("preview.quality")}
-                        {!pro && <span className="ms-2 font-bold text-white/35">{t("preview.freeCap") || "الحد المجاني 1080p"}</span>}
                       </label>
                       <div className="flex flex-wrap gap-2">
-                        {QUALITIES.map((q) => {
-                          const locked = !pro && heightOf(q) > FREE_MAX_HEIGHT;
-                          return (
-                            <motion.button
-                              key={q}
-                              onClick={() => (locked ? setQuality("1080p") : setQuality(q))}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              title={locked ? (t("preview.proOnly") || "متاح في خطة Pro فقط") : q}
-                              className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
-                                quality === q
-                                  ? "bg-gradient-to-r from-emerald to-emerald-dark text-void shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
-                                  : locked
-                                    ? "bg-white/[0.02] text-white/30 border border-white/10 hover:text-white/50"
-                                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
-                              }`}
-                            >
-                              {locked ? `🔒 ${q}` : q}
-                            </motion.button>
-                          );
-                        })}
+                        {QUALITIES.map((q) => (
+                          <motion.button
+                            key={q}
+                            onClick={() => setQuality(q)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            title={q}
+                            className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
+                              quality === q
+                                ? "bg-gradient-to-r from-emerald to-emerald-dark text-void shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
+                                : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
+                            }`}
+                          >
+                            {q}
+                          </motion.button>
+                        ))}
                       </div>
-                      {!pro && (
-                        <p className="mt-2 text-[11px] text-white/40">
-                          {t("preview.upgradeHint") || "الجودات الأعلى من 1080p متاحة في خطة Pro."}{" "}
-                          <a href="/pricing" className="font-bold text-emerald">{t("preview.upgrade") || "ترقية"}</a>
-                        </p>
-                      )}
                     </div>
                   )}
 

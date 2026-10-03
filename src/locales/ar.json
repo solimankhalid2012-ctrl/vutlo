@@ -2,7 +2,6 @@
   "nav": {
     "home": "الرئيسية",
     "features": "الميزات",
-    "pricing": "الأسعار",
     "blog": "المدونة",
     "download": "حمّل الآن",
     "history": "السجل",
@@ -41,11 +40,7 @@
     "preparing": "جارٍ التحميل…",
     "processing": "جارٍ الدمج والتحويل…",
     "saveFile": "حفظ الملف على جهازك",
-    "tools": "أدوات",
-    "freeCap": "الحد المجاني 1080p",
-    "proOnly": "متاح في خطة Pro فقط",
-    "upgradeHint": "الجودات الأعلى من 1080p متاحة في خطة Pro.",
-    "upgrade": "ترقية"
+    "tools": "أدوات"
   },
   "stats": {
     "downloads": "تحميل",

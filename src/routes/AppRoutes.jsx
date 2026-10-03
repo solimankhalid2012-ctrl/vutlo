@@ -9,7 +9,6 @@ import { useLang } from "../context/LangContext.jsx";
 const Download = lazy(() => import("../pages/Download.jsx"));
 const History = lazy(() => import("../pages/History.jsx"));
 const Features = lazy(() => import("../pages/Features.jsx"));
-const Pricing = lazy(() => import("../pages/Pricing.jsx"));
 const About = lazy(() => import("../pages/About.jsx"));
 const Contact = lazy(() => import("../pages/Contact.jsx"));
 const Privacy = lazy(() => import("../pages/Privacy.jsx"));
@@ -65,7 +64,6 @@ export default function AppRoutes() {
           <Route path="/download" element={<Download />} />
           <Route path="/history" element={<History />} />
           <Route path="/features" element={<Features />} />
-          <Route path="/pricing" element={<Pricing />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />

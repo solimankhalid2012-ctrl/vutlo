@@ -13,7 +13,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vites
 import { act } from "react";
 
 const ROUTES = [
-  "/", "/download", "/history", "/features", "/pricing", "/about",
+  "/", "/download", "/history", "/features", "/about",
   "/contact", "/privacy", "/terms", "/blog",
   "/login", "/register", "/admin/login", "/admin/users",
   "/admin/analytics", "/admin", "/blog/some-article-slug", "/no-such-page",
