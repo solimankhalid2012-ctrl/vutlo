@@ -8,11 +8,14 @@ import { LangProvider } from "./context/LangContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { MotionProvider } from "./components/common/Reveal.jsx";
 import { installErrorReporting } from "./utils/errorReporter.js";
+import { installStaleTabGuard } from "./utils/buildStamp.js";
 import "./styles/globals.css";
 import "./styles/themes.css";
 import "./styles/animations.css";
 
 installErrorReporting();
+// تحديث تلقائي إن كان التبويب قديماً (نشر نسخة جديدة والتّبويب مفتوح)
+installStaleTabGuard();
 
 function App() {
   return (

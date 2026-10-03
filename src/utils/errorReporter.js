@@ -5,6 +5,8 @@
  * فيضيع وقت طويل في التخمين. هنا نطبع كل خطأ في الطرفية عند التطوير
  * (بلا حلقات لا نهائية) ونرسل نسخة مختصرة إلى /api/client-error.
  */
+import { currentBuildId } from "./buildStamp.js";
+
 let installed = false;
 
 const MAX_CHARS = 800;
@@ -60,6 +62,7 @@ function report(kind, message, stack, extra) {
     stack: clip(stack || ""),
     url: clip(typeof location !== "undefined" ? location.href : ""),
     ua: clip(typeof navigator !== "undefined" ? navigator.userAgent : ""),
+    build: currentBuildId(), // ⇐ يميّز خطأ حزمة قديمة عن خطأ برمجي حقيقي
     time: new Date().toISOString(),
   };
   if (extra) payload.data = safeStringify(extra);
