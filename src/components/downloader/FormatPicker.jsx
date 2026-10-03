@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { FORMATS } from "../../utils/detectors.js";
 
 /** FormatPicker — اختيار الصيغة MP4/MP3/WEBM/MKV/GIF */

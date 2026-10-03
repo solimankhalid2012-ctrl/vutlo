@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header.jsx";
 import Footer from "../components/common/Footer.jsx";

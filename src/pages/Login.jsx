@@ -37,58 +37,15 @@ export default function Login() {
       <Helmet><title>{ar ? "تسجيل الدخول" : "Login"} — VideoVault Pro</title></Helmet>
       <Header />
       <main className="mx-auto max-w-sm px-4 py-14">
-        {/* 🎨 تغيير الألوان فقط: البنية والحقول كما هي */}
+        {/* تغيير الألوان فقط: البنية والحقول والنصوص كما هي */}
         <form onSubmit={submit} className="card border-emerald/25 p-7 shadow-[0_10px_40px_rgba(29,185,84,0.12)]">
-          <h1 className="text-center text-2xl font-black text-on-accent">
-            <span className="mr-1.5 inline-block rounded-xl bg-emerald/15 px-2 py-0.5 text-emerald-dark">👋</span>
-            <span className="bg-gradient-to-r from-emerald via-emerald-dark to-emerald bg-clip-text text-transparent">
-              {ar ? "مرحباً بعودتك" : "Welcome back"}
-            </span>
-          </h1>
-          <p className="mt-1 text-center text-xs font-bold text-emerald/80">
-            {ar ? "سجّل دخولك وتابع التحميلات" : "Sign in and keep downloading"}
-          </p>
-
-          <label className="mt-5 block text-xs font-black text-emerald/90" htmlFor="login-email">Email</label>
-          <input
-            id="login-email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            dir="ltr"
-            autoComplete="email"
-            className="input-smart mt-1.5 text-left placeholder:text-emerald/50 focus:border-emerald focus:bg-emerald/5"
-          />
-
-          <label className="mt-3 block text-xs font-black text-emerald/90" htmlFor="login-pass">
-            {ar ? "كلمة المرور" : "Password"}
-          </label>
-          <input
-            id="login-pass"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={ar ? "••••••••" : "••••••••"}
-            dir="ltr"
-            autoComplete="current-password"
-            className="input-smart mt-1.5 text-left placeholder:text-emerald/50 focus:border-emerald focus:bg-emerald/5"
-          />
-
-          {error && (
-            <p className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm font-bold text-red-300">
-              ⚠️ {error}
-            </p>
-          )}
-
-          <button disabled={busy} className="btn-primary mt-5 w-full">
-            {busy ? "⏳" : ar ? "تسجيل الدخول" : "Login"}
-          </button>
-
+          <h1 className="bg-gradient-to-r from-emerald via-emerald-dark to-emerald-dark bg-clip-text text-center text-2xl font-black text-transparent">{ar ? "مرحباً بعودتك" : "Welcome back"}</h1>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" dir="ltr" autoComplete="email" className="input-smart mt-4 text-left focus:border-emerald focus:bg-emerald/5" />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={ar ? "كلمة المرور" : "Password"} dir="ltr" autoComplete="current-password" className="input-smart mt-2 text-left focus:border-emerald focus:bg-emerald/5" />
+          {error && <p className="mt-2 text-sm font-bold text-red-400">⚠️ {error}</p>}
+          <button disabled={busy} className="btn-primary mt-4 w-full">{busy ? "⏳" : ar ? "تسجيل الدخول" : "Login"}</button>
           <p className="mt-3 text-center text-sm text-white/55">
-            {ar ? "جديد هنا؟" : "New here?"}{" "}
-            <Link to="/register" className="font-bold text-emerald underline-offset-4 hover:underline">
-              {ar ? "أنشئ حساباً (+50 نقطة)" : "Create account (+50 pts)"}
-            </Link>
+            {ar ? "جديد هنا؟" : "New here?"} <Link to="/register" className="font-bold text-emerald hover:underline">{ar ? "أنشئ حساباً (+50 نقطة)" : "Create account (+50 pts)"}</Link>
           </p>
         </form>
       </main>

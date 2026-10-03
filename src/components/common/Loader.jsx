@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 /**
  * Loader — مؤشّر تحميل من 10 أشرطة (موازن صوتي مصغّر).

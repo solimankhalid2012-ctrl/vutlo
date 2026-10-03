@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { QUALITIES } from "../../utils/detectors.js";
 
 /** QualitySelector — اختيار الجودة 144p → 8K (مستقل قابل لإعادة الاستخدام) */

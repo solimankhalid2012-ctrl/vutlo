@@ -15,7 +15,7 @@ function readStoredTheme() {
   }
 }
 
-/** تطبيق الوضع على <html> — يُستدعى قبل الرسم الأول فلا occurs وميض. */
+/** تطبيق الوضع على <html> — يُستدعى قبل الرسم الأول فلا يظهر وميض. */
 function applyTheme(theme) {
   if (!isBrowser) return;
   const root = document.documentElement;

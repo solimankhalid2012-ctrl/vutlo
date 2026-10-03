@@ -1,4 +1,4 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 
 // 🎨 ألوان النظام كلها عبر متغيّرات CSS ⇒ الوضع النهاري يعمل بلا تكرار.
 //    القيم في globals.css (:root) وthemes.css ([data-theme="light"]).
@@ -37,7 +37,7 @@ export default {
           light: token("--c-mint-light"),
           dark: token("--c-mint-dark"),
         },
-        // نص فوق Emerald/Mint (أزرار): داكن في النهاري، أبيض في الليلي
+        // نص فوق Emerald/Mint (أزرار): أبيض في النهاري، داكن في الليلي
         "on-accent": token("--c-on-accent"),
       },
       fontFamily: {
