@@ -7,11 +7,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import { DOWNLOAD_DIR } from "../server/services/paths.js";
-import { sweepOldFiles, FILE_TTL_MS } from "../server/services/retention.js";
+import { sweepOldFiles, isJobArtifact, FILE_TTL_MS } from "../server/services/retention.js";
 
-/** اسم ملف فريد لكل اختبار حتى لا يصطدم الملفوف Maverick */
+/** اسم ملف فريد لكل اختبار حتى لا يصطدم الملفوف Maverick.
+ *  ⚠️ لا بد أن يبدأ بـ`job_`: التنظيف يقتصر على مخرجات التطبيق (isJobArtifact)،
+ *  فأي اسم آخر لن يُحذف أصلاً — وهذا ما تحرسه اختبارات النطاق أدناه. */
 let tag = "";
-const name = (base) => `__test_${tag}_${base}`;
+const name = (base) => `job_t${tag}_${base}`;
 const write = (n, ageMs) => {
   const full = path.join(DOWNLOAD_DIR, n);
   fs.writeFileSync(full, "x".repeat(10));
@@ -25,7 +27,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   for (const f of fs.readdirSync(DOWNLOAD_DIR)) {
-    if (f.startsWith("__test_")) fs.unlinkSync(path.join(DOWNLOAD_DIR, f));
+    if (f.startsWith("job_t")) fs.unlinkSync(path.join(DOWNLOAD_DIR, f));
   }
 });
 
@@ -76,5 +78,50 @@ describe("منظّف الملفات — يحدّ القرص ويغلق الرا�
       expect(fresh.FILE_TTL_MS, `FILE_TTL_HOURS=${bad}`).toBe(6 * 3600_000);
     }
     delete process.env.FILE_TTL_HOURS;
+  });
+});
+
+describe("نطاق التنظيف: مخرجات التطبيق فقط", () => {
+  it("isJobArtifact يقبل مخرجات yt-dlp وFFmpeg", () => {
+    for (const n of [
+      "job_muqv8avd_pyv9me.mp4", // تنزيل yt-dlp
+      "job_muqv8avd_pyv9me.webm",
+      "job_muqv8avd_pyv9me.mp3",
+      "job_muqv8avd_pyv9me_converted.mp4", // convertTo
+      "job_muqv8avd_pyv9me_converted.gif", // videoToGif
+      "job_muqv8avd_pyv9me.mp4.part", // جزئي من تنزيل فاشل
+      "job_x.mp4.evil.sh", // داخل نطاق التطبيق ⇒ لنا أن نُنظّفه
+    ]) expect(isJobArtifact(n), n).toBe(true);
+  });
+
+  it("isJobArtifact يرفض ما ليس من مخرجاتنا", () => {
+    for (const n of [
+      ".gitkeep", // ⬅ ما حذفه التنظيف سابقاً بالخطأ (ملف متتبَّع في git)
+      ".env", "index.html", "config.json",
+      "notes.txt", "myjob_x.mp4", // job_ في وسط الاسم لا تكفي
+      "job_.mp4", // بلا معرّف
+      "job_", "job_-x.mp4", // لا يبدأ الاسم بمعرّف صالح
+      "", "JOB_x.mp4", // البادئة حسّاسة لحالة الأحرف
+    ]) expect(isJobArtifact(n), n || "(empty)").toBe(false);
+  });
+
+  it("التنظيف لا يحذف ملفاً منتهياً لا يبدأ بـjob_", () => {
+    // الخلل الحقيقي: downloads/.gitkeep كان يُحذف من الخادم Explorer's Sweeper
+    const keep = write(`.gitkeep_${tag}`, FILE_TTL_MS + 60_000);
+    const other = write(`other_${tag}.txt`, FILE_TTL_MS + 60_000);
+    try {
+      sweepOldFiles();
+      expect(fs.existsSync(keep), "ملف مخفي يجب ألا يُمس").toBe(true);
+      expect(fs.existsSync(other), "ملف foreign يجب ألا يُمس").toBe(true);
+    } finally {
+      for (const f of [keep, other]) if (fs.existsSync(f)) fs.unlinkSync(f);
+    }
+  });
+
+  it("يحذف job_ المنتهية فعلاً (السلوك لم يتغيّر)", () => {
+    const j = write(name("sweep.mp4"), FILE_TTL_MS + 60_000);
+    const r = sweepOldFiles();
+    expect(fs.existsSync(j)).toBe(false);
+    expect(r.removed).toBeGreaterThanOrEqual(1);
   });
 });

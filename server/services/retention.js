@@ -28,6 +28,18 @@ export const FILE_TTL_MS = resolveTtlMs();
 const SWEEP_EVERY_MS = 15 * 60_000;
 let sweeper = null;
 
+/**
+ * هل هذا الملف من مخرجات التطبيق (ويُسمح بحذفه)؟
+ *
+ * ⚠️ كان التنظيف يحذف **كل** ملف تجاوز الأجل في المجلد، فحذف `downloads/.gitkeep`
+ * (ملف متتبَّع في git) وأي ملف آخر لا علاقة له بالتنزيل.
+ * كل مخرجات yt-dlp وFFmpeg تبدأ بـ`job_` (بما فيها الملفات الجزئية `.part`
+ * من التنزيلات الفاشلة) ⇒ نقصر الحذف على نطاق التطبيق وحده.
+ */
+export function isJobArtifact(name) {
+  return /^job_[A-Za-z0-9][A-Za-z0-9._-]*$/.test(String(name));
+}
+
 /** حذف الملفات المنتهية الأجل. يُرجع { removed, bytes } أو {0,0} إن لم
  *  يوجد المجلد (لا نرمي: التنظيف عملية صيانة لا يجب أن تُسقط الخادم). */
 export function sweepOldFiles(now = Date.now()) {
@@ -41,6 +53,7 @@ export function sweepOldFiles(now = Date.now()) {
   }
   for (const ent of entries) {
     if (!ent.isFile()) continue; // لا نلمس المجلدات
+    if (!isJobArtifact(ent.name)) continue; // ⚠️ لا نحذف ما ليس من مخرجاتنا
     const full = path.join(DOWNLOAD_DIR, ent.name);
     try {
       const st = fs.statSync(full);
