@@ -1,34 +1,44 @@
-/** @type {import('tailwindcss').Config} */
+﻿/** @type {import('tailwindcss').Config} */
+
+// 🎨 ألوان النظام كلها عبر متغيّرات CSS ⇒ الوضع النهاري يعمل بلا تكرار.
+//    القيم في globals.css (:root) وthemes.css ([data-theme="light"]).
+const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
+
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
       colors: {
+        // ⚠️ white ليست "#fff" في النهاري: صارت "لون النص/السطح المرتفع"
+        // ⇒ bg-white/5 و text-white/70 يتكيّفان مع الوضع بلا تعديل أي مكوّن.
+        white: token("--c-ink"),
         // 🎨 الهوية الرسمية — VideoVault Pro
         void: {
-          DEFAULT: "#0A0E0A",
-          50: "#0F1510",
-          100: "#14201A",
-          200: "#1B2B22",
-          300: "#23382D",
-          400: "#2D4A3A",
-          500: "#3A5F4A",
-          600: "#4A7560",
-          700: "#14201A",
-          800: "#0F1510",
-          900: "#0A0E0A",
+          DEFAULT: token("--c-void"),
+          50: token("--c-void-50"),
+          100: token("--c-void-100"),
+          200: token("--c-void-200"),
+          300: token("--c-void-300"),
+          400: token("--c-void-400"),
+          500: token("--c-void-500"),
+          600: token("--c-void-600"),
+          700: token("--c-void-700"),
+          800: token("--c-void-800"),
+          900: token("--c-void-900"),
         },
         emerald: {
-          DEFAULT: "#1DB954",
-          dark: "#159A44",
-          light: "#4ADE80",
+          DEFAULT: token("--c-emerald"),
+          dark: token("--c-emerald-dark"),
+          light: token("--c-emerald-light"),
         },
         mint: {
-          DEFAULT: "#A8E6CF",
-          light: "#D4F5E6",
-          dark: "#7FD6B5",
+          DEFAULT: token("--c-mint"),
+          light: token("--c-mint-light"),
+          dark: token("--c-mint-dark"),
         },
+        // نص فوق Emerald/Mint (أزرار): داكن في النهاري، أبيض في الليلي
+        "on-accent": token("--c-on-accent"),
       },
       fontFamily: {
         // Cairo للعربية + Inter للإنجليزية
@@ -45,7 +55,7 @@ export default {
       },
       backgroundImage: {
         "hero-gradient":
-          "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29,185,84,0.25), transparent), linear-gradient(180deg, #0A0E0A 0%, #0D1A12 50%, #0A0E0A 100%)",
+          "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29,185,84,0.25), transparent), var(--page-bg)",
         "card-gradient":
           "linear-gradient(135deg, rgba(29,185,84,0.12) 0%, rgba(168,230,207,0.05) 100%)",
         "glow-green": "radial-gradient(circle, rgba(29,185,84,0.4) 0%, transparent 70%)",

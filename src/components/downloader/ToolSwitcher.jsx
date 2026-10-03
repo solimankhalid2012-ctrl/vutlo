@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "framer-motion";
 import { useLang } from "../../context/LangContext.jsx";
 import { TOOLS, toolById } from "../../utils/tools.js";
@@ -26,7 +26,7 @@ export default function ToolSwitcher({ value, onChange, className = "" }) {
             title={tool.hint[ar ? "ar" : "en"]}
             className={`flex items-center gap-2 rounded-2xl px-3.5 py-2.5 text-sm font-black transition-all ${
               active
-                ? "bg-gradient-to-r from-emerald to-emerald-dark text-void shadow-[0_6px_24px_rgba(29,185,84,0.35)]"
+                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_6px_24px_rgba(29,185,84,0.35)]"
                 : "border border-white/10 bg-white/5 text-white/70 hover:border-emerald/40 hover:text-white"
             }`}
           >

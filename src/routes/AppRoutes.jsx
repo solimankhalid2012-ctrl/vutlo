@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useLayoutEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import Home from "../pages/Home.jsx";
 import { PageTransition } from "../components/common/Reveal.jsx";
+import Loader from "../components/common/Loader.jsx";
 import { isLang } from "../hooks/useLanguage.js";
 import { useLang } from "../context/LangContext.jsx";
 
@@ -23,14 +24,6 @@ const AdminAnalytics = lazy(() => import("../pages/admin/Analytics.jsx"));
 const Login = lazy(() => import("../pages/Login.jsx"));
 const Register = lazy(() => import("../pages/Register.jsx"));
 const Post = lazy(() => import("../pages/Post.jsx"));
-
-const Loader = () => (
-  <div className="flex min-h-screen items-center justify-center">
-    <div className="animate-glow-pulse rounded-3xl bg-emerald/15 px-8 py-6 text-xl font-black text-emerald">
-      ⚡ VideoVault Pro…
-    </div>
-  </div>
-);
 
 /**
  * /:lang — كان يعرض الرئيسية فقط ويتجاهل المعامل، فيظهر /en بالعربية.
@@ -56,7 +49,7 @@ function LangRoute() {
 export default function AppRoutes() {
   const location = useLocation();
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<Loader label="VideoVault Pro…" />}>
       <PageTransition pathname={location.pathname}>
         <Routes location={location}>
           <Route path="/" element={<Home />} />

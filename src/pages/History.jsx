@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+﻿import React, { useCallback, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "../components/common/Header.jsx";
 import Footer from "../components/common/Footer.jsx";
@@ -159,7 +159,7 @@ export default function History() {
       </Modal>
 
       {toast && (
-        <div className="fixed bottom-6 start-1/2 -translate-x-1/2 rounded-2xl bg-emerald px-5 py-3 font-bold text-void shadow-glow">
+        <div className="fixed bottom-6 start-1/2 -translate-x-1/2 rounded-2xl bg-emerald px-5 py-3 font-bold text-on-accent shadow-glow">
           {toast}
         </div>
       )}

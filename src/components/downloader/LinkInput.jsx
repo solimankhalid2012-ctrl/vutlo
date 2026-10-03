@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   detectPlatform,
@@ -370,7 +370,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                             title={q}
                             className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
                               quality === q
-                                ? "bg-gradient-to-r from-emerald to-emerald-dark text-void shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
+                                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
                                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
                             }`}
                           >
@@ -396,7 +396,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                             title={f.desc}
                             className={`rounded-xl px-3 py-2 text-xs font-black transition-all ${
                               format === f.id
-                                ? "bg-gradient-to-r from-mint to-emerald text-void"
+                                ? "bg-gradient-to-r from-mint to-emerald text-on-accent"
                                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:border-emerald/30 border border-white/10"
                             }`}
                           >

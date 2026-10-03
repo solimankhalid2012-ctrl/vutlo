@@ -9,7 +9,9 @@ import { Logo } from "./Logo.jsx";
 
 export default function Header() {
   const { t, lang, changeLang } = useLang();
+  const ar = lang === "ar";
   const { theme, toggle } = useTheme();
+  const isDark = theme === "dark";
   const { LANGS } = useLanguage();
   const nav = useNavigate();
   const { pathname } = useLocation();
@@ -120,13 +122,31 @@ export default function Header() {
               </select>
             </div>
 
-            {/* Theme Toggle */}
-            <button onClick={toggle} className="p-2 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:border-emerald/50 hover:bg-emerald/10 hover:text-emerald transition-all" aria-label={theme === "dark" ? "Light mode" : "Dark mode"}>
-              {theme === "dark" ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
+            {/* Theme Switch — مقبض منزلق: أيقونة الوضع الحالي داخل المقبض، والأخرى في الطرف المقابل */}
+            <button
+              onClick={toggle}
+              role="switch"
+              aria-checked={isDark}
+              aria-label={isDark ? (ar ? "التبديل إلى الوضع النهاري" : "Switch to light mode") : (ar ? "التبديل إلى الوضع الليلي" : "Switch to dark mode")}
+              title={isDark ? (ar ? "نهاري" : "Light") : (ar ? "ليلي" : "Dark")}
+              className="theme-switch relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border border-emerald/30 bg-void-200 transition-colors duration-300 hover:border-emerald/60"
+            >
+              {/* أيقونة الوضع الآخر، باهتة، في الطرف المقابل */}
+              <span
+                className="theme-switch-target absolute top-1/2 -translate-y-1/2 text-[11px] leading-none opacity-45"
+                style={{ insetInlineEnd: 9 }}
+                aria-hidden="true"
+              >
+                {isDark ? "🌞" : "🌙"}
+              </span>
+              {/* المقبض + أيقونة الوضع الحالي */}
+              <span
+                className="theme-switch-knob absolute top-1 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald to-emerald-dark text-[11px] leading-none shadow-[0_2px_10px_rgba(29,185,84,0.55)] transition-all duration-300 ease-[cubic-bezier(.34,1.56,.64,1)]"
+                style={{ insetInlineStart: isDark ? 28 : 4 }}
+                aria-hidden="true"
+              >
+                {isDark ? "🌙" : "🌞"}
+              </span>
             </button>
 
             {/* User / Auth */}

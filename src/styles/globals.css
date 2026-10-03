@@ -9,6 +9,29 @@
 ═══════════════════════════════════════════ */
 
 :root {
+  /* ══ رموز الألوان (قنوات RGB بدون فواصل ⇒ تعمل مع <alpha-value>) ══
+   تُستهلك من tailwind.config.js، وقيم النهاري في themes.css. */
+  --c-ink: 255 255 255;      /* white ↓ نص أساسي + سطح فاتح */
+  --c-void: 10 14 10;        /* خلفية الصفحة/الترويسة */
+  --c-void-50: 15 21 16;
+  --c-void-100: 20 32 26;
+  --c-void-200: 27 43 34;
+  --c-void-300: 35 56 45;
+  --c-void-400: 45 74 58;
+  --c-void-500: 58 95 74;
+  --c-void-600: 74 117 96;
+  --c-void-700: 20 32 26;
+  --c-void-800: 15 21 16;
+  --c-void-900: 10 14 10;
+  --c-emerald: 29 185 84;
+  --c-emerald-dark: 21 154 68;
+  --c-emerald-light: 74 222 128;
+  --c-mint: 168 230 207;
+  --c-mint-light: 212 245 230;
+  --c-mint-dark: 127 214 181;
+  --c-on-accent: 10 14 10;   /* نص فوق Emerald/Mint */
+
+  /* متغيّرات CSS مباشرة (تستخدم في scrolling/selection خارج Tailwind) */
   --void: #0A0E0A;
   --void-50: #111813;
   --void-100: #151F19;
@@ -34,6 +57,8 @@
   --gray-700: #334833;
   --gray-800: #243424;
   --gray-900: #182418;
+  --sel-text: #0A0E0A;
+  --page-bg: linear-gradient(180deg, #0A0E0A 0%, #0D1A12 40%, #111813 70%, #0A0E0A 100%);
   color-scheme: dark;
 }
 
@@ -48,8 +73,9 @@ body {
   background:
     radial-gradient(ellipse 100% 80% at 50% -20%, rgba(29,185,84,0.15), transparent),
     radial-gradient(ellipse 60% 60% at 80% 100%, rgba(168,230,207,0.08), transparent),
-    linear-gradient(180deg, #0A0E0A 0%, #0D1A12 40%, #111813 70%, #0A0E0A 100%);
+    var(--page-bg);
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ══ Scrollbar ══ */
@@ -61,7 +87,7 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--emerald-light), var(--emerald)); }
 
-::selection { background: var(--emerald-glow); color: var(--void); }
+::selection { background: var(--emerald-glow); color: var(--sel-text); }
 
 /* ══ Focus ══ */
 :focus-visible {
@@ -81,7 +107,7 @@ body {
   }
   .btn-primary {
     @apply btn px-6 py-3.5 text-base
-    bg-gradient-to-r from-emerald to-emerald-dark text-void
+    bg-gradient-to-r from-emerald to-emerald-dark text-on-accent
     shadow-[0_4px_20px_rgba(29,185,84,0.35)]
     hover:from-emerald-light hover:to-emerald hover:shadow-[0_8px_30px_rgba(29,185,84,0.5)];
   }

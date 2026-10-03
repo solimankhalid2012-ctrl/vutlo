@@ -53,6 +53,28 @@
 .stagger-7 { animation-delay: 0.35s; }
 .stagger-8 { animation-delay: 0.4s; }
 
+/* ══ Loader: 10 أشرطة ══ */
+@keyframes vv-bar {
+  0%, 100% { height: 22%; opacity: 0.45; }
+  50% { height: 100%; opacity: 1; }
+}
+.vv-bars {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: var(--bar-h, 26px);
+}
+.vv-bars > i {
+  display: block;
+  width: 3px;
+  min-height: 22%;
+  height: 22%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--c-mint-light, #D4F5E6), var(--c-emerald, #1DB954));
+  animation: vv-bar 1.05s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
 /* ══ Progress shimmer overlay ══ */
 .progress-shimmer {
   background: linear-gradient(90deg,

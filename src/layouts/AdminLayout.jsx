@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
               key={to}
               to={to}
               className={`block rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
-                loc.pathname === to ? "bg-emerald text-void" : "text-white/65 hover:bg-white/5"
+                loc.pathname === to ? "bg-emerald text-on-accent" : "text-white/65 hover:bg-white/5"
               }`}
             >
               {icon} {label}
