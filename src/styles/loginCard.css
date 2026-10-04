@@ -4,7 +4,8 @@
    تصميم من الكود الذي أرسله المستخدم، بعد ثلاثة تعديلات:
    ① تقييد كل قاعدة داخل .monkey-card حتى لا تصيب .card و.form و.input
       في باقي الموقع (‏.card مستعملة في 3 صفحات).
-   ② تحويل الألوان إلى أخضر/أسود (الأبيض ↔ Emerald/Mint/Void).
+   ② البطاقة أخضر/أسود (الأبيض ↔ Emerald/Mint/Void) بينما القرد بألوانه
+      الطبيعية (فرو بنّي/بشرة فاتحة/أنف بنّي داكن) — راجع MonkeyAvatar.jsx.
    ③ إبقاء القرد في الأعلى (order:0) والنموذج تحته (order:1).
    ═══════════════════════════════════════════════════════════════ */
 
@@ -51,7 +52,7 @@
   height: var(--sz-avatar);
   min-height: var(--sz-avatar);
   max-height: var(--sz-avatar);
-  border: 1px solid #2d4a3a;
+  border: 1px solid rgba(216, 168, 120, 0.22);
   border-radius: 9999px;
   overflow: hidden;
   cursor: pointer;
@@ -87,14 +88,14 @@
   transform: translateY(calc(var(--sz-avatar) / 1.25)) rotateX(-21deg);
 }
 
-/* الفم/غطاء العين — كان #3c302a (بني) صار أسود */
+/* الفم/غطاء العين — بني داكن يوافق DARK في MonkeyAvatar.jsx */
 .monkey-card .avatar::before {
   content: "";
   border-radius: 45%;
   width: calc(var(--sz-svg) / 3.889);
   height: calc(var(--sz-svg) / 5.833);
   border: 0;
-  border-bottom: calc(var(--sz-svg) * (4 / 100)) solid #0a0e0a;
+  border-bottom: calc(var(--sz-svg) * (4 / 100)) solid #2b1c12;
   bottom: 20%;
   position: absolute;
   transition: all 0.2s ease;
@@ -104,7 +105,7 @@
   width: calc(var(--sz-svg) * (9 / 100));
   height: 0;
   border-radius: 50%;
-  border-bottom: calc(var(--sz-svg) * (10 / 100)) solid #0a0e0a;
+  border-bottom: calc(var(--sz-svg) * (10 / 100)) solid #2b1c12;
 }
 .monkey-card .avatar svg#monkey .monkey-eye-r,
 .monkey-card .avatar svg#monkey .monkey-eye-l {

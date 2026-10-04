@@ -14,6 +14,7 @@ import "./styles/themes.css";
 import "./styles/animations.css";
 import "./styles/rating.css";
 import "./styles/loginCard.css";
+import "./styles/animatedButton.css";
 
 installErrorReporting();
 // تحديث تلقائي إن كان التبويب قديماً (نشر نسخة جديدة والتّبويب مفتوح)

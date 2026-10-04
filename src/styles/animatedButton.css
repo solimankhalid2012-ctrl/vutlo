@@ -1,0 +1,115 @@
+/* ═══════════════════════════════════════════════════════════════
+   زر التحميل المتحرك — من تصميم المستخدم، مُكيَّفاً مع ألوان الموقع
+   ───────────────────────────────────────────────────────────────
+   ✅ greenyellow ➜ emerald #1DB954 + نص داكن #06120a
+   ✅ :active scale حُذف: تحريك العنصر نفسه تحت المؤشر يجعل
+      mousedown وmouseup يقعان على عنصرين مختلفين فيضيع onclick
+      (نفس سبب حذف active:scale من .btn) — البديل filter فقط،
+      والحركة تبقى على الدائرة والسهم.
+   ═══════════════════════════════════════════════════════════════ */
+
+.animated-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #06120a;
+  background-color: #1db954;
+  border: 1px solid rgba(10, 14, 10, 0.25);
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s, box-shadow 0.3s, filter 0.15s;
+  box-shadow: 0 4px 18px rgba(29, 185, 84, 0.32);
+}
+.animated-button > span:first-child {
+  position: relative;
+  z-index: 1;
+}
+.animated-button .circle {
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  width: 30px;
+  height: 30px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  z-index: 0;
+  transition: left 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+.animated-button:hover .circle {
+  left: calc(100% + 50px);
+}
+.animated-button span {
+  transition: color 0.5s;
+}
+.animated-button:hover span {
+  color: #212121;
+}
+/* ⚠️ بدون scale/transform على الزر نفسه (انظر أعلى الملف) */
+.animated-button:active {
+  filter: brightness(0.94);
+}
+.animated-button:focus-visible {
+  outline: 2px solid #a8e6cf;
+  outline-offset: 2px;
+}
+.animated-button .arrow {
+  margin-left: 5px;
+  display: inline-block;
+  transition: transform 0.3s;
+}
+.animated-button:hover .arrow {
+  transform: translateX(5px);
+}
+.animated-button .arrow--left {
+  margin-left: 0;
+  margin-right: 5px;
+  transform: rotate(180deg);
+}
+.animated-button:hover .arrow--left {
+  transform: rotate(180deg) translateX(5px);
+}
+
+/* حجم الهيدر — يطابق btn-primary-sm (px-4 py-2.5 text-sm) */
+.animated-button--sm {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+}
+.animated-button--sm .circle {
+  width: 24px;
+  height: 24px;
+}
+/* قائمة الجوال — زر بعرض كامل */
+.animated-button--block {
+  display: flex;
+  width: 100%;
+  padding: 12px 20px;
+  font-weight: 700;
+  border-radius: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-button .circle,
+  .animated-button .arrow,
+  .animated-button span {
+    transition: none;
+  }
+  .animated-button:hover .arrow,
+  .animated-button:hover .arrow--left {
+    transform: none;
+  }
+  .animated-button .arrow--left {
+    transform: rotate(180deg);
+  }
+}

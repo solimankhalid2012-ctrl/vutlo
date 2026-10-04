@@ -6,6 +6,7 @@ import { useTheme } from "../../context/ThemeContext.jsx";
 import { useLanguage } from "../../hooks/useLanguage.js";
 import { currentUser, logoutUser, me, isLoggedIn } from "../../services/authApi.js";
 import { Logo } from "./Logo.jsx";
+import AnimatedDownloadButton from "./AnimatedDownloadButton.jsx";
 
 export default function Header() {
   const { t, lang, changeLang } = useLang();
@@ -171,7 +172,7 @@ export default function Header() {
                   className="flex items-center gap-2"
                 >
                   <Link to="/login" className="btn-ghost-sm">👤 {t("nav.login")}</Link>
-                  <Link to="/download" className="btn-primary-sm">⬇️ {t("nav.download")}</Link>
+                  <AnimatedDownloadButton variant="sm" label={`⬇️ ${t("nav.download")}`} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -229,9 +230,11 @@ export default function Header() {
                       <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-3 rounded-xl text-base font-bold text-white/80 hover:bg-white/5">
                         👤 {t("nav.login")}
                       </Link>
-                      <Link to="/download" onClick={() => setMobileOpen(false)} className="btn-primary">
-                        ⬇️ {t("nav.download")}
-                      </Link>
+                      <AnimatedDownloadButton
+                        variant="block"
+                        label={`⬇️ ${t("nav.download")}`}
+                        onClick={() => setMobileOpen(false)}
+                      />
                     </>
                   )}
                 </div>

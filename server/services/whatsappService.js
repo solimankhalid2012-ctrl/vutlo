@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────
 import { getVideoInfo, queueDownload } from "./ytdlpService.js";
 import { safeEqual } from "../config/passwords.js";
+import { safeJson } from "../config/safeJson.js";
 
 const TOKEN = process.env.WHATSAPP_TOKEN || "";
 const PHONE_ID = process.env.WHATSAPP_PHONE_ID || "";
@@ -33,7 +34,7 @@ async function wa(to, text) {
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({ messaging_product: "whatsapp", to, type: "text", text: { body: text } }),
   });
-  return r.json();
+  return safeJson(r);
 }
 
 const say = (to, text) => wa(to, text).catch(() => {});

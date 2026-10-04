@@ -9,6 +9,7 @@
 // • كل خطأ يُطبع في السجل ويُعاد للمستخدم نص عام (لا تفاصيل داخلية)
 // ─────────────────────────────────────────────
 import { getVideoInfo, queueDownload, getJob } from "./ytdlpService.js";
+import { safeJson } from "../config/safeJson.js";
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const api = (m) => `https://api.telegram.org/bot${TOKEN}/${m}`;
@@ -46,7 +47,7 @@ async function tg(method, payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  return r.json();
+  return safeJson(r);
 }
 
 const say = (chatId, text) => tg("sendMessage", { chat_id: chatId, text }).catch(() => {});
