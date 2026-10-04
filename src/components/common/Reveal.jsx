@@ -130,10 +130,13 @@ export function PageTransition({ children, pathname }) {
 }
 
 /* ─────────────────────  Scale / Tap  ─────────────────────
-   رد فعل صغير موحّد للزِر والبطاقات — يحدّ من "القفز" الغبي   */
+   رد فعل صغير موحّد للزِر والبطاقات — يحدّ من "القفز" الغبي.
+   ⚠️ whileTap بلا scale عمداً: تصغير الزر أثناء الضغط يحرّكه تحت المؤشر،
+   فيقع mousedown وmouseup على عنصرين مختلفين ويضيع onclick (المشكلة الشهيرة:
+   "لازم أضغط مرتين"). التفاعل البصري عند الضغط = لون فقط. */
 export const pressable = {
   whileHover: { scale: 1.015 },
-  whileTap: { scale: 0.97 },
+  whileTap: { scale: 1 },
   transition: { duration: DURATION.fast, ease: EASE },
 };
 

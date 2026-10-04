@@ -24,6 +24,9 @@ export default function ToolSwitcher({ value, onChange, className = "" }) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(tool.id)}
+            /* التبديل يتم عند pointerdown أيضاً (انظر LinkInput): الاختيار لا
+               يعتمد على وصول CLICK، فيكفيه ضغطة واحدة دائماً. */
+            onPointerDown={() => onChange(tool.id)}
             title={tool.hint[ar ? "ar" : "en"]}
             className={`flex select-none touch-manipulation items-center gap-2 rounded-2xl px-3.5 py-2.5 text-sm font-black transition-colors duration-150 ${
               active

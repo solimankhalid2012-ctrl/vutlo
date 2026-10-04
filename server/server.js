@@ -13,7 +13,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { getVideoInfo, getPlaylist, queueDownload, getJob, getJobRecord, cancelJob, ytdlpStatus, queueDepth } from "./services/ytdlpService.js";
-import { convertTo, compressVideo, videoToGif, ffmpegDepth } from "./services/ffmpegService.js";
+import { convertTo, compressVideo, videoToGif, clampGifArgs, ffmpegDepth } from "./services/ffmpegService.js";
 import { scheduleDownload, cancelSchedule, listSchedulesFor, restoreSchedules } from "./services/schedulerService.js";
 import { handleTelegramUpdate } from "./services/telegramBot.js";
 import { initDb, db } from "./services/db.js";
@@ -178,13 +178,15 @@ app.post("/api/info", async (req, res) => {
 // ── POST /api/download — بدء التحميل (خيارات متقدمة كاملة) ──
 app.post("/api/download", async (req, res) => {
   try {
-    const { url, quality = "1080p", format = "mp4", password = "", trimStart = "", trimEnd = "", subs = false, threads = 8 } = req.body || {};
+    const { url, quality = "1080p", format = "mp4", password = "", trimStart = "", trimEnd = "", subs = false, threads = 8, gif } = req.body || {};
     if (!url) return res.status(400).json({ error: "رابط مفقود" });
     if (!["mp4", "mp3", "webm", "mkv", "gif"].includes(format))
       return res.status(400).json({ error: "صيغة غير مدعومة" });
     // ⚠️ كان هنا حدّ 1080p (402) للخطة المجانية — أُزيل مع نظام الدفع
     const user = optionalUser(req);
-    res.json(await queueDownload(url, { quality, format, password, trimStart, trimEnd, subs, threads, userId: user?.sub || null }));
+    // 🎞️ خيارات GIF تُقصَّى هنا (وليس في ffmpeg) ⇒ ملف مهمّة واحد لكل تركيبة
+    const gifOpts = format === "gif" ? clampGifArgs(gif || {}) : null;
+    res.json(await queueDownload(url, { quality, format, password, trimStart, trimEnd, subs, threads, gif: gifOpts, userId: user?.sub || null }));
   } catch (e) {
     console.error("[download]", e.message);
     res.status(e.status || 500).json({ error: publicError(e, "فشل بدء التحميل") });
@@ -324,10 +326,11 @@ app.post("/api/compress", async (req, res) => {
 });
 app.post("/api/gif", async (req, res) => {
   try {
-    const { jobId, start = 0, duration = 3, width = 480 } = req.body || {};
+    const { jobId, gif } = req.body || {};
     if (!jobId) return res.status(400).json({ error: "jobId مطلوب" });
     if (!ownJobOr403(req, jobId, res)) return;
-    res.json(await videoToGif(jobId, { start, duration, width }));
+    // يقبل إمّا { jobId, ...خيارات } أو { jobId, gif: {...} } — والتقييد داخل clampGifArgs
+    res.json(await videoToGif(jobId, gif || req.body || {}));
   } catch (e) { res.status(e.status || 400).json({ error: publicError(e, "فشل إنشاء GIF") }); }
 });
 
@@ -376,7 +379,7 @@ app.get("/api/docs", (req, res) => res.json({
   plan: "بلا حدود جودة — كل الجودات (حتى 8K) متاحة للجميع؛ حقل plan باقٍ في الأدمن كبيانات فقط",
   endpoints: [
     { method: "POST", path: "/info", body: { url: "string" }, desc: "Video preview (title, thumbnail, duration)" },
-    { method: "POST", path: "/download", body: { url: "string", quality: "1080p", format: "mp4|mp3|webm|mkv|gif", password: "?", trimStart: "?", trimEnd: "?", subs: "bool", threads: "1-16" }, desc: "Start a download job" },
+    { method: "POST", path: "/download", body: { url: "string", quality: "1080p", format: "mp4|mp3|webm|mkv|gif", password: "?", trimStart: "?", trimEnd: "?", subs: "bool", threads: "1-16", gif: "GIF_OPTS?" }, desc: "Start a download job" },
     { method: "GET", path: "/job/:id", desc: "Job status + progress + fileUrl (مهمة خاصة تتطلب توكن صاحبها)" },
     { method: "DELETE", path: "/job/:id", desc: "Cancel a running job" },
     { method: "POST", path: "/save-desktop", body: { file: "job_x.mp4" }, desc: "نسخ ملف مكتمل إلى سطح مكتب مستخدم هذا الجهاز (يتطلب ملكية المهمة)" },
@@ -386,7 +389,7 @@ app.get("/api/docs", (req, res) => res.json({
     { method: "DELETE", path: "/schedule/:id", desc: "Cancel a scheduled task" },
     { method: "POST", path: "/convert", body: { jobId: "string", target: "mp4|mkv|webm|avi|mp3" }, desc: "Convert format (FFmpeg)" },
     { method: "POST", path: "/compress", body: { jobId: "string", crf: "18-40" }, desc: "Compress video" },
-    { method: "POST", path: "/gif", body: { jobId: "string", start: "sec 0-21600", duration: "sec 1-20", width: "px 120-720" }, desc: "Video → animated GIF" },
+    { method: "POST", path: "/gif", body: { jobId: "string", start: "sec 0-21600", duration: "sec 1-30", width: "px 120-720", fps: "5-30", dither: "none|bayer|bayer2|fs|sierra2", loop: "0=∞|1-10", speed: "0.25-4" }, desc: "Video → animated GIF" },
     { method: "POST", path: "/contact", body: { name: "string", email: "string", message: "string" }, desc: "نموذج التواصل (5 رسائل/ساعة لكل IP)" },
     { method: "POST", path: "/auth/register", body: { email: "string", password: "4+ chars" }, desc: "تسجيل جديد ⇒ token + 50 نقطة" },
     { method: "POST", path: "/auth/login", body: { email: "string", password: "string" }, desc: "دخول ⇒ token" },

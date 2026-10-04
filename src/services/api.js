@@ -55,14 +55,18 @@ export const fetchVideoInfo = (url) => req("/api/info", { method: "POST", body: 
 /** POST /api/download — بدء التحميل (يُرجع fileUrl / jobId)
  * مصدر واحد للحقيقة: المتجر المشترك (vv-adv) ثم حقول extra الصريحة من النموذج.
  * الحقول undefined تُستبعد حتى لا تمسح قيمة محفوظة. */
-export const startDownload = (url, { quality, format, extra } = {}) => {
+export const startDownload = (url, { quality, format, extra, gif } = {}) => {
   const stored = getAdvOptions();
   const explicit = Object.fromEntries(
     Object.entries(extra || {}).filter(([, v]) => v !== undefined),
   );
   return req("/api/download", {
     method: "POST",
-    body: JSON.stringify({ url, quality, format, ...stored, ...explicit }),
+    // 🎞️ gif: خيارات صورة GIF — تُرسل فقط مع format=gif (الخادم يقرؤها عندها)
+    body: JSON.stringify({
+      url, quality, format, ...stored, ...explicit,
+      ...(format === "gif" && gif ? { gif } : {}),
+    }),
   });
 };
 

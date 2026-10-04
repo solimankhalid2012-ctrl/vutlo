@@ -12,6 +12,7 @@ import { installStaleTabGuard } from "./utils/buildStamp.js";
 import "./styles/globals.css";
 import "./styles/themes.css";
 import "./styles/animations.css";
+import "./styles/rating.css";
 
 installErrorReporting();
 // تحديث تلقائي إن كان التبويب قديماً (نشر نسخة جديدة والتّبويب مفتوح)

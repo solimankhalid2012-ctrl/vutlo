@@ -164,29 +164,80 @@ export async function compressVideo(jobIdOrPath, crf = 28) {
   });
 }
 
-/** تقييد معاملات GIF في مكان واحد (قابل للاختبار) */
-export function clampGifArgs({ start = 0, duration = 3, width = 480 } = {}) {
+/** أنماط الـdithering المدعومة في paletteuse (ن(names فقط، مُنقّاة هنا) */
+export const GIF_DITHERERS = ["none", "bayer", "bayer2", "fs", "sierra2"];
+
+/** القيم الافتراضية لـGIF — مصدر واحد للـAPI والواجهة وتسمية الملفات */
+export const GIF_DEFAULTS = {
+  start: 0, duration: 4, width: 480,
+  fps: 12, dither: "bayer", loop: 0, speed: 1,
+};
+
+/** تقييد معاملات GIF في مكان واحد (قابل للاختبار).
+ *  كل قيمة من المستخدم تمرّ هنا قبل بناء أمر ffmpeg — لا رقم يُدخَل مباشرة. */
+export function clampGifArgs({
+  start = GIF_DEFAULTS.start,
+  duration = GIF_DEFAULTS.duration,
+  width = GIF_DEFAULTS.width,
+  fps = GIF_DEFAULTS.fps,
+  dither = GIF_DEFAULTS.dither,
+  loop = GIF_DEFAULTS.loop,
+  speed = GIF_DEFAULTS.speed,
+} = {}) {
   const num = (v, def) => (Number.isFinite(Number(v)) ? Number(v) : def);
+  const d = String(dither ?? "").trim().toLowerCase();
   return {
     start: Math.min(Math.max(Math.round(num(start, 0)), 0), 6 * 3600),
-    duration: Math.min(Math.max(Math.round(num(duration, 3)), 1), 20),
-    width: Math.min(Math.max(Math.round(num(width, 480)), 120), 720),
+    duration: Math.min(Math.max(Math.round(num(duration, GIF_DEFAULTS.duration)), 1), 30),
+    width: Math.min(Math.max(Math.round(num(width, GIF_DEFAULTS.width)), 120), 720),
+    fps: Math.min(Math.max(Math.round(num(fps, GIF_DEFAULTS.fps)), 5), 30),
+    dither: GIF_DITHERERS.includes(d) ? d : GIF_DEFAULTS.dither,
+    loop: Math.min(Math.max(Math.round(num(loop, 0)), 0), 10), // 0 = تكرار بلا نهاية
+    speed: Math.min(Math.max(Number(num(speed, 1).toFixed(2)), 0.25), 4),
   };
+}
+
+/** سلسلة فلتر GIF (مصدَّرة للاختبار): الأهم أن السرعة والـfps والعرض مُقيَّدة */
+export function buildGifFilter(o = {}) {
+  const { fps, width, speed } = clampGifArgs(o);
+  // setpts يعيد حساب الزمن ⇒ سرعة 2x تجعل المقطع أقصر مرتين (بلا إطارات مفقودة)
+  const speedPart = speed === 1 ? "" : `,setpts=${(1 / speed).toFixed(4)}*PTS`;
+  return `fps=${fps},scale=${width}:-1:flags=lanczos${speedPart}`;
+}
+
+/** اسم ملف يميّز كل تركيبة خيارات ⇒ تشغيل GIF بنفس المقطع مرتين لا يبتلع أحدهما الآخر */
+/** اسم ملف يميّز كل تركيبة خيارات — بما فيها وقت البدء والمدة،
+ *  وإلا تولّد مقطعان مقصوصان مختلفان نفس الاسم وتُستبدل ملفاتهما. */
+export function gifOutputName(base, o) {
+  const tag = [
+    o.start ? `s${o.start}` : "",
+    o.duration !== GIF_DEFAULTS.duration ? `d${o.duration}` : "",
+    o.width,
+    o.fps,
+    o.speed === 1 ? "" : `${o.speed}x`,
+    o.loop === 0 ? "" : `x${o.loop}`,
+    o.dither === GIF_DEFAULTS.dither ? "" : o.dither,
+  ]
+    .filter(Boolean)
+    .join("_");
+  return `${base}_${tag}.gif`;
 }
 
 /** 🎞️ تحويل مقطع إلى GIF متحرك (لوحة ألوان مزدوجة لجودة عالية) */
 export async function videoToGif(jobIdOrPath, opts = {}) {
-  const { start, duration, width } = clampGifArgs(opts);
+  const options = clampGifArgs(opts);
+  const { start, duration, dither, loop } = options;
   return withSlot(async () => {
     const input = resolveInput(jobIdOrPath);
     const base = input.replace(/\.[^.]+$/, "");
-    const palette = `${base}_palette.png`;
-    const out = `${base}.gif`;
-    const vf = `fps=12,scale=${width}:-1:flags=lanczos`;
+    const palette = `${base}_palette_${Date.now().toString(36)}.png`;
+    const out = gifOutputName(base, options);
+    const vf = buildGifFilter(options);
+    const use = `paletteuse=dither=${dither}:diff_mode=rectangle`;
     try {
-      await run(["-ss", String(start), "-t", String(duration), "-i", input, "-vf", `${vf},palettegen`, palette], 1000 * 60 * 10, "gif-palette");
+      await run(["-ss", String(start), "-t", String(duration), "-i", input, "-vf", `${vf},palettegen=stats_mode=diff`, palette], 1000 * 60 * 10, "gif-palette");
       await run(
-        ["-ss", String(start), "-t", String(duration), "-i", input, "-i", palette, "-lavfi", `${vf} [x]; [x][1:v] paletteuse`, out],
+        ["-ss", String(start), "-t", String(duration), "-i", input, "-i", palette, "-lavfi", `${vf} [x]; [x][1:v] ${use}`, "-loop", String(loop), out],
         1000 * 60 * 10,
         "gif"
       );
@@ -194,6 +245,6 @@ export async function videoToGif(jobIdOrPath, opts = {}) {
       try { fs.unlinkSync(palette); } catch { /* تجاهُل */ }
     }
     const size = assertOutput(out);
-    return { file: path.basename(out), fileUrl: `/files/${path.basename(out)}`, size, start, duration, width };
+    return { file: path.basename(out), fileUrl: `/files/${path.basename(out)}`, size, ...options };
   });
 }

@@ -15,6 +15,8 @@ import { useLang } from "../../context/LangContext.jsx";
 import { convertJob, compressJob, gifJob, fileUrl as absFileUrl, saveToDesktop } from "../../services/api.js";
 import { fmtBytes } from "../../utils/formatters.js";
 import ToolSwitcher from "./ToolSwitcher.jsx";
+import GifOptions from "./GifOptions.jsx";
+import RatingStars from "../ui/RatingStars.jsx";
 import AdvancedOptions from "./AdvancedOptions.jsx";
 import ScheduleBox from "./ScheduleBox.jsx";
 import PlaylistDownloader from "./PlaylistDownloader.jsx";
@@ -93,6 +95,8 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
       quality,
       format: formatForTool(tool, format),
       extra: adv,
+      // 🎞️ خيارات GIF تُرسل مع الطلب (الخادم يقصّها) — بلا هذا كانت تُتجاهل
+      gif: toolById(tool).gifOptions ? { ...gifOpts } : undefined,
     });
   };
 
@@ -103,7 +107,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
     try {
       const r = kind === "mp3" ? await convertJob(job.jobId, "mp3")
         : kind === "zip" ? await compressJob(job.jobId, 28)
-          : await gifJob(job.jobId, { start: gifOpts.start, duration: gifOpts.duration, width: gifOpts.width });
+          : await gifJob(job.jobId, { ...gifOpts });
       setToolMsg({ label: kind === "mp3" ? "🎧 MP3 جاهز" : kind === "zip" ? "🗜️ النسخة المضغوطة جاهزة" : "🎞️ GIF جاهز", ...r });
     } catch (e) {
       setToolMsg({ label: "⚠️ " + (e.message || "فشلت الأداة"), error: true });
@@ -399,6 +403,11 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                             type="button"
                             key={q}
                             onClick={() => setQuality(q)}
+                            /* الاختيار يتم عند الضغط نفسه (pointerdown) لا عند
+                               CLICK: لو ضاع الحدث لأي سبب (تحريك تحت المؤشر،
+                               عنصر يعلو الزر، لمسة متقطعة) يبقى الاختيار
+                               مضموناً بضغطة واحدة. */
+                            onPointerDown={() => setQuality(q)}
                             title={q}
                             aria-pressed={quality === q}
                             className={`select-none touch-manipulation rounded-xl px-3 py-2 text-xs font-black transition-colors duration-150 ${
@@ -425,6 +434,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                             type="button"
                             key={f.id}
                             onClick={() => setFormat(f.id)}
+                            onPointerDown={() => setFormat(f.id)}
                             title={f.desc}
                             aria-pressed={format === f.id}
                             className={`select-none touch-manipulation rounded-xl px-3 py-2 text-xs font-black transition-colors duration-150 ${
@@ -445,40 +455,9 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                     </div>
                   </div>
 
-                  {/* GIF Options */}
+                  {/* 🎞️ خيارات GIF الكاملة — تُرسل مع طلب التنزيل */}
                   {active.gifOptions && (
-                    <div className="mt-4">
-                      <label className="block text-xs font-black text-white/60 mb-2">🎞️ {t("tools.gifOpts") || "خيارات المقطع"}</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <label className="text-[11px] font-bold text-white/50">
-                          {t("tools.gifStart") || "من (ثانية)"}
-                          <input
-                            type="number" min="0" value={gifOpts.start}
-                            onChange={(e) => setGifOpts((g) => ({ ...g, start: e.target.value }))}
-                            className="input-smart mt-1"
-                          />
-                        </label>
-                        <label className="text-[11px] font-bold text-white/50">
-                          {t("tools.gifDur") || "المدة (ثانية)"}
-                          <input
-                            type="number" min="1" max="20" value={gifOpts.duration}
-                            onChange={(e) => setGifOpts((g) => ({ ...g, duration: e.target.value }))}
-                            className="input-smart mt-1"
-                          />
-                        </label>
-                        <label className="text-[11px] font-bold text-white/50">
-                          {t("tools.gifWidth") || "العرض (px)"}
-                          <input
-                            type="number" min="120" max="960" step="40" value={gifOpts.width}
-                            onChange={(e) => setGifOpts((g) => ({ ...g, width: e.target.value }))}
-                            className="input-smart mt-1"
-                          />
-                        </label>
-                      </div>
-                      <p className="mt-2 text-[11px] text-white/40">
-                        {ar ? "يتم تنزيل نسخة ≤480p ثم تحويلها عبر FFmpeg." : "A ≤480p copy is downloaded then converted with FFmpeg."}
-                      </p>
-                    </div>
+                    <GifOptions value={gifOpts} onChange={setGifOpts} durationSec={info?.durationSec} compact={compact} />
                   )}
                 </div>
 
@@ -573,13 +552,17 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                         )
                       )}
 
+                      {/* ⭐ نجوم التقييم — CSS وHTML كما ورد الطلب */}
+                      <RatingStars className="mt-1" />
+
                       <button onClick={reset} className="btn-ghost !py-2 text-xs">{t("preview.newLink")}</button>
                     </motion.div>
                   ) : (
-                    <motion.button
+                    /* ⚠️ كان motion.button مع whileTap={{scale:0.98}}: التصغير
+                       أثناء الضغط يحرّك الزر تحت المؤشر فيضيع onclick ⇒ المستخدم
+                       يضغط مرتين. زر عادي بلا transform. */
+                    <button
                       onClick={handleDownload}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                       className="btn-primary w-full sm:w-auto group"
                     >
                       <span className="flex items-center justify-center gap-2 relative z-10">
@@ -588,7 +571,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                         {active.qualities && !audioOnly && ` · ${quality}`}
                       </span>
                       <span className="absolute inset-0 bg-gradient-to-r from-emerald-light to-emerald opacity-0 group-hover:opacity-20 transition-opacity rounded-[22px]" />
-                    </motion.button>
+                    </button>
                   )}
                 </div>
               </div>

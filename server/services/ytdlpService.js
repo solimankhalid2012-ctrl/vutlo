@@ -11,7 +11,7 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import { db } from "./db.js"; // نقاط المكافآت عند اكتمال التحميل
-import { videoToGif, FFMPEG } from "./ffmpegService.js";
+import { videoToGif, FFMPEG, clampGifArgs } from "./ffmpegService.js";
 import { DOWNLOAD_DIR as DOWNLOADS_DIR } from "./paths.js";
 
 const exec = promisify(execFile);
@@ -351,6 +351,9 @@ export async function queueDownload(url, opts = {}) {
   const job = {
     jobId, url: safe, status: "queued", stage: "queued", progress: 0,
     quality: opts.quality || "1080p", format: opts.format || "mp4",
+    // 🎞️ خيارات GIF التي اختارها المستخدم — تُستخدم بعد انتهاء التنزيل.
+    // ⚠️ كانت hardcoded ({0, 4s, 480}) ⇒ كل خيارات المستخدم في الواجهة بلا أثر!
+    gif: opts.format === "gif" ? clampGifArgs(opts.gif || {}) : null,
     file: null, fileName: null, fileUrl: null, size: 0, error: null,
     userId: opts.userId || null, createdAt: Date.now(),
   };
@@ -531,7 +534,9 @@ async function finishJob(job, stderrTail) {
   if (job.format === "gif") {
     job.stage = "processing";
     try {
-      const g = await videoToGif(job.jobId, { start: 0, duration: 4, width: 480 });
+      // 🎞️ نحوّل المقطع المنزَّل إلى GIF بنفس خيارات المستخدم (start/duration/
+      // width/fps/dither/loop/speed) — مُقيَّدة بـ clampGifArgs عند إنشاء المهمة.
+      const g = await videoToGif(job.jobId, job.gif || {});
       file = g.file;
     } catch (e) {
       job.status = "error";

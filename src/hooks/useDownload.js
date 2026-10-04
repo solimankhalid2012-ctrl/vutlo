@@ -50,12 +50,12 @@ export function useDownload() {
     }
   }, []);
 
-  const download = useCallback(async (url, { quality = "1080p", format = "mp4", extra } = {}) => {
+  const download = useCallback(async (url, { quality = "1080p", format = "mp4", extra, gif } = {}) => {
     setStatus("downloading"); setProgress(0); setStage(""); setError(""); setJob(null);
     stopPolling();
     const myRound = round.current;
     try {
-      const res = await startDownload(url, { quality, format, extra });
+      const res = await startDownload(url, { quality, format, extra, gif });
       // ⚠️ لو بدأ المستخدم تحميلاً جديداً أو أعدنا الضبط أثناء الانتظار، نتخلّى
       // عن هذه النتيجة حتى لا تكتب حالة مهمة قديمة فوق المهمة الحالية.
       if (myRound !== round.current) return null;

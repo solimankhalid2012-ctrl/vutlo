@@ -101,9 +101,13 @@ body {
 
 @layer components {
   /* ── Buttons ── */
+  /* ⚠️ كان هنا active:scale-[0.98] ⇒ التحريك أثناء الضغط يجعل mousedown وmouseup
+     يقعان على عنصرين مختلفين، فيضيع onclick ويظن المستخدم أن الزر "لا يستجيب"
+     فيضغط مرتين أو ثلاثاً. الأزرار التفاعلية (جودة/صيغة/أدوات) لا يجوز أن
+     تتحرك تحت المؤشر إطلاقاً — التحريك البصري اختياري، الاستجابة ليست. */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-2xl font-black transition-all duration-200
-    active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+    disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
   }
   .btn-primary {
     @apply btn px-6 py-3.5 text-base
@@ -133,8 +137,9 @@ body {
     transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
   }
   .card:hover {
+    /* بلا transform: الرفع 2px كان يحرّك البطاقة (وأزرارها) تحت المؤشر ⇒
+       목표 النقرة يتغيّر بين mousedown وmouseup فيضيع onclick. لون وحدود فقط. */
     @apply border-emerald/30 shadow-[0_16px_48px_rgba(0,0,0,0.5),0_0_0_1px_rgba(29,185,84,0.1)];
-    transform: translateY(-2px);
   }
   .card-premium {
     @apply rounded-3xl relative overflow-hidden

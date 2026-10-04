@@ -102,4 +102,31 @@ export const formatForTool = (toolId, chosen) => {
 
 /** GIF لا يتجاوز 480p داخلياً (لحجم معقول) */
 export const GIF_MAX_HEIGHT = 480;
-export const GIF_DEFAULT = { start: 0, duration: 4, width: 480 };
+
+/** ⚙️ خيارات GIF — القيم الافتراضية تطابق clampGifArgs في الخادم.
+ *  speed: معامل تسريع (2 = ضعف السرعة), loop: 0 = تكرار لا نهائي */
+export const GIF_DEFAULT = { start: 0, duration: 4, width: 480, fps: 12, dither: "bayer", loop: 0, speed: 1 };
+
+/** نطاقات العرض في الواجهة (الخادم يقصّ 120–720) */
+export const GIF_WIDTHS = [240, 320, 360, 480, 640, 720];
+export const GIF_FPS = [8, 10, 12, 15, 20, 25];
+export const GIF_SPEEDS = [0.5, 0.75, 1, 1.5, 2, 3];
+export const GIF_DITHERERS = [
+  { id: "bayer", ar: "ناعم (Bayer)", en: "Smooth (Bayer)" },
+  { id: "bayer2", ar: "أنعم (Bayer 2×2)", en: "Smoother (Bayer 2×2)" },
+  { id: "fs", ar: "حِدّة أعلى (FS)", en: "Sharper (FS)" },
+  { id: "sierra2", ar: "توازن (Sierra)", en: "Balanced (Sierra)" },
+  { id: "none", ar: "بلا تدرّج (أصغر حجماً)", en: "No dither (smaller)" },
+];
+
+/** مجموعات جاهزة بنقرة واحدة — أشهر استخدامات GIF */
+export const GIF_PRESETS = [
+  { id: "reaction", ar: "ردة فعل 3s", en: "Reaction 3s", opts: { start: 0, duration: 3, width: 480, fps: 15, speed: 1, loop: 0, dither: "bayer" } },
+  { id: "loop", ar: "تكرار 6s هادئ", en: "Smooth loop 6s", opts: { start: 0, duration: 6, width: 360, fps: 12, speed: 0.75, loop: 0, dither: "sierra2" } },
+  { id: "square", ar: "مربّع 320 خفيف", en: "Square 320 light", opts: { start: 0, duration: 4, width: 320, fps: 10, speed: 1, loop: 0, dither: "bayer" } },
+  { id: "slowmo", ar: "حركة بطيئة 2×", en: "Slow-mo 0.5×", opts: { start: 0, duration: 4, width: 480, fps: 20, speed: 0.5, loop: 1, dither: "bayer" } },
+  { id: "fast", ar: "سريع 2× خفيف", en: "Fast 2× light", opts: { start: 0, duration: 4, width: 360, fps: 12, speed: 2, loop: 0, dither: "none" } },
+];
+
+/** تقريب الأرقام للـ slider/المدخلات الرقمية (عائم⇒لا NaN في الواجهة) */
+export const gifNumber = (v, fallback = 0) => (Number.isFinite(Number(v)) ? Number(v) : fallback);

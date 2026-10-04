@@ -11,6 +11,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { act } from "react";
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { readFileSync } from "node:fs";
 
 // لا شبكة ولا FFmpeg: نعترض طبقة api بالكامل
 vi.mock("../src/services/api.js", () => ({
@@ -114,5 +115,49 @@ describe("اختيار الجودة والصيغة بضغطة واحدة", () =>
     expect(target).toBeTruthy();
     expect(target.className).toContain("touch-manipulation");
     expect(target.className).not.toContain("transition-all");
+  });
+
+  /* ── ضغطة واحدة حتى لو ضاع حدث click ──────────────────────────────
+     الآلية: كل transform أثناء الضغط (.btn active:scale / .card:hover /
+     whileTap) يحرّك الزر تحت المؤشر ⇒ mousedown وmouseup على عنصرين
+     مختلفين ⇒ لا click ⇒ المستخدم يضغط مرتين أو ثلاثاً.
+     العلاج: الاختيار يتم عند pointerdown + لا transform أثناء الضغط. */
+  it("الجودة تُختار عند الضغط (pointerdown) حتى بلا click", async () => {
+    mount();
+    await analyse();
+    const target = buttonByText("1080p");
+    await act(async () => {
+      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    });
+    expect(isSelected(buttonByText("1080p")), "pointerdown وحده يكفي").toBe(true);
+  });
+
+  it("الصيغة تُختار عند الضغط (pointerdown) حتى بلا click", async () => {
+    mount();
+    await analyse();
+    await act(async () => {
+      buttonByText("MKV").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    });
+    expect(isSelected(buttonByText("MKV"))).toBe(true);
+  });
+
+  it("الأداة تُبدَّل عند الضغط (pointerdown) — بلا ضغطات متكررة", async () => {
+    mount();
+    await act(async () => {
+      [...host.querySelectorAll('button[role="tab"]')]
+        .find((b) => b.textContent.includes("صورة GIF"))
+        .dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    });
+    const gifTab = [...host.querySelectorAll('button[role="tab"]')].find((b) => b.textContent.includes("صورة GIF"));
+    expect(gifTab.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("لا transform أثناء الضغط في أي مكان (CSS مشترك)", () => {
+    // نتجاهل التعليقات (تحكي المشكلة) ونفحص القواعد فقط
+    const css = readFileSync("src/styles/globals.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css, "active:scale يجعل الزر يهرب من المؤشر").not.toContain("active:scale");
+    expect(css, "رفع البطاقة عند hover يحرّك أزرارها").not.toMatch(/\.card:hover[\s\S]{0,200}transform:/);
+    // ولا في صفحات التطبيق: whileTap بمقياس
+    expect(readFileSync("src/components/common/Reveal.jsx", "utf8")).not.toContain("whileTap: { scale: 0.");
   });
 });

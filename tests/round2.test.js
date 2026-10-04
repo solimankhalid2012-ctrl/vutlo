@@ -12,7 +12,7 @@
 import { describe, it, expect } from "vitest";
 
 // ── 1) حدود معاملات FFmpeg ──
-import { clampGifArgs, ffmpegDepth, MAX_FFMPEG } from "../server/services/ffmpegService.js";
+import { clampGifArgs, buildGifFilter, gifOutputName, ffmpegDepth, MAX_FFMPEG } from "../server/services/ffmpegService.js";
 // ── 2) أخطاء الجدولة: status + expose ──
 import { scheduleDownload } from "../server/services/schedulerService.js";
 // ── 3) أخطاء إدخال yt-dlp آمنة للعرض ──
@@ -26,21 +26,51 @@ import { FEATURES, featureList, liveFeatures } from "../src/data/features.js";
 
 describe("FFmpeg — حدود المعاملات", () => {
   it("يقصّ start/duration/width إلى المدى المسموح", () => {
-    expect(clampGifArgs({ start: -500, duration: 9999, width: 9999 }))
-      .toEqual({ start: 0, duration: 20, width: 720 });
+    const a = clampGifArgs({ start: -500, duration: 9999, width: 9999 });
+    expect(a).toMatchObject({ start: 0, duration: 30, width: 720 });
     expect(clampGifArgs({ start: 1e9, duration: 0, width: 1 }))
-      .toEqual({ start: 21600, duration: 1, width: 120 });
+      .toMatchObject({ start: 21600, duration: 1, width: 120 });
   });
   it("يقبل قيماً صحيحة كما هي", () => {
     expect(clampGifArgs({ start: 10, duration: 3, width: 480 }))
-      .toEqual({ start: 10, duration: 3, width: 480 });
+      .toMatchObject({ start: 10, duration: 3, width: 480 });
   });
   it("يتحمّل نقص المعاملات (لا NaN)", () => {
     const r = clampGifArgs({});
-    for (const v of Object.values(r)) {
-      expect(Number.isFinite(v), JSON.stringify(r)).toBe(true);
+    for (const [k, v] of Object.entries(r)) {
+      if (typeof v === "number") expect(Number.isFinite(v), `${k}=${v}`).toBe(true);
+      else expect(typeof v, `${k}=${v}`).toBe("string");
     }
   });
+  it("خيارات GIF الجديدة: fps/dither/loop/speed تُقصّ ضمن المدى", () => {
+    expect(clampGifArgs({ fps: 999, dither: "evil", loop: -3, speed: 99 }))
+      .toMatchObject({ fps: 30, dither: "bayer", loop: 0, speed: 4 });
+    expect(clampGifArgs({ fps: 1, dither: "sierra2", loop: 2, speed: 0.1 }))
+      .toMatchObject({ fps: 5, dither: "sierra2", loop: 2, speed: 0.25 });
+  });
+  it("فلتر GIF يبني fps/عرض/سرعة بلا قيم خارج المدى", () => {
+    expect(buildGifFilter({ fps: 15, width: 360, speed: 2 }))
+      .toBe("fps=15,scale=360:-1:flags=lanczos,setpts=0.5000*PTS");
+    // السرعة العادية ⇒ بلا setpts (لا إعادة حساب الزمن)
+    expect(buildGifFilter({ fps: 12, width: 480, speed: 1 }))
+      .toBe("fps=12,scale=480:-1:flags=lanczos");
+  });
+  it("اسم ملف GIF يميّز وقت البدء والمدة (لا استبدال بين المقاطع)",
+    () => {
+      const base = "clip";
+      const names = [
+        clampGifArgs({ start: 0, duration: 4 }),
+        clampGifArgs({ start: 12, duration: 4 }),
+        clampGifArgs({ start: 0, duration: 8 }),
+        clampGifArgs({ start: 0, duration: 4, width: 320 }),
+        clampGifArgs({ start: 0, duration: 4, speed: 2 }),
+        clampGifArgs({ start: 0, duration: 4, loop: 3 }),
+        clampGifArgs({ start: 0, duration: 4, dither: "sierra2" }),
+      ].map((o) => gifOutputName(base, o));
+      expect(new Set(names).size, "كل تركيبةoptions لها اسم مختلف").toBe(names.length);
+      expect(gifOutputName(base, clampGifArgs({ start: 30, duration: 9 }))).toContain("s30_d9");
+      expect(names[0]).toMatch(/\.gif$/);
+    });
   it("عمق FFmpeg يبدأ صفراً والحد الأقصى موجب", () => {
     const d = ffmpegDepth();
     expect(d.active).toBe(0);
