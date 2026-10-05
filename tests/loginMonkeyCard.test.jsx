@@ -17,6 +17,7 @@ import { MemoryRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 
 import Login from "../src/pages/Login.jsx";
+import MonkeyAvatar, { MonkeyHands } from "../src/components/auth/MonkeyAvatar.jsx";
 import { LangProvider } from "../src/context/LangContext.jsx";
 import { ThemeProvider } from "../src/context/ThemeContext.jsx";
 import { MotionProvider } from "../src/components/common/Reveal.jsx";
@@ -181,5 +182,31 @@ describe("بطاقة تسجيل الدخول 🐒", () => {
     for (const k of ["monkeyBlink", "monkeySlick", "-webkit-text-security", "blind_input", "monkey-eye-r", "perspective"]) {
       expect(css, k).toContain(k);
     }
+  });
+
+  it("ألوان القرد طبيعية (بنية) والبطاقة خضراء/سوداء", () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    const box = document.createElement("div");
+    document.body.appendChild(box);
+    const r2 = createRoot(box);
+    act(() => r2.render(<><MonkeyAvatar /><MonkeyHands /></>));
+    const fills = [...box.querySelectorAll("[fill]")].map((n) => n.getAttribute("fill"));
+    expect(fills.length).toBeGreaterThan(5);
+    for (const f of fills) {
+      // لا يعود للأخضر/الأزرق القديم، وكل fill لون ثابت
+      expect(["#2C6B4A", "#3E8A63", "#A8E6CF", "#0A0E0A"].includes(f), f).toBe(false);
+      expect(f).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+    // فرو بنّي + بشرة فاتحة + أنف داكن
+    expect(fills).toContain("#6f4a2b");
+    expect(fills).toContain("#c08a5a");
+    expect(fills).toContain("#2b1c12");
+    act(() => r2.unmount());
+    box.remove();
+    // شريط الفم في CSS يوافق لون الأنف، والبطاقة ما زالت خضراء
+    const css = readFileSync("src/styles/loginCard.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toContain("#2b1c12");
+    expect(css).toContain("#1db954");
+    expect(css).toContain("#0a0e0a");
   });
 });
