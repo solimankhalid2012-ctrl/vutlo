@@ -115,15 +115,9 @@ describe("الأخطاء — تُعلَّم للعرض بدل 500", () => {
       scheduleDownload({ url: "https://youtube.com/watch?v=x", runAt: new Date(Date.now() - 60000).toISOString() }),
     ).toThrow(/المستقبل/);
   });
-  it("رابط غير http/https يُرفض مع expose", () => {
+  it("رابط غير http/https يُرفض مع expose", async () => {
     for (const bad of ["file:///etc/passwd", "javascript:alert(1)", "ftp://x.com/a"]) {
-      try {
-        assertUrl(bad);
-        throw new Error(`كان يجب رفض ${bad}`);
-      } catch (e) {
-        expect(e.status).toBe(400);
-        expect(e.expose).toBe(true);
-      }
+      await expect(assertUrl(bad), bad).rejects.toMatchObject({ status: 400, expose: true });
     }
   });
 });

@@ -1,0 +1,17 @@
+# ── مستثنيات بناء صورة Docker (حجم وخصوصية) ──
+node_modules
+dist
+.git
+.env
+.env.*
+!.env.example
+downloads
+uploads
+prisma/dev.db
+tests
+coverage
+*.log
+.vscode
+.idea
+.gitkeep
+.DS_Store

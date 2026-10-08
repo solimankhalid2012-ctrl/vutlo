@@ -1,0 +1,45 @@
+# ─────────────────────────────────────────────
+# render.yaml — Blueprint النشر التلقائي على Render
+# الاستخدام:
+#   1. ادفع المستودع إلى GitHub.
+#   2. في Render: New → Blueprint → اختر المستودع.
+#   3. قبل/بعد الإنشاء اضبط المتغيرات الموضحة أدناه من لوحة التحكم
+#      (Sync=false تعني بلا قيم افتراضية ضعيفة — تُملأ يدوياً).
+# المتغيرات الإلزامية (يوقف السيرفر نفسه إن غابت في الإنتاج):
+#   - JWT_SECRET       مفتاح 32+ حرف عشوائياً
+#   - ADMIN_PASS_HASH  هاش scrypt لكلمة مرور المشرف — توليده:
+#       node -e "const c=require('crypto');const s=c.randomBytes(16);const k=c.scryptSync('ما-PASSWORD',s,64,{N:16384,r:8,p:1,maxmem:67108864});console.log(['scrypt',16384,8,1,s.toString('base64url'),k.toString('base64url')].join('$'))"
+# بعض البيانات (المستخدمون/الملفات) على قرص الحاوية المؤقت — تُفقد عند
+# إعادة النشر. للثبات احترفياً: ربط قرص دائم (Persistent Disk) عبر DOWNLOAD_DIR.
+# ─────────────────────────────────────────────
+services:
+  - type: web
+    name: vutlo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_PASS_HASH
+        sync: false
+      # اختياري — رابط الموقع الكامل بعد الإنشاء (للواجهة/CORS الصريحة)
+      - key: CLIENT_URL
+        sync: false
+      - key: VITE_SITE_URL
+        sync: false
+      # اتركها فارغة دائماً (منع SSRF). الـ"1" مخرج للأنظمة التي تريد
+      # التحميل من شبكتها الداخلية عمداً فقط.
+      - key: VUTLO_ALLOW_PRIVATE_URLS
+        sync: false
+      # اختياري — PostgreSQL الخارجي يعطي ثباتاً كاملاً للبيانات
+      - key: DATABASE_URL
+        sync: false

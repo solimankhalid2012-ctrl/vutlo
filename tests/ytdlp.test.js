@@ -29,22 +29,35 @@ const after = (args, flag) => {
 };
 
 describe("assertUrl", () => {
-  it("يقبل http/https", () => {
-    expect(assertUrl("https://youtu.be/abc")).toBe("https://youtu.be/abc");
-    expect(assertUrl(" http://example.com/v ")).toBe("http://example.com/v");
+  it("يقبل http/https العام", async () => {
+    await expect(assertUrl("https://youtu.be/abc")).resolves.toBe("https://youtu.be/abc");
+    await expect(assertUrl(" http://example.com/v ")).resolves.toBe("http://example.com/v");
+    // عنوان رقمي عام — لا يعتمد اختبار القبول على DNS
+    await expect(assertUrl("https://93.184.216.34/v")).resolves.toBe("https://93.184.216.34/v");
   });
 
-  it("يرفض الرابط الفارغ/غير الصالح", () => {
-    expect(() => assertUrl("")).toThrow("رابط مفقود");
-    expect(() => assertUrl("not-a-url")).toThrow("رابط غير صالح");
+  it("يرفض الرابط الفارغ/غير الصالح", async () => {
+    await expect(assertUrl("")).rejects.toThrow("رابط مفقود");
+    await expect(assertUrl("not-a-url")).rejects.toThrow("رابط غير صالح");
   });
 
-  it("يرفض Schemes غير المدعومة (file:)", () => {
-    expect(() => assertUrl("file:///C:/Windows/win.ini")).toThrow("يدعم http/https فقط");
+  it("يرفض Schemes غير المدعومة (file:)", async () => {
+    await expect(assertUrl("file:///C:/Windows/win.ini")).rejects.toThrow("يدعم http/https فقط");
   });
 
-  it("يرفض الروابط الطويلة جداً", () => {
-    expect(() => assertUrl("https://e.com/" + "a".repeat(2100))).toThrow("الحد 2048");
+  it("يرفض الروابط الطويلة جداً", async () => {
+    await expect(assertUrl("https://e.com/" + "a".repeat(2100))).rejects.toThrow("الحد 2048");
+  });
+
+  it("حارس SSRF: يرفض عناوين داخلية وميتاداتا السحابة", async () => {
+    const blocked = [
+      "http://localhost/", "http://127.0.0.1/", "http://[::1]/",
+      "http://10.1.2.3/x", "http://172.16.0.5/x", "http://192.168.1.1/x",
+      "http://169.254.169.254/latest/meta-data/", "http://[fc00::1]/",
+    ];
+    for (const u of blocked) {
+      await expect(assertUrl(u), u).rejects.toThrow(/ممنوع|داخلي|ميتاداتا|أمني/);
+    }
   });
 });
 
@@ -309,8 +322,9 @@ describe("formatDuration", () => {
 });
 
 describe("job store", () => {
-  // منفذ مغلق محلياً: يفشل yt-dlp فوراً دون انتظار الشبكة
-  const fastFail = "http://127.0.0.1:1/nope";
+  // منفذ مغلق على عنوان عام رقمي: يفشل yt-dlp فوراً دون انتظار الشبكة،
+  // ويجتاز حارس SSRF (127.0.0.1 كان الحارس يرفضه كعنوان داخلي).
+  const fastFail = "http://1.1.1.1:1/nope";
 
   it("ينشئ مهمة ويعيد معرّفاً ورسالة", async () => {
     const job = await queueDownload(fastFail, { quality: "360p", format: "mp3" });

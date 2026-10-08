@@ -78,13 +78,25 @@ app.use((req, _res, next) => {
   next();
 });
 
-/** سياسة أمان المحتوى — انظر server/config/csp.js لشرح كل قرار. */
+/** سياسة أمان المحتوى رؤوس الأمان — انظر server/config/csp.js لسياسة المحتوى.
+ *  (استخدمنا useDefaults:false للـCSP فنضيف صراحة رؤوس الحماية الأخرى التي
+ *  كانت تختفي مع إبطال الافتراضيات: HSTS، nosniff، Referrer-Policy، X-Frame-Options.) */
 app.use(helmet({
-  crossOriginResourcePolicy: false,
+  crossOriginResourcePolicy: { policy: "same-site" }, // منع قراءة ملفاتنا من مواقع أخرى
   contentSecurityPolicy: {
     useDefaults: false,
     directives: CSP_DIRECTIVES,
   },
+  // 🔒 HSTS: القوى المتصفح بأن يطلب https فقط (فعّال خلف TLS؛ يجعل التجاهل سهلاً لاحقاً)
+  hsts: {
+    maxAge: 63072000, // سنتان
+    includeSubDomains: true,
+    preload: false,
+  },
+  nosniff: true,                       // X-Content-Type-Options: nosniff
+  referrerPolicy: { policy: "no-referrer" }, // لا نسرّب أي معلومات عبر Referer
+  crossOriginEmbedderPolicy: false,    // يبقى الإنتاج بدون COEP (blob/media)
+  frameguard: { action: "sameorigin" }, // X-Frame-Options: SAMEORIGIN
 }));
 app.use(cors({
   origin: (process.env.CLIENT_URL || "http://localhost:5173").split(","),

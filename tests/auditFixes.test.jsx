@@ -86,7 +86,7 @@ describe("listJobs / getJob — لا circular JSON", () => {
   });
 
   it("listJobs لا تسرّب retryTimer لأي مهمة", async () => {
-    const job = await queueDownload("https://example.invalid/probe", { quality: "1080p", format: "mp4" });
+    const job = await queueDownload("http://1.1.1.1:1/probe", { quality: "1080p", format: "mp4" });
     try {
       const rows = listJobs();
       expect(() => JSON.stringify(rows)).not.toThrow();

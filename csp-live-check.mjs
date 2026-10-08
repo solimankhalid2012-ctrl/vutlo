@@ -37,6 +37,14 @@ const img = (csp.match(/img-src[^;]*/) || [""])[0];
 const media = (csp.match(/media-src[^;]*/) || [""])[0];
 console.log(`\nimg-src:    ${img}`);
 console.log(`media-src:  ${media}`);
+console.log(
+  "رؤوس الأمان:\n" +
+  `  HSTS:  ${res.headers.get("strict-transport-security") || "❌ غائب"}\n` +
+  `  nosniff: ${res.headers.get("x-content-type-options") || "❌ غائب"}\n` +
+  `  Referrer-Policy: ${res.headers.get("referrer-policy") || "❌ غائب"}\n` +
+  `  X-Frame-Options: ${res.headers.get("x-frame-options") || "❌ غائب"}\n` +
+  `  X-Powered-By: ${res.headers.has("x-powered-by") ? "⚠️ مكشوف" : "مخفٍّ ✅"}\n`
+);
 
 const checks = [
   ["مصغّرات يوتيوب (i.ytimg.com)", img.includes("https:")],
@@ -46,6 +54,11 @@ const checks = [
   ["كل سكربتات inline مسموحة", bad === 0],
   ["سمات onclick محجوبة (script-src-attr 'none')", /script-src-attr 'none'/.test(csp)],
   ["object محجوب", csp.includes("object-src 'none'")],
+  ["HSTS مفعّل", Boolean(res.headers.get("strict-transport-security"))],
+  ["nosniff مفعّل", res.headers.get("x-content-type-options") === "nosniff"],
+  ["Referrer-Policy مفعّل", Boolean(res.headers.get("referrer-policy"))],
+  ["X-Frame-Options مفعّل", Boolean(res.headers.get("x-frame-options"))],
+  ["X-Powered-By مخفي", !res.headers.has("x-powered-by")],
 ];
 console.log();
 let fail = 0;

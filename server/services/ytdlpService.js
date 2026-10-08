@@ -13,6 +13,7 @@ import path from "path";
 import { db } from "./db.js"; // نقاط المكافآت عند اكتمال التحميل
 import { videoToGif, FFMPEG, clampGifArgs } from "./ffmpegService.js";
 import { DOWNLOAD_DIR as DOWNLOADS_DIR } from "./paths.js";
+import { assertSafeHttpUrl } from "../config/ssrfGuard.js";
 
 const exec = promisify(execFile);
 const YTDLP = process.env.YTDLP_BIN || "yt-dlp";
@@ -153,15 +154,20 @@ export function toSeconds(value) {
   return String(total);
 }
 
-/** روابط http/https فقط — يمنع تمرير وسائط/أOptions خبيثة لـ yt-dlp */
-export function assertUrl(url) {
+/**
+ * روابط http/https فقط + حارس SSRF (انظر config/ssrfGuard.js):
+ * - يمنع loopback/الشبكة الداخلية/الميتاداتا مهما كان شكل التهريب.
+ * - fail-closed: الرابط الذي لا يمكن التحقق منه يُرفض.
+ * الواجهة غير متزامنة لأن التحقق يتطلب حلّ DNS.
+ */
+export async function assertUrl(url) {
   const u = String(url || "").trim();
   if (!u) throw httpError(400, "رابط مفقود");
-  if (u.length > 2048) throw httpError(400, "الرابط طويل جداً (الحد 2048 حرف)");
-  let parsed;
-  try { parsed = new URL(u); } catch { throw httpError(400, "رابط غير صالح"); }
-  if (!/^https?:$/.test(parsed.protocol)) throw httpError(400, "يدعم http/https فقط");
-  return u;
+  try {
+    return await assertSafeHttpUrl(u);
+  } catch (e) {
+    throw httpError(400, e?.expose ? e.message : "رابط غير مسموح");
+  }
 }
 
 function httpError(status, message) {
@@ -311,7 +317,7 @@ const INFO_TTL = 10 * 60_000;
 const INFO_CACHE_MAX = 200;
 
 export async function getVideoInfo(url) {
-  const safe = assertUrl(url);
+  const safe = await assertUrl(url);
   const hit = infoCache.get(safe);
   if (hit && Date.now() - hit.at < INFO_TTL) return hit.data;
 
@@ -348,7 +354,7 @@ export async function getVideoInfo(url) {
 
 /** 📃 معلومات قائمة تشغيل/قناة (سريع عبر flat-playlist) */
 export async function getPlaylist(url) {
-  const safe = assertUrl(url);
+  const safe = await assertUrl(url);
   try {
     const { stdout } = await exec(
       YTDLP, ["--flat-playlist", "-J", "--no-warnings", safe],
@@ -374,7 +380,7 @@ export async function getPlaylist(url) {
 
 /** بدء مهمة تحميل حقيقية (تعمل في الخلفية، تُراقب عبر GET /api/job/:id) */
 export async function queueDownload(url, opts = {}) {
-  const safe = assertUrl(url);
+  const safe = await assertUrl(url);
   const jobId = `job_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   const args = buildYtdlpArgs(jobId, opts);
   const job = {

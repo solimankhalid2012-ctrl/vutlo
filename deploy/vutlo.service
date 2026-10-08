@@ -1,0 +1,25 @@
+# deploy/vutlo.service — وحدة systemd لتشغيل التطبيق 24/7 وإعادة إقلاعه عند أي توقف
+# يُثبّت من سكربت setup-vutlo.sh تلقائياً إلى /etc/systemd/system/vutlo.service
+[Unit]
+Description=Vutlo (videovault-pro) web service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vutlo
+Group=vutlo
+WorkingDirectory=/opt/vutlo
+EnvironmentFile=/opt/vutlo/.env
+ExecStart=/usr/bin/node server/server.js
+Restart=always
+RestartSec=3
+Nice=5
+UMask=0007
+# حد أقصى ذاكري آمن لجهاز Always Free المجاني
+MemoryMax=1024M
+# مجلدات قابلة للكتابة
+ReadWritePaths=/opt/vutlo/downloads /opt/vutlo/uploads /opt/vutlo/data
+
+[Install]
+WantedBy=multi-user.target
