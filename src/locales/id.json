@@ -13,8 +13,8 @@
     "terms": "Ketentuan"
   },
   "hero": {
-    "title1": "Unduh video apa pun",
-    "titleGreen": "secepat kilat",
+    "title1": "Video dari YouTube & TikTok",
+    "titleGreen": "dengan kualitas hingga 8K",
     "title2": "tanpa watermark ⚡",
     "subtitle": "Tempel tautan YouTube, TikTok, Instagram atau 1000+ situs — terdeteksi otomatis dalam <500ms, kualitas hingga 8K.",
     "placeholder": "Tempel tautan video di sini… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "unduhan",
     "sites": "situs didukung",
     "rating": "rating pengguna"
+  },
+  "rating": {
+    "title": "Beri kami rating",
+    "sub": "Penilaian jujur Anda membantu kami membaik — penghitung langsung",
+    "count": "{n} penilaian",
+    "countOne": "{n} penilaian",
+    "empty": "Jadilah yang pertama menilai",
+    "hint": "Ketuk bintang — mengubah suara memperbarui angka",
+    "saving": "Menyimpan penilaian Anda…"
   },
   "platforms": {
     "title": "🌍 Bekerja dengan semua platform favoritmu"
@@ -88,7 +97,7 @@
     "company": "Perusahaan"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — Pengunduh cerdas 1000+ situs, tanpa watermark",
+    "homeTitle": "Vutlo — Pengunduh cerdas 1000+ situs, tanpa watermark",
     "homeDesc": "Tempel tautan YouTube, TikTok atau Instagram dan unduh hingga 8K tanpa watermark. MP4, MP3, WEBM, GIF."
   },
   "download": {

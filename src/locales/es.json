@@ -13,8 +13,8 @@
     "terms": "Términos"
   },
   "hero": {
-    "title1": "Descarga cualquier vídeo",
-    "titleGreen": "a la velocidad del rayo",
+    "title1": "Vídeo de YouTube y TikTok",
+    "titleGreen": "en calidad hasta 8K",
     "title2": "sin marca de agua ⚡",
     "subtitle": "Pega un enlace de YouTube, TikTok, Instagram o más de 1000 sitios — detección auto en menos de 500ms y calidad hasta 8K.",
     "placeholder": "Pega el enlace del vídeo aquí… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "descargas",
     "sites": "sitios compatibles",
     "rating": "valoración"
+  },
+  "rating": {
+    "title": "Valóranos",
+    "sub": "Tu valoración honesta nos ayuda a mejorar — contador en vivo",
+    "count": "{n} valoraciones",
+    "countOne": "{n} valoración",
+    "empty": "Sé el primero en valorar",
+    "hint": "Toca una estrella — cambiar tu voto actualiza el número",
+    "saving": "Guardando tu valoración…"
   },
   "platforms": {
     "title": "🌍 Compatible con tus plataformas favoritas"
@@ -88,7 +97,7 @@
     "company": "Empresa"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — Descargador inteligente de 1000+ sitios, sin marca de agua",
+    "homeTitle": "Vutlo — Descargador inteligente de 1000+ sitios, sin marca de agua",
     "homeDesc": "Pega un enlace de YouTube, TikTok o Instagram y descarga hasta 8K sin marca de agua. MP4, MP3, WEBM, GIF."
   },
   "download": {

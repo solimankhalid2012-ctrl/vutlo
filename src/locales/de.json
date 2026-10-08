@@ -13,8 +13,8 @@
     "terms": "AGB"
   },
   "hero": {
-    "title1": "Lade jedes Video",
-    "titleGreen": "mit Blitzgeschwindigkeit",
+    "title1": "Videos von YouTube & TikTok",
+    "titleGreen": "in Qualität bis zu 8K",
     "title2": "ohne Wasserzeichen ⚡",
     "subtitle": "Füge einen Link von YouTube, TikTok, Instagram oder 1000+ Seiten ein — Erkennung in unter 500ms, Qualität bis 8K.",
     "placeholder": "Videolink hier einfügen… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "Downloads",
     "sites": "unterstützte Seiten",
     "rating": "Nutzerbewertung"
+  },
+  "rating": {
+    "title": "Bewerte uns",
+    "sub": "Deine ehrliche Bewertung hilft uns zu verbessern — Live-Zähler",
+    "count": "{n} Bewertungen",
+    "countOne": "{n} Bewertung",
+    "empty": "Sei der Erste, der bewertet",
+    "hint": "Tippe auf einen Stern — deine Änderung aktualisiert die Zahl",
+    "saving": "Bewertung wird gespeichert…"
   },
   "platforms": {
     "title": "🌍 Funktioniert mit deinen Lieblingsplattformen"
@@ -88,7 +97,7 @@
     "company": "Unternehmen"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — Smarter Downloader für 1000+ Seiten, ohne Wasserzeichen",
+    "homeTitle": "Vutlo — Smarter Downloader für 1000+ Seiten, ohne Wasserzeichen",
     "homeDesc": "YouTube-, TikTok- oder Instagram-Link einfügen und bis 8K ohne Wasserzeichen laden. MP4, MP3, WEBM, GIF."
   },
   "download": {

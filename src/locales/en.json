@@ -13,8 +13,8 @@
     "terms": "Terms"
   },
   "hero": {
-    "title1": "Download any video",
-    "titleGreen": "at lightning speed",
+    "title1": "Video from YouTube & TikTok",
+    "titleGreen": "in quality up to 8K",
     "title2": "with no watermark ⚡",
     "subtitle": "Paste a link from YouTube, TikTok, Instagram or 1000+ sites — we detect the platform in under 500ms and prepare up to 8K quality.",
     "placeholder": "Paste your video link here… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "downloads",
     "sites": "supported sites",
     "rating": "user rating"
+  },
+  "rating": {
+    "title": "Rate us",
+    "sub": "Your honest rating helps us improve — a live counter of every vote",
+    "count": "{n} ratings",
+    "countOne": "{n} rating",
+    "empty": "Be the first to rate",
+    "hint": "Tap a star — changing your vote updates the number",
+    "saving": "Saving your rating…"
   },
   "platforms": {
     "title": "🌍 Works with all your favorite platforms"
@@ -88,7 +97,7 @@
     "company": "Company"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — Smart video downloader from 1000+ sites, no watermark",
+    "homeTitle": "Vutlo — Smart video downloader from 1000+ sites, no watermark",
     "homeDesc": "Paste any YouTube, TikTok or Instagram link and download up to 8K with no watermark. MP4, MP3, WEBM, GIF."
   },
   "download": {

@@ -13,8 +13,8 @@
     "terms": "Conditions"
   },
   "hero": {
-    "title1": "Téléchargez toute vidéo",
-    "titleGreen": "à la vitesse de l'éclair",
+    "title1": "Des vidéos YouTube et TikTok",
+    "titleGreen": "en qualité jusqu'au 8K",
     "title2": "sans filigrane ⚡",
     "subtitle": "Collez un lien YouTube, TikTok, Instagram ou 1000+ sites — détection auto en moins de 500ms et qualité jusqu'à 8K.",
     "placeholder": "Collez le lien vidéo ici… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "téléchargements",
     "sites": "sites pris en charge",
     "rating": "note utilisateurs"
+  },
+  "rating": {
+    "title": "Notez-nous",
+    "sub": "Votre note honnête nous aide à améliorer — compteur en direct",
+    "count": "{n} notes",
+    "countOne": "{n} note",
+    "empty": "Soyez le premier à noter",
+    "hint": "Touchez une étoile — changer votre vote met le chiffre à jour",
+    "saving": "Enregistrement de votre note…"
   },
   "platforms": {
     "title": "🌍 Compatible avec vos plateformes préférées"
@@ -88,7 +97,7 @@
     "company": "Entreprise"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — Téléchargeur intelligent, 1000+ sites, sans filigrane",
+    "homeTitle": "Vutlo — Téléchargeur intelligent, 1000+ sites, sans filigrane",
     "homeDesc": "Collez un lien YouTube, TikTok ou Instagram et téléchargez jusqu'à 8K sans filigrane. MP4, MP3, WEBM, GIF."
   },
   "download": {

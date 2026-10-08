@@ -13,8 +13,8 @@
     "terms": "Koşullar"
   },
   "hero": {
-    "title1": "Herhangi bir videoyu",
-    "titleGreen": "şimşek hızıyla indir",
+    "title1": "YouTube ve TikTok videoları",
+    "titleGreen": "8K'ye kadar kaliteyle",
     "title2": "filigransız ⚡",
     "subtitle": "YouTube, TikTok, Instagram veya 1000+ siteden bağlantı yapıştır — 500ms altında otomatik algılama, 8K'ye kadar kalite.",
     "placeholder": "Video bağlantısını buraya yapıştır… (youtube.com, tiktok.com, instagram.com …)",
@@ -46,6 +46,15 @@
     "downloads": "indirme",
     "sites": "desteklenen site",
     "rating": "kullanıcı puanı"
+  },
+  "rating": {
+    "title": "Bizi puanlayın",
+    "sub": "Dürüst puanınız gelişmemize yardımcı olur — canlı sayaç",
+    "count": "{n} puan",
+    "countOne": "{n} puan",
+    "empty": "İlk puanı sen ver",
+    "hint": "Bir yıldıza dokun — fikrini değiştirmek sayıyı günceller",
+    "saving": "Puanınız kaydediliyor…"
   },
   "platforms": {
     "title": "🌍 Favori platformlarının tümüyle çalışır"
@@ -88,7 +97,7 @@
     "company": "Şirket"
   },
   "seo": {
-    "homeTitle": "VideoVault Pro — 1000+ siteden akıllı indirici, filigransız",
+    "homeTitle": "Vutlo — 1000+ siteden akıllı indirici, filigransız",
     "homeDesc": "YouTube, TikTok veya Instagram bağlantısı yapıştır ve 8K'ye kadar filigransız indir. MP4, MP3, WEBM, GIF."
   },
   "download": {
