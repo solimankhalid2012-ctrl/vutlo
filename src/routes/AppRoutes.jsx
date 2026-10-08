@@ -8,6 +8,7 @@ import { useLang } from "../context/LangContext.jsx";
 
 // تحميل كسول لبقية الصفحات (سرعة < 1.5s)
 const Download = lazy(() => import("../pages/Download.jsx"));
+const Lab = lazy(() => import("../pages/Lab.jsx"));
 const History = lazy(() => import("../pages/History.jsx"));
 const Features = lazy(() => import("../pages/Features.jsx"));
 const About = lazy(() => import("../pages/About.jsx"));
@@ -49,12 +50,13 @@ function LangRoute() {
 export default function AppRoutes() {
   const location = useLocation();
   return (
-    <Suspense fallback={<Loader label="VideoVault Pro…" />}>
+    <Suspense fallback={<Loader label="Vutlo…" />}>
       <PageTransition pathname={location.pathname}>
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/:lang" element={<LangRoute />} />
           <Route path="/download" element={<Download />} />
+          <Route path="/lab" element={<Lab />} />
           <Route path="/history" element={<History />} />
           <Route path="/features" element={<Features />} />
           <Route path="/about" element={<About />} />
