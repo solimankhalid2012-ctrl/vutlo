@@ -66,7 +66,7 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <Helmet><title>Admin Dashboard — VideoVault Pro</title></Helmet>
+      <Helmet><title>Admin Dashboard — Vutlo</title></Helmet>
       <AdminLayout>
         <h1 className="text-2xl font-black">📊 {ar ? "لوحة التحكم" : "Dashboard"}</h1>
         <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">

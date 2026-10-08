@@ -32,7 +32,7 @@ export default function AdminLogin() {
 
   return (
     <>
-      <Helmet><title>Admin Login — VideoVault Pro</title></Helmet>
+      <Helmet><title>Admin Login — Vutlo</title></Helmet>
       <div className="flex min-h-screen items-center justify-center px-4">
         <form onSubmit={submit} className="card w-full max-w-sm">
           <h1 className="text-center text-2xl font-black">🛡️ Admin</h1>

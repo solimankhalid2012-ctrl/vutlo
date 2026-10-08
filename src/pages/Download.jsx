@@ -19,7 +19,7 @@ export default function Download() {
   return (
     <>
       <Helmet>
-        <title>{t("download.title")} — VideoVault Pro</title>
+        <title>{t("download.title")} — Vutlo</title>
         <meta name="description" content={t("download.subtitle")} />
       </Helmet>
       <Header />

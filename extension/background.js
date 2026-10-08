@@ -1,4 +1,4 @@
-// VideoVault Pro — background (MV3 service worker): right-click → download
+// Vutlo — background (MV3 service worker): right-click → download
 const MENU_ID = "vv-download";
 
 const buildMenu = () => {
@@ -8,7 +8,7 @@ const buildMenu = () => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: MENU_ID,
-      title: "⬇ Download with VideoVault Pro",
+      title: "⬇ Download with Vutlo",
       contexts: ["link", "video", "page"],
     });
   });
@@ -20,7 +20,7 @@ chrome.runtime.onStartup.addListener(buildMenu);
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== MENU_ID) return;
-  const { vvBase = "https://videovaultpro.com/download" } = await chrome.storage.sync.get("vvBase");
+  const { vvBase = "https://vutlo.com/download" } = await chrome.storage.sync.get("vvBase");
   const u = encodeURIComponent(info.linkUrl || info.srcUrl || tab?.url || "");
   chrome.tabs.create({ url: `${vvBase}?url=${u}` });
 });

@@ -44,7 +44,7 @@ export default function AdminUsers() {
 
   return (
     <>
-      <Helmet><title>Admin Users — VideoVault Pro</title></Helmet>
+      <Helmet><title>Admin Users — Vutlo</title></Helmet>
       <AdminLayout>
         <h1 className="text-2xl font-black">👥 {ar ? "المستخدمون" : "Users"} ({users.length})</h1>
         <form onSubmit={add} className="card mt-4 flex flex-col gap-2 sm:flex-row">

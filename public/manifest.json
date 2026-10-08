@@ -1,6 +1,6 @@
 ﻿{
-  "name": "VideoVault Pro — Smart Video Downloader",
-  "short_name": "VideoVault",
+  "name": "Vutlo — Smart Video Downloader",
+  "short_name": "Vutlo",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

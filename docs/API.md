@@ -1,4 +1,4 @@
-# 🧑‍💻 VideoVault Pro — Public REST API v1.1.0
+# 🧑‍💻 Vutlo — Public REST API v1.1.0
 
 Base URL (dev): `http://localhost:4001/api` — فهرس تفاعلي حي: `GET /api/docs`
 (يُولَّد من نفس تعريفات السيرفر، فلا يتقادم مع الكود)

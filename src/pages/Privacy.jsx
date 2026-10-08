@@ -13,17 +13,17 @@ export default function Privacy() {
     ["🍪 ملفات تعريف الارتباط", "نستخدم LocalStorage وCookies لحفظ اللغة والثيم وتوكن الجلسة فقط. لا نستخدم كوكيز تتبّع إعلانية."],
     ["🌐 خدمات خارجية", "الخطوط من Google Fonts، ورمز QR يُطلب من api.qrserver.com فيرسل ذلك رابط الفيديو إلى هذه الخدمة. لا نشارك بياناتك مع أي طرف ثالث عدا ذلك، ولا تُفعَّل أي شبكة إعلانية حالياً."],
     ["🗑️ مدة الاحتفاظ", "سجل التحميلات يبقى ما دام الحساب موجوداً، ويُحذف نهائياً بطلب منك أو بحذف الحساب."],
-    ["✏️ حقوقك", "يمكنك طلب تصدير أو حذف بياناتك عبر support@videovaultpro.com في أي وقت."],
+    ["✏️ حقوقك", "يمكنك طلب تصدير أو حذف بياناتك عبر support@vutlo.com في أي وقت."],
   ] : [
     ["📦 Data we collect", "Email (on signup only), download links and basic operational logs. Stored server history is private to your account and never shown to other visitors. We never sell your data."],
     ["🍪 Cookies", "LocalStorage and cookies store language, theme and session only. We use no advertising trackers."],
     ["🌐 Third-party services", "Fonts are served by Google Fonts, and QR images are requested from api.qrserver.com, which therefore receives that video link. No data is shared with anyone else, and no ad network is currently enabled."],
     ["🗑️ Retention", "Download history is kept while your account exists, and is permanently deleted on request or when the account is removed."],
-    ["✏️ Your rights", "Request export or deletion anytime via support@videovaultpro.com."],
+    ["✏️ Your rights", "Request export or deletion anytime via support@vutlo.com."],
   ];
   return (
     <>
-      <Helmet><title>{ar ? "سياسة الخصوصية" : "Privacy Policy"} — VideoVault Pro</title></Helmet>
+      <Helmet><title>{ar ? "سياسة الخصوصية" : "Privacy Policy"} — Vutlo</title></Helmet>
       <Header />
       <main className="mx-auto max-w-3xl px-4 py-10">
         <h1 className="text-3xl font-black">🔒 {ar ? "سياسة الخصوصية" : "Privacy Policy"}</h1>

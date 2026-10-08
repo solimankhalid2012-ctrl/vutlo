@@ -1,5 +1,5 @@
-// VideoVault Pro — popup: prefill current tab URL, open site with ?url=
-const BASES = ["https://videovaultpro.com/download", "http://localhost:5173/download"];
+// Vutlo — popup: prefill current tab URL, open site with ?url=
+const BASES = ["https://vutlo.com/download", "http://localhost:5173/download"];
 
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

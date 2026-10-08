@@ -13,7 +13,7 @@ export default function Blog() {
   return (
     <>
       <Helmet>
-        <title>{ar ? "المدونة" : "Blog"} — VideoVault Pro</title>
+        <title>{ar ? "المدونة" : "Blog"} — Vutlo</title>
         <meta name="description" content={ar ? "شروحات التحميل والجودة والقانون — مقالات عملية." : "Download guides, quality tips and legal explainers."} />
       </Helmet>
       <Header />

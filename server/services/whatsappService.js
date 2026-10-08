@@ -5,7 +5,7 @@
 // استقبال: POST /api/bot/whatsapp?hub.verify_token=... (نفس التوكن — Meta لا يوقّع الطلبات)
 // docs: https://developers.facebook.com/docs/whatsapp/cloud-api
 //
-// ⚠️ كان التوكن الافتراضي "videovault-verify" قيمة معروفة ⇒ أي شخص كان يتحقق
+// ⚠️ كان التوكن الافتراضي "vutlo-verify" قيمة معروفة ⇒ أي شخص كان يتحقق
 //   من الـwebhook. الآن لا قيمة افتراضية إطلاقاً + مقارنة ثابتة الزمن.
 // ─────────────────────────────────────────────
 import { getVideoInfo, queueDownload } from "./ytdlpService.js";
@@ -74,7 +74,7 @@ export async function handleWhatsappUpdate(body) {
   const text = msg.text.body.trim();
 
   if (!chatAllowed(from)) {
-    await say(from, "⛔ هذا البوت مغلق حالياً — تواصل عبر support@videovaultpro.com");
+    await say(from, "⛔ هذا البوت مغلق حالياً — تواصل عبر support@vutlo.com");
     return { ok: true, blocked: true };
   }
   if (!withinLimit(from)) {
@@ -84,7 +84,7 @@ export async function handleWhatsappUpdate(body) {
 
   const link = (text.match(/https?:\/\/\S+/) || [])[0];
   if (!link) {
-    await say(from, "🔗 أرسل رابط فيديو من فضلك — VideoVault Pro ✨");
+    await say(from, "🔗 أرسل رابط فيديو من فضلك — Vutlo ✨");
     return { ok: true };
   }
 

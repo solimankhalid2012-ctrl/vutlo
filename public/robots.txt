@@ -8,5 +8,5 @@ Disallow: /login
 Disallow: /register
 Disallow: /history
 
-Sitemap: https://videovaultpro.com/sitemap.xml
+Sitemap: https://vutlo.com/sitemap.xml
 

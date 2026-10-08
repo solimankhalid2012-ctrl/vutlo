@@ -21,7 +21,7 @@ export default function Post() {
   return (
     <>
       <Helmet>
-        <title>{c.title} — VideoVault Pro</title>
+        <title>{c.title} — Vutlo</title>
         <meta name="description" content={c.excerpt} />
         <meta property="og:title" content={c.title} />
         <meta property="og:description" content={c.excerpt} />
@@ -32,7 +32,7 @@ export default function Post() {
         <nav className="text-xs text-white/40">🏠 {t("nav.home")} / 📝 Blog / {c.title.slice(0, 30)}…</nav>
         <div className="mt-3 text-5xl">{post.icon}</div>
         <h1 className="mt-2 text-3xl font-black leading-tight">{c.title}</h1>
-        <p className="mt-2 text-sm text-white/45" dir="ltr">{post.date} • VideoVault Pro</p>
+        <p className="mt-2 text-sm text-white/45" dir="ltr">{post.date} • Vutlo</p>
         <article className="card mt-6 space-y-4 leading-loose text-white/80">
           {c.body.map((p, i) => <p key={i}>{p}</p>)}
         </article>

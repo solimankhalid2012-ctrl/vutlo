@@ -1,22 +1,22 @@
-// ── مدونة VideoVault Pro — مقالات حقيقية (ar/en + fallback en) ──
+// ── مدونة Vutlo — مقالات حقيقية (ar/en + fallback en) ──
 export const POSTS = [
   {
     slug: "tiktok-no-watermark", icon: "🎵", date: "2026-09-20",
     ar: {
       title: "تحميل فيديوهات TikTok بدون علامة مائية: الدليل الكامل",
-      excerpt: "لماذا تظهر العلامة المائية وكيف يزيلها VideoVault Pro تلقائياً بجودة أصلية.",
+      excerpt: "لماذا تظهر العلامة المائية وكيف يزيلها Vutlo تلقائياً بجودة أصلية.",
       body: [
         "تضيف TikTok علامة مائية متحركة (اسم المستخدم + الشعار) لحماية صنّاع المحتوى، لكنها تفسد إعادة الاستخدام المشروع لمقاطعك الخاصة.",
-        "الصق رابط الفيديو في VideoVault Pro وسيكتشف المنصة خلال أجزاء من الثانية، ثم يجلب النسخة الأصلية بدون علامة مائية بجودة تصل إلى 1080p أو أعلى.",
+        "الصق رابط الفيديو في Vutlo وسيكتشف المنصة خلال أجزاء من الثانية، ثم يجلب النسخة الأصلية بدون علامة مائية بجودة تصل إلى 1080p أو أعلى.",
         "تذكير قانوني: حمّل فقط مقاطعك الخاصة أو المحتوى المرخّص لك، واحترم حقوق صنّاع المحتوى دائماً.",
       ],
     },
     en: {
       title: "TikTok Videos Without Watermark: The Complete Guide",
-      excerpt: "Why the watermark exists and how VideoVault Pro removes it automatically in original quality.",
+      excerpt: "Why the watermark exists and how Vutlo removes it automatically in original quality.",
       body: [
         "TikTok adds a moving watermark (username + logo) to protect creators, but it ruins legitimate reuse of your own clips.",
-        "Paste the link into VideoVault Pro: it detects the platform in milliseconds, then fetches the original watermark-free version up to 1080p or higher.",
+        "Paste the link into Vutlo: it detects the platform in milliseconds, then fetches the original watermark-free version up to 1080p or higher.",
         "Legal reminder: only download your own clips or licensed content, and always respect creators' rights.",
       ],
     },
@@ -28,7 +28,7 @@ export const POSTS = [
       excerpt: "الفرق بين 720p و4K و8K، وكيف تختار الجودة المناسبة لجهازك ومساحتك.",
       body: [
         "يرفع صنّاع المحتوى نسخاً بجودات متعددة؛ فيديو 8K قد يتجاوز 500MB للدقائق بينما 720p يكفي للهاتف ويوفّر 80% من الحجم.",
-        "مساعد AI في VideoVault Pro يقترح الجودة حسب سرعة شبكتك تلقائياً، ويمكنك التبديل اليدوي من 144p حتى 4320p.",
+        "مساعد AI في Vutlo يقترح الجودة حسب سرعة شبكتك تلقائياً، ويمكنك التبديل اليدوي من 144p حتى 4320p.",
         "نصيحة: للأرشفة اختر MKV، وللمشاركة السريعة MP4 بجودة 1080p — أفضل توازن حجم/جودة.",
       ],
     },
@@ -37,7 +37,7 @@ export const POSTS = [
       excerpt: "720p vs 4K vs 8K, and how to pick the right quality for your device and storage.",
       body: [
         "Creators upload multiple renditions; an 8K video can exceed 500MB for minutes while 720p is enough for phones and saves 80% of size.",
-        "The AI assistant in VideoVault Pro suggests quality from your network speed automatically, or switch manually from 144p to 4320p.",
+        "The AI assistant in Vutlo suggests quality from your network speed automatically, or switch manually from 144p to 4320p.",
         "Tip: MKV for archiving, 1080p MP4 for quick sharing — the best size/quality balance.",
       ],
     },

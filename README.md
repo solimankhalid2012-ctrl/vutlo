@@ -1,4 +1,4 @@
-# ⚡ VideoVault Pro — Smart Video Downloader
+# ⚡ Vutlo — Smart Video Downloader
 
 أداة تحميل فيديو Utility: الصق رابطاً من **1000+ موقع** (YouTube, TikTok, Instagram,
 Facebook, X, Vimeo, Twitch, Reddit, Pinterest, Snapchat, LinkedIn, Dailymotion, SoundCloud…)
@@ -86,7 +86,7 @@ npm run server   # الباكند على 4001
 
 - الواجهة: **Vercel** — `npm run build` → مجلد `dist`
 - الباكند: **Railway / Render** — الأمر `npm run server` (ثبّت `yt-dlp` + `ffmpeg` على السيرفر)
-- أضِف `VITE_API_URL=https://api.videovaultpro.com` في بيئة Vercel
+- أضِف `VITE_API_URL=https://api.vutlo.com` في بيئة Vercel
 - متغيّرات مطلوبة على السيرفر: أسرار `.env` كلها (راجع `.env.example`)،
   و`ADMIN_PASS_HASH` بصيغة scrypt
 - روابط الملفات النسبية `/files/...` تُحوَّل لمطلقة تلقائياً في الواجهة

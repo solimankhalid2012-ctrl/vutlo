@@ -16,7 +16,7 @@ export default function Features() {
   return (
     <>
       <Helmet>
-        <title>{t("nav.features")} — VideoVault Pro</title>
+        <title>{t("nav.features")} — Vutlo</title>
         <meta name="description" content={t("features.subtitle")} />
       </Helmet>
       <Header />

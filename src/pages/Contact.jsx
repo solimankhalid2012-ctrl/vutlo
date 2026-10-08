@@ -25,7 +25,7 @@ export default function Contact() {
 
   return (
     <>
-      <Helmet><title>{ar ? "تواصل معنا" : "Contact"} — VideoVault Pro</title></Helmet>
+      <Helmet><title>{ar ? "تواصل معنا" : "Contact"} — Vutlo</title></Helmet>
       <Header />
       <main className="mx-auto max-w-xl px-4 py-10">
         <h1 className="text-3xl font-black">✉️ {ar ? "تواصل معنا 24/7" : "Contact us 24/7"}</h1>
@@ -36,7 +36,7 @@ export default function Contact() {
           {msg && <p className={`text-sm ${state === "done" ? "text-mint" : "text-red-300"}`}>{msg}</p>}
           <button disabled={state === "sending"} className="btn-primary w-full">{state === "sending" ? "⏳…" : ar ? "إرسال" : "Send"}</button>
         </form>
-        <p className="mt-3 text-center text-xs text-white/40" dir="ltr">support@videovaultpro.com</p>
+        <p className="mt-3 text-center text-xs text-white/40" dir="ltr">support@vutlo.com</p>
       </main>
       <Footer />
     </>

@@ -40,7 +40,7 @@ export default function Login() {
 
   return (
     <>
-      <Helmet><title>{ar ? "تسجيل الدخول" : "Login"} — VideoVault Pro</title></Helmet>
+      <Helmet><title>{ar ? "تسجيل الدخول" : "Login"} — Vutlo</title></Helmet>
       <Header />
       <main className="flex flex-col items-center gap-4 px-4 py-14">
         <div className="monkey-card">

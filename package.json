@@ -1,7 +1,7 @@
 {
-  "name": "videovault-pro",
+  "name": "vutlo",
   "version": "1.0.0",
-  "description": "VideoVault Pro — Smart Link Recognition Engine for downloading videos from 1000+ sites without watermark. React + Node + yt-dlp.",
+  "description": "Vutlo — Smart Link Recognition Engine for downloading videos from 1000+ sites without watermark. React + Node + yt-dlp.",
   "type": "module",
   "scripts": {
     "dev": "vite",

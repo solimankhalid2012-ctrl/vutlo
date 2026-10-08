@@ -12,14 +12,14 @@ export function Logo({ size = 40, className = "", animated = false }) {
       height={size}
       viewBox="0 0 48 48"
       fill="none"
-      aria-label="VideoVault Pro"
+      aria-label="Vutlo"
       className={className}
-      style={{ filter: animated ? "drop-shadow(0 0 8px #1DB954)" : "none" }}
+      style={{ filter: animated ? "drop-shadow(0 0 8px #0DBE68)" : "none" }}
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1DB954" />
-          <stop offset="100%" stopColor="#4ADE80" />
+          <stop offset="0%" stopColor="#0DBE68" />
+          <stop offset="100%" stopColor="#40EC8C" />
         </linearGradient>
       </defs>
       <path
@@ -35,7 +35,7 @@ export function Logo({ size = 40, className = "", animated = false }) {
       />
       <rect x="15" y="18" width="18" height="13" rx="3.5" fill={`url(#${gradId})`} />
       <path d="M22 21.2v6.6l5.4-3.3-5.4-3.3Z" fill="#0A0E0A" />
-      <circle cx="33" cy="15" r="2.4" fill="#A8E6CF" />
+      <circle cx="33" cy="15" r="2.4" fill="#9ADEC1" />
     </svg>
   );
 }

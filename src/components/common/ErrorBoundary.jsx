@@ -80,7 +80,7 @@ export default class ErrorBoundary extends React.Component {
               type="button"
               className="btn-ghost"
               onClick={() => {
-                const body = `VideoVault Pro — UI error\n\n${String(error?.stack || error)}\n\n${info}`;
+                const body = `Vutlo — UI error\n\n${String(error?.stack || error)}\n\n${info}`;
                 navigator.clipboard?.writeText(body);
               }}
             >

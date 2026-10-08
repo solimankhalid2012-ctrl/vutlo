@@ -11,7 +11,7 @@ const FORBIDDEN = new Set([
   "change-me-super-secret",
   "changeme",
   "secret",
-  "videovault-verify",
+  "vutlo-verify",
   "admin123",
   "password",
   "test",

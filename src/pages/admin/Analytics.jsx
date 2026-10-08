@@ -52,7 +52,7 @@ export default function AdminAnalytics() {
 
   return (
     <>
-      <Helmet><title>Admin Analytics — VideoVault Pro</title></Helmet>
+      <Helmet><title>Admin Analytics — Vutlo</title></Helmet>
       <AdminLayout>
         <h1 className="text-2xl font-black">📈 {ar ? "التحليلات" : "Analytics"}</h1>
         <div className="card mt-4">

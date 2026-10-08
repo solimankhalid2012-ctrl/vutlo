@@ -62,7 +62,7 @@ export async function handleTelegramUpdate(update) {
   if (text === "/start") {
     await say(
       chatId,
-      "👋 أهلاً بك في VideoVault Pro Bot\n\nأرسل رابط أي فيديو (YouTube / TikTok / Instagram…) وسأجهّزه لك بجودة عالية وبدون علامة مائية ✨\n\nتابع المهمة بأمر: /job <رقم المهمة>"
+      "👋 أهلاً بك في Vutlo Bot\n\nأرسل رابط أي فيديو (YouTube / TikTok / Instagram…) وسأجهّزه لك بجودة عالية وبدون علامة مائية ✨\n\nتابع المهمة بأمر: /job <رقم المهمة>"
     );
     return { ok: true };
   }
@@ -87,7 +87,7 @@ export async function handleTelegramUpdate(update) {
   }
 
   if (!chatAllowed(chatId)) {
-    await say(chatId, "⛔ هذا البوت مغلق حالياً — تواصل عبر support@videovaultpro.com");
+    await say(chatId, "⛔ هذا البوت مغلق حالياً — تواصل عبر support@vutlo.com");
     return { ok: true, blocked: true };
   }
   if (!withinLimit(chatId)) {
