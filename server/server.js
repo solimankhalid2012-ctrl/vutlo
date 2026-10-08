@@ -58,6 +58,15 @@ const app = express();
 // مفقود كانت الواجهة لا تصل للـAPI إطلاقاً.
 const PORT = process.env.PORT || 4001;
 
+let safetyLogs = 0;
+const safetyNet = (label) => (err) => {
+  safetyLogs += 1;
+  if (safetyLogs <= 5) console.error(`[safety] ${label}:`, err?.stack || err?.message || err);
+  if (safetyLogs > 2000) process.exit(1);
+};
+process.on("unhandledRejection", safetyNet("unhandledRejection"));
+process.on("uncaughtException", safetyNet("uncaughtException"));
+
 // عدد الـproxies الموثوقة. الافتراضي 0 = لا نثق بأي ترويسة (نشر مباشر).
 // مع proxy محلي (nginx على نفس الجهاز) ⇒ TRUSTED_HOPS=1.
 // الإعداد وحده ليس كافياً: نصحّح req.ip بأنفسنا أدناه، لأن إعداد Express
