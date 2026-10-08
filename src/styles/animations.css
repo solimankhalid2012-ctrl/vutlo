@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   VideoVault Pro — Premium Animations
+   Vutlo — Premium Animations
 ═══════════════════════════════════════════ */
 
 @keyframes float {
@@ -9,8 +9,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 24px rgba(29,185,84,0.25), 0 0 48px rgba(29,185,84,0.1); }
-  50% { box-shadow: 0 0 48px rgba(29,185,84,0.45), 0 0 80px rgba(29,185,84,0.2); }
+  0%, 100% { box-shadow: 0 0 24px rgba(13,190,104,0.22), 0 0 48px rgba(13,190,104,0.08); }
+  50% { box-shadow: 0 0 48px rgba(13,190,104,0.4), 0 0 80px rgba(13,190,104,0.16); }
 }
 
 @keyframes shimmer {
@@ -32,6 +32,21 @@
   from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ظهور القوائم المنسدلة: انزلاق خفيف + ليونة زنبركية راقية */
+@keyframes pop {
+  0% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  60% { opacity: 1; transform: translateY(1px) scale(1.012); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fade-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-pop { animation: pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-fade-down { animation: fade-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
@@ -71,7 +86,7 @@
   min-height: 22%;
   height: 22%;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--c-mint-light, #D4F5E6), var(--c-emerald, #1DB954));
+  background: linear-gradient(180deg, var(--c-mint-light, #D4F5E3), var(--c-emerald, #0DBE68));
   animation: vv-bar 1.05s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
@@ -93,7 +108,7 @@
 }
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(29,185,84,0.15);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(13,190,104,0.14);
 }
 
 /* ══ Magnetic button effect ══ */

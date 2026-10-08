@@ -176,7 +176,7 @@ describe("بطاقة تسجيل الدخول 🐒", () => {
     expect(css).not.toMatch(/^\s*\.input\s*{/m);
     // غير أبيض: خلفية داكنة + emerald
     expect(css).toContain("#0a0e0a");
-    expect(css).toContain("#1db954");
+    expect(css).toContain("#0dbe68");
     expect(css).not.toContain("background: white");
     // المؤثرات الأصلية موجودة
     for (const k of ["monkeyBlink", "monkeySlick", "-webkit-text-security", "blind_input", "monkey-eye-r", "perspective"]) {
@@ -194,7 +194,7 @@ describe("بطاقة تسجيل الدخول 🐒", () => {
     expect(fills.length).toBeGreaterThan(5);
     for (const f of fills) {
       // لا يعود للأخضر/الأزرق القديم، وكل fill لون ثابت
-      expect(["#2C6B4A", "#3E8A63", "#A8E6CF", "#0A0E0A"].includes(f), f).toBe(false);
+      expect(["#2C6B4A", "#3E8A63", "#9ADEC1", "#0A0E0A"].includes(f), f).toBe(false);
       expect(f).toMatch(/^#[0-9a-f]{6}$/i);
     }
     // فرو بنّي + بشرة فاتحة + أنف داكن
@@ -206,7 +206,7 @@ describe("بطاقة تسجيل الدخول 🐒", () => {
     // شريط الفم في CSS يوافق لون الأنف، والبطاقة ما زالت خضراء
     const css = readFileSync("src/styles/loginCard.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
     expect(css).toContain("#2b1c12");
-    expect(css).toContain("#1db954");
+    expect(css).toContain("#0dbe68");
     expect(css).toContain("#0a0e0a");
   });
 });

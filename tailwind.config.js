@@ -13,7 +13,7 @@ export default {
         // ⚠️ white ليست "#fff" في النهاري: صارت "لون النص/السطح المرتفع"
         // ⇒ bg-white/5 و text-white/70 يتكيّفان مع الوضع بلا تعديل أي مكوّن.
         white: token("--c-ink"),
-        // 🎨 الهوية الرسمية — VideoVault Pro
+        // 🎨 الهوية الرسمية — Vutlo
         void: {
           DEFAULT: token("--c-void"),
           50: token("--c-void-50"),
@@ -39,6 +39,13 @@ export default {
         },
         // نص فوق Emerald/Mint (أزرار): أبيض في النهاري، داكن في الليلي
         "on-accent": token("--c-on-accent"),
+        // ⭐ اللون المساعد (Premium/تنويهات): نصه يبقى داكناً في الوضعين
+        gold: {
+          DEFAULT: token("--c-gold"),
+          light: token("--c-gold-light"),
+          dark: token("--c-gold-dark"),
+        },
+        "on-gold": token("--c-on-gold"),
       },
       fontFamily: {
         // Cairo للعربية + Inter للإنجليزية
@@ -55,14 +62,14 @@ export default {
       },
       backgroundImage: {
         "hero-gradient":
-          "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29,185,84,0.25), transparent), var(--page-bg)",
+          "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(13,190,104,0.22), transparent), var(--page-bg)",
         "card-gradient":
-          "linear-gradient(135deg, rgba(29,185,84,0.12) 0%, rgba(168,230,207,0.05) 100%)",
-        "glow-green": "radial-gradient(circle, rgba(29,185,84,0.4) 0%, transparent 70%)",
+          "linear-gradient(135deg, rgba(13,190,104,0.1) 0%, rgba(154,222,193,0.04) 100%)",
+        "glow-green": "radial-gradient(circle, rgba(13,190,104,0.35) 0%, transparent 70%)",
       },
       boxShadow: {
-        glow: "0 0 24px rgba(29,185,84,0.35)",
-        "glow-lg": "0 0 48px rgba(29,185,84,0.45)",
+        glow: "0 0 24px rgba(13,190,104,0.32)",
+        "glow-lg": "0 0 48px rgba(13,190,104,0.42)",
         card: "0 8px 32px rgba(0,0,0,0.45)",
       },
       animation: {

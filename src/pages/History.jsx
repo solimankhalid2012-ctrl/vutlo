@@ -58,7 +58,7 @@ export default function History() {
     // مشاركة الرابط الحقيقي (أو نسخه) — بدون روابط وهمية
     try {
       if (navigator.share) {
-        await navigator.share({ title: "VideoVault Pro", url });
+        await navigator.share({ title: "Vutlo", url });
         return;
       }
       await navigator.clipboard.writeText(url);
@@ -74,7 +74,7 @@ export default function History() {
   return (
     <>
       <Helmet>
-        <title>{t("history.title")} — VideoVault Pro</title>
+        <title>{t("history.title")} — Vutlo</title>
         <meta name="description" content={t("history.subtitle")} />
       </Helmet>
       <Header />
@@ -159,7 +159,7 @@ export default function History() {
       </Modal>
 
       {toast && (
-        <div className="fixed bottom-6 start-1/2 -translate-x-1/2 rounded-2xl bg-emerald px-5 py-3 font-bold text-on-accent shadow-glow">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-2xl bg-emerald px-5 py-3 font-bold text-on-accent shadow-glow">
           {toast}
         </div>
       )}

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   VideoVault Pro — Themes: ليلي / نهاري
+   Vutlo — Themes: ليلي / نهاري
    ───────────────────────────────────────────
    الوضع النهاري لا يحتاج تعديل أي مكوّن JSX: كل الألوان في
    tailwind.config.js مربوطة بمتغيّرات --c-* هنا و في :root (globals.css).
@@ -25,15 +25,20 @@
   --c-void-900: 255 255 255;
 
   /* أخضر أغمق ⇒ يبقى مقروءاً كنص/ارتباط على الأبيض */
-  --c-emerald: 15 122 60;
-  --c-emerald-dark: 12 98 48;
-  --c-emerald-light: 22 138 68;
+  --c-emerald: 11 140 72;
+  --c-emerald-dark: 8 116 58;
+  --c-emerald-light: 15 156 80;
   /* Mint كان نصاً فاتحاً على خلفية داكنة ⇒ يصير أخضر داكناً هنا */
-  --c-mint: 12 98 48;
-  --c-mint-light: 15 122 60;
-  --c-mint-dark: 10 80 40;
+  --c-mint: 8 116 58;
+  --c-mint-light: 11 140 72;
+  --c-mint-dark: 6 96 46;
   /* النص فوق Emerald/Mint: داكن في الليلي ⇒ أبيض في النهاري */
   --c-on-accent: 255 255 255;
+  /* Gold: أغمق ليبقى مقروءاً على الأبيض، ونصّه يبقى داكناً في الوضعين */
+  --c-gold: 170 129 42;
+  --c-gold-light: 198 155 66;
+  --c-gold-dark: 132 98 28;
+  --c-on-gold: 28 22 8;
 
   /* متغيّرات CSS مباشرة */
   --void: #ffffff;
@@ -42,13 +47,18 @@
   --void-200: #e8f4ec;
   --void-300: #dcece2;
   --void-400: #cde3d5;
-  --emerald: #0F7A3C;
-  --emerald-dark: #0C6230;
-  --emerald-light: #168A44;
-  --emerald-glow: rgba(15, 122, 60, 0.22);
-  --mint: #0C6230;
-  --mint-light: #0F7A3C;
-  --mint-dark: #0A5028;
+  --emerald: #0B8C48;
+  --emerald-dark: #08743A;
+  --emerald-light: #0F9C50;
+  --emerald-glow: rgba(11, 140, 72, 0.2);
+  --mint: #08743A;
+  --mint-light: #0B8C48;
+  --mint-dark: #06602E;
+  /* Gold أغمق ⇒ يبقى مقروءاً كنص/حدود على الأبيض */
+  --gold: #AA812A;
+  --gold-light: #C69B42;
+  --gold-dark: #84621C;
+  --gold-glow: rgba(170, 129, 42, 0.2);
   --sel-text: #ffffff;
   --page-bg: linear-gradient(180deg, #F7FBF8 0%, #EFF7F1 45%, #F7FBF8 100%);
 
@@ -57,10 +67,10 @@
 
 :root[data-theme="light"] body {
   background:
-    radial-gradient(ellipse 100% 80% at 50% -20%, rgba(29,185,84,0.10), transparent),
-    radial-gradient(ellipse 60% 60% at 80% 100%, rgba(168,230,207,0.14), transparent),
+    radial-gradient(ellipse 100% 80% at 50% -20%, rgba(11,140,72,0.08), transparent),
+    radial-gradient(ellipse 60% 60% at 80% 100%, rgba(154,222,193,0.5), transparent),
     var(--page-bg);
-  color: #0a0e0a;
+  color: #090c0b;
 }
 
 /* ── مكوّنات تحتاج لمسة نهارية (الظلال نصية في النهاري) ── */
@@ -70,8 +80,8 @@
   box-shadow: 0 8px 28px rgba(16, 40, 26, 0.07);
 }
 :root[data-theme="light"] .card:hover {
-  border-color: rgba(15, 122, 60, 0.35);
-  box-shadow: 0 16px 40px rgba(16, 40, 26, 0.12), 0 0 0 1px rgba(29, 185, 84, 0.12);
+  border-color: rgba(11, 140, 72, 0.35);
+  box-shadow: 0 16px 40px rgba(16, 40, 26, 0.12), 0 0 0 1px rgba(11, 140, 72, 0.12);
 }
 :root[data-theme="light"] .card-premium {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(232, 244, 236, 0.92));
@@ -97,3 +107,21 @@
 /*خيارات في المتصفحات ترسم بألوان النظام ما لم نحدّدها */
 :root[data-theme="light"] option { background: #ffffff; color: #0a0e0a; }
 :root[data-theme="light"] .ad-slot { border-color: rgba(10, 14, 10, 0.16); }
+
+/* قائمة اللغات: حدودها كانت بيضاء ⇒ شبه مختفية على خلفية النهاري */
+:root[data-theme="light"] .lang-menu-btn,
+:root[data-theme="light"] .lang-menu-pop {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(10, 14, 10, 0.12);
+  color: rgba(10, 14, 10, 0.75);
+}
+:root[data-theme="light"] .lang-item { color: rgba(10, 14, 10, 0.65); }
+:root[data-theme="light"] .lang-item:hover { background: rgba(15, 122, 60, 0.08); color: #0a0e0a; }
+:root[data-theme="light"] .lang-item-code { border-color: rgba(10, 14, 10, 0.14); color: rgba(10, 14, 10, 0.6); }
+:root[data-theme="light"] .lang-item.is-active { background: rgba(15, 122, 60, 0.12); }
+:root[data-theme="light"] .lang-item-rtl { color: rgba(10, 14, 10, 0.3); }
+/* بطاقات المختبر وخلفيتها — كانت rgba داكنة ⇒ غير مقروءة نهاراً */
+:root[data-theme="light"] .lab-panel,
+:root[data-theme="light"] .scan-report { background: rgba(255, 255, 255, 0.9); border-color: rgba(10, 14, 10, 0.1); }
+:root[data-theme="light"] .dropzone { background: rgba(15, 122, 60, 0.05); border-color: rgba(15, 122, 60, 0.35); }
+:root[data-theme="light"] .scan-bar { background: rgba(10, 14, 10, 0.08); }

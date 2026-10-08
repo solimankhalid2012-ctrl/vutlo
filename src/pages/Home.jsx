@@ -5,6 +5,8 @@ import Header from "../components/common/Header.jsx";
 import Footer from "../components/common/Footer.jsx";
 import { Reveal, Stagger, StaggerItem, CountUp, EASE } from "../components/common/Reveal.jsx";
 import LinkInput from "../components/downloader/LinkInput.jsx";
+import RatingWidget from "../components/common/RatingWidget.jsx";
+import useRating from "../hooks/useRating.js";
 import { useLang } from "../context/LangContext.jsx";
 // نفس مصدر Features — was a hardcoded Arabic list on a page that serves 10 languages
 import { liveFeatures } from "../data/features.js";
@@ -53,6 +55,8 @@ function AnimatedDecimals({ to, decimals, suffix }) {
 /** الصفحة الرئيسية — تصميم أخضر/أسود مذهل + SEO + 30 ميزة */
 export default function Home() {
   const { t, lang } = useLang();
+  /* ⭐ عدد التقييمات الفعلي من الخادم — لا رقم 4.9 مزروع كما كان */
+  const { stats: rating } = useRating();
 
   const platforms = [
     { icon: "▶️", name: "YouTube" }, { icon: "🎵", name: "TikTok" },
@@ -99,7 +103,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE }}
           >
-            <span className="chip !text-sm">⚡ Smart Link Recognition Engine · &lt;500ms</span>
+            <span className="chip-gold !text-sm">⚡ Smart Link Recognition Engine · &lt;500ms</span>
             <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
               {t("hero.title1")} <span className="bg-gradient-to-l from-emerald to-mint bg-clip-text text-transparent">{t("hero.titleGreen")}</span>
               <br />{t("hero.title2")}
@@ -126,7 +130,7 @@ export default function Home() {
           <Stagger className="mx-auto mt-10 grid max-w-3xl grid-cols-3 gap-3" step={0.07}>
             <Stat label={t("stats.downloads")} value={48} suffix="M+" />
             <Stat label={t("stats.sites")} value={1000} suffix="+" />
-            <Stat label={t("stats.rating")} value={4.9} suffix="★" decimals={1} />
+            <Stat label={t("stats.rating")} value={rating?.count ?? 0} />
           </Stagger>
         </section>
 
@@ -183,6 +187,9 @@ export default function Home() {
             ))}
           </Stagger>
         </section>
+
+        {/* ── ⭐ تقييم المستخدمين (عدّاد حيّ + نجوم التصويت) ── */}
+        <RatingWidget />
 
         {/* ── CTA ── */}
         <Reveal>

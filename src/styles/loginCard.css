@@ -24,9 +24,9 @@
   border-radius: 16px;
   /* ✅ أخضر/أسود بدل background: white */
   background:
-    radial-gradient(120% 90% at 50% -10%, rgba(29, 185, 84, 0.16), transparent 60%),
+    radial-gradient(120% 90% at 50% -10%, rgba(13, 190, 104, 0.16), transparent 60%),
     linear-gradient(180deg, #101711 0%, #0a0e0a 100%);
-  border: 1px solid rgba(29, 185, 84, 0.28);
+  border: 1px solid rgba(13, 190, 104, 0.28);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
   position: relative;
   display: flex;
@@ -210,8 +210,8 @@
   width: var(--blind-w);
   border-radius: 4px;
   /* ✅ أخضر/أسود بدل #fff على #4d4d4d */
-  background-color: rgba(29, 185, 84, 0.16);
-  color: #a8e6cf;
+  background-color: rgba(13, 190, 104, 0.16);
+  color: #9ADEC1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -225,11 +225,11 @@
   top: 0;
   height: 100%;
   width: 1px;
-  background: rgba(168, 230, 207, 0.35);
+  background: rgba(154, 222, 193, 0.35);
 }
 .monkey-card label.blind_input:hover {
-  color: #d4f5e6;
-  background-color: rgba(29, 185, 84, 0.28);
+  color: #d4f5e3;
+  background-color: rgba(13, 190, 104, 0.28);
 }
 .monkey-card .blind-check ~ label.blind_input span.show,
 .monkey-card .blind-check:checked ~ label.blind_input span.hide {
@@ -260,9 +260,9 @@
   padding-top: 0;
   padding-bottom: 1rem;
   /* ✅ كان rgba(0,0,0,.7) على أبيض */
-  color: #a8e6cf;
+  color: #9ADEC1;
   text-align: center;
-  border-bottom: 2px solid rgba(29, 185, 84, 0.35);
+  border-bottom: 2px solid rgba(13, 190, 104, 0.35);
 }
 
 .monkey-card .form .label_input {
@@ -270,7 +270,7 @@
   font-size: 1rem;
   margin-top: calc(var(--space-y) / 2);
   /* ✅ كان rgba(0,0,0,.9) */
-  color: #d4f5e6;
+  color: #d4f5e3;
   font-weight: 600;
   display: inline;
   text-align: left;
@@ -285,7 +285,7 @@
   resize: vertical;
   /* ✅ كان background: white */
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid #2d4a3a;
+  border: 1px solid #2c4037;
   border-radius: 6px;
   outline: none;
   padding: var(--input-py) var(--input-px);
@@ -293,7 +293,7 @@
   width: 100%;
   /* ✅ كان #000000b3 على أبيض */
   color: rgba(255, 255, 255, 0.85);
-  caret-color: #1db954;
+  caret-color: #0dbe68;
   margin: var(--space-y) 0;
   transition: all 0.25s ease;
 }
@@ -305,9 +305,9 @@
 }
 .monkey-card .form .input:focus {
   /* ✅ كان #0969da (أزرق) */
-  border: 1px solid #1db954;
+  border: 1px solid #0dbe68;
   outline: 0;
-  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.5);
+  box-shadow: 0 0 0 2px rgba(13, 190, 104, 0.5);
 }
 .monkey-card .form .frg_pss {
   width: 100%;
@@ -327,7 +327,7 @@
   float: right;
 }
 .monkey-card .form .frg_pss .forgot:hover {
-  color: #a8e6cf;
+  color: #9ADEC1;
 }
 
 .monkey-card .form .submit {
@@ -336,7 +336,7 @@
   outline: none;
   cursor: pointer;
   /* ✅ زر أخضر-أسود بدل أبيض بتدرّج رمادي */
-  background-color: #1db954;
+  background-color: #0dbe68;
   background-image: linear-gradient(
     -180deg,
     rgba(255, 255, 255, 0.18) 0%,
@@ -392,11 +392,11 @@
   text-align: center;
 }
 .login-alt a {
-  color: #4ade80;
+  color: #40ec8c;
   font-weight: 700;
 }
 .login-alt a:hover {
-  color: #a8e6cf;
+  color: #9ADEC1;
   text-decoration: underline;
 }
 

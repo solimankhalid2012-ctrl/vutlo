@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "../../context/LangContext.jsx";
+import { siteUrl, socialLinks } from "../../config/site.js";
+import { toolsLabel, TOOLS_EMOJI } from "../../config/tools.js";
 import { Logo } from "./Logo.jsx";
 
 /** شعارات الحسابات — تُعرض فقط إن ضُبط رابطها في البيئة */
@@ -17,16 +19,24 @@ const ICONS = {
 };
 
 export default function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const ar = lang === "ar";
 
   // ⚠️ كانت روابط الحسابات الثلاث ثابتة على صفحات عامة (github.com/twitter.com/
   // discord.com) لا حسابات المشروع ⇒ تبدو روابط رسمية وهي ليست كذلك.
   // الآن تُقرأ من متغيّرات البيئة ولا يظهر إلا ما ضُبط فعلاً.
-  const SOCIAL = [
-    { key: "github", label: "GitHub", href: import.meta.env.VITE_SOCIAL_GITHUB },
-    { key: "x", label: "X", href: import.meta.env.VITE_SOCIAL_X },
-    { key: "discord", label: "Discord", href: import.meta.env.VITE_SOCIAL_DISCORD },
-  ].filter((s) => /^https:\/\//.test(String(s.href || "")));
+  const SOCIAL = socialLinks();
+
+  // رابط الموقع الرسمي: لا نخمّن عنواناً — يظهر فقط إن ضُبط VITE_SITE_URL
+  const SITE = siteUrl();
+
+  const PRODUCT = [
+    { k: "features" },
+    { k: "download" },
+    { k: "lab", label: toolsLabel(lang), emoji: TOOLS_EMOJI },
+    { k: "history" },
+    { k: "blog" },
+  ];
 
   const columns = [
     {
@@ -41,8 +51,12 @@ export default function Footer() {
       title: t("footer.product"),
       items: (
         <ul className="space-y-2.5">
-          {["features", "download", "history", "blog"].map((k) => (
-            <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
+          {PRODUCT.map(({ k, label, emoji }) => (
+            <li key={k}>
+              <Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:ltr:translate-x-1 hover:rtl:-translate-x-1 transition-all">
+                {emoji ? `${emoji} ` : ""}{label ?? t(`nav.${k}`)}
+              </Link>
+            </li>
           ))}
         </ul>
       ),
@@ -52,7 +66,7 @@ export default function Footer() {
       items: (
         <ul className="space-y-2.5">
           {["about", "contact"].map((k) => (
-            <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
+            <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:ltr:translate-x-1 hover:rtl:-translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
           ))}
         </ul>
       ),
@@ -62,7 +76,7 @@ export default function Footer() {
       items: (
         <ul className="space-y-2.5">
           {["privacy", "terms"].map((k) => (
-            <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
+            <li key={k}><Link to={`/${k}`} className="text-sm text-white/60 hover:text-emerald hover:ltr:translate-x-1 hover:rtl:-translate-x-1 transition-all">{t(`nav.${k}`)}</Link></li>
           ))}
         </ul>
       ),
@@ -70,7 +84,9 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-white/10 bg-gradient-to-t from-void via-void-50 to-transparent">
+    // ⚠️ overflow-hidden مقصود: التوهج 600px يتمركز فيخرج 110px عن كل جانب
+    // على شاشة 390 ⇒ كان يمرّر الصفحة كلها أفقياً على الهاتف.
+    <footer className="relative overflow-hidden border-t border-white/10 bg-gradient-to-t from-void via-void-50 to-transparent">
       {/* توهج خلفي */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -86,10 +102,25 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-sm text-white/40">
-              <span>© 2026 VideoVault Pro. {t("footer.rights")}</span>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-white/40 md:justify-start">
+              <span>© 2026 Vutlo. {t("footer.rights")}</span>
               <span className="hidden sm:inline">•</span>
               <span className="text-emerald/50 font-medium">{t("footer.disclaimerTitle").replace("⚖️ ", "")}</span>
+              {SITE && (
+                <>
+                  <span className="hidden sm:inline">•</span>
+                  <a
+                    href={SITE}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-bold text-emerald hover:text-mint transition-colors"
+                    data-testid="footer-site"
+                  >
+                    🌐 {ar ? "الموقع" : "Website"}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+                  </a>
+                </>
+              )}
             </div>
             {SOCIAL.length > 0 && (
               <div className="flex items-center gap-4">

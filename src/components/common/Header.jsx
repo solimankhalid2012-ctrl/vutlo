@@ -3,24 +3,36 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "../../context/LangContext.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
-import { useLanguage } from "../../hooks/useLanguage.js";
 import { currentUser, logoutUser, me, isLoggedIn } from "../../services/authApi.js";
+import { siteUrl } from "../../config/site.js";
+import { toolsLabel, TOOLS_EMOJI } from "../../config/tools.js";
 import { Logo } from "./Logo.jsx";
+import LanguageMenu from "./LanguageMenu.jsx";
+
+/** أيقونة «فتح في تبويب جديد» — لا كوكب: كوكب قائمة اللغات مجاورها */
+const ExternalLink = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
 
 export default function Header() {
-  const { t, lang, changeLang } = useLang();
+  const { t, lang } = useLang();
   const ar = lang === "ar";
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
-  const { LANGS } = useLanguage();
   const nav = useNavigate();
   const { pathname } = useLocation();
   const NAV_ITEMS = [
     { path: "", key: "nav.home" },
     { path: "/features", key: "nav.features" },
+    { path: "/lab", label: toolsLabel(lang), emoji: TOOLS_EMOJI },
     { path: "/blog", key: "nav.blog" },
   ];
   const isActive = (path) => (path === "" ? pathname === "/" : pathname.startsWith(path));
+  const SITE = siteUrl();
   const [user, setUser] = useState(() => currentUser());
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -83,44 +95,64 @@ export default function Header() {
       <nav className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5" aria-label="VideoVault Pro Home">
+          <Link to="/" className="flex items-center gap-2.5" aria-label="Vutlo Home">
             <Logo size={36} animated />
             <span className="hidden sm:block text-xl font-black tracking-tight">
               Video<span className="text-emerald">Vault</span>
-              <span className="ml-1.5 rounded-full bg-emerald/15 px-2 py-0.5 text-[10px] font-extrabold text-mint uppercase tracking-wider">Pro</span>
+              <span className="ml-1.5 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold text-gold uppercase tracking-wider">Pro</span>
             </span>
           </Link>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav — رابط نشط بوسادة ناعمة + خط سفلي متدرّج ينمو */}
           <div className="hidden lg:flex lg:items-center lg:gap-1">
-            {NAV_ITEMS.map(({ path, key }) => (
-              <Link
-                key={path || "/"}
-                to={path || "/"}
-                className={`px-3 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${isActive(path)
-                  ? "bg-emerald/15 text-emerald"
-                  : "text-white/70 hover:text-white hover:bg-white/5"}`}
-              >
-                {t(key)}
-              </Link>
-            ))}
+            {NAV_ITEMS.map(({ path, key, label, emoji }) => {
+              const active = isActive(path);
+              return (
+                <Link
+                  key={path || "/"}
+                  to={path || "/"}
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
+                    active
+                      ? "bg-emerald/15 text-emerald shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                      : "text-white/65 hover:text-white"
+                  }`}
+                >
+                  {emoji ? `${emoji} ` : ""}{label ?? t(key)}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-3 -bottom-[3px] h-[2px] rounded-full bg-gradient-to-r from-emerald/0 via-emerald to-emerald/0 transition-all duration-300 origin-center ${
+                      active
+                        ? "scale-x-100 opacity-100"
+                        : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
-            {/* Language Selector */}
-            <div className="relative">
-              <select
-                value={lang}
-                onChange={(e) => changeLang(e.target.value)}
-                className="appearance-none rounded-xl border border-white/10 bg-white/5 px-3 py-2 pr-8 text-xs font-bold text-white focus:border-emerald/50 focus:ring-2 focus:ring-emerald/20 focus:bg-white/10 cursor-pointer"
-                style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
+            {/* رابط الموقع الرسمي — أيقونة فقط تفتح تبويباً جديداً.
+                تظهر إن ضُبط VITE_SITE_URL بـ https فقط (src/config/site.js). */}
+            {SITE && (
+              <a
+                href={SITE}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={ar ? "الموقع الرسمي" : "Official website"}
+                aria-label={ar ? "الموقع الرسمي (تبويب جديد)" : "Official website (new tab)"}
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition-all hover:border-emerald/50 hover:bg-emerald/10 hover:text-emerald"
+                data-testid="header-site"
               >
-                {LANGS.map((l) => (
-                  <option key={l.code} value={l.code} className="bg-void-200">{l.label}</option>
-                ))}
-              </select>
-            </div>
+                <ExternalLink />
+              </a>
+            )}
+
+            {/* اللغة — قائمة أزرار بدل <select> (لا تقبل تنسيق الموقع ولا
+                تُفتح بالـEscape ولا تُغلق بالنقر خارجها) */}
+            <LanguageMenu variant="solid" alignEnd />
 
             {/* Theme Switch — مقبض منزلق: أيقونة الوضع الحالي داخل المقبض، والأخرى في الطرف المقابل */}
             <button
@@ -141,7 +173,7 @@ export default function Header() {
               </span>
               {/* المقبض + أيقونة الوضع الحالي */}
               <span
-                className="theme-switch-knob absolute top-1 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald to-emerald-dark text-[11px] leading-none shadow-[0_2px_10px_rgba(29,185,84,0.55)] transition-all duration-300 ease-[cubic-bezier(.34,1.56,.64,1)]"
+                className="theme-switch-knob absolute top-1 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald to-emerald-dark text-[11px] leading-none shadow-[0_2px_10px_rgba(13,190,104,0.55)] transition-all duration-300 ease-[cubic-bezier(.34,1.56,.64,1)]"
                 style={{ insetInlineStart: isDark ? 28 : 4 }}
                 aria-hidden="true"
               >
@@ -149,16 +181,18 @@ export default function Header() {
               </span>
             </button>
 
-            {/* User / Auth */}
+            {/* User / Auth — مخفي تحت lg: الأزرار تتكرّر داخل قائمة ☰ (أسفل)،
+                وظهورها معاً كان يفيض الصف أفقياً على الجوال (نص الزر ينكسر
+                لثلاثة أسطر والشعار يخرج عن الشاشة). */}
             <AnimatePresence mode="wait">
               {user ? (
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-2"
+                  className="hidden items-center gap-2 lg:flex"
                 >
-                  <span className="hidden sm:block badge badge-emerald">🏆 {user.points ?? 0}</span>
+                  <span className="hidden sm:block badge badge-gold">🏆 {user.points ?? 0}</span>
                   <button onClick={out} className="p-2 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:border-emerald/50 hover:bg-emerald/10 hover:text-emerald transition-all" title="Logout">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                   </button>
@@ -168,7 +202,7 @@ export default function Header() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-2"
+                  className="hidden items-center gap-2 lg:flex"
                 >
                   <Link to="/login" className="btn-ghost-sm">👤 {t("nav.login")}</Link>
                   <Link to="/download" className="btn-primary-sm">⬇️ {t("nav.download")}</Link>
@@ -199,16 +233,19 @@ export default function Header() {
               className="lg:hidden overflow-hidden border-t border-white/10 pt-4 pb-6"
             >
               <div className="flex flex-col gap-2">
-                {NAV_ITEMS.map(({ path, key }) => (
+                {NAV_ITEMS.map(({ path, key, label, emoji }, i) => (
                   <Link
                     key={path || "/"}
                     to={path || "/"}
                     onClick={() => setMobileOpen(false)}
-                    className={`px-3 py-3 rounded-xl text-base font-bold transition-colors ${isActive(path)
-                      ? "bg-emerald/15 text-emerald"
-                      : "text-white/70 hover:text-white hover:bg-white/5"}`}
+                    style={{ animationDelay: `${i * 40}ms` }}
+                    className={`px-3 py-3 rounded-xl text-base font-bold animate-fade-down transition-colors ${
+                      isActive(path)
+                        ? "bg-emerald/15 text-emerald"
+                        : "text-white/70 hover:text-white hover:bg-white/5"
+                    }`}
                   >
-                    {t(key)}
+                    {emoji ? `${emoji} ` : ""}{label ?? t(key)}
                   </Link>
                 ))}
                 {/* ⚠️ على الجوال كان زرّا الدخول والتحميل مخفيين (sm:block / sm فقط)
@@ -216,7 +253,7 @@ export default function Header() {
                 <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
                   {user ? (
                     <>
-                      <span className="px-3 py-1 text-sm font-bold text-white/60">🏆 {user.points ?? 0}</span>
+                      <span className="px-3 py-1 text-sm font-bold text-gold">🏆 {user.points ?? 0}</span>
                       <button
                         onClick={out}
                         className="px-3 py-3 rounded-xl text-base font-bold text-red-300 hover:bg-red-500/10"
