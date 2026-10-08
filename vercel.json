@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://vutlo.onrender.com/api/:path*"
+    },
+    {
+      "source": "/files/:path*",
+      "destination": "https://vutlo.onrender.com/files/:path*"
+    }
+  ]
+}
