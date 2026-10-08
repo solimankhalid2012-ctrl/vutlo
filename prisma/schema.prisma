@@ -18,6 +18,7 @@ model User {
   role      String     @default("user") // user | admin
   points    Int        @default(0)      // نظام النقاط والمكافآت
   plan      String     @default("free") // free | pro  (Pro = بلا إعلانات + فوق 1080p)
+  age       Int?       // العمر وقت التسجيل (13-120) — nullable ليبقى سجل المستخدمين القدامى صالحاً
   createdAt DateTime   @default(now())
   downloads Download[]
 }
@@ -55,4 +56,13 @@ model ScheduledTask {
   @@index([runAt])
   @@index([status])
   @@index([userId])
+}
+
+model Rating {
+  // 🔢 معرّف المتصفح (uuid يولّده العميل في localStorage) ⇒ صوت واحد لكل متصفح
+  clientId  String   @id
+  stars     Int      // 1..5 — التحقق من الحدود في التطبيق قبل الحفظ
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

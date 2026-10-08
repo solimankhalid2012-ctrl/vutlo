@@ -46,10 +46,16 @@ function readSaved(key) {
   }
 }
 
-export default function RatingStars({ storageKey = "vv-rating", onChange, className = "" }) {
+export default function RatingStars({ storageKey = "vv-rating", onChange, className = "", uid = "" }) {
   const { lang } = useLang();
   const ar = lang === "ar";
   const [value, setValue] = useState(() => readSaved(storageKey));
+
+  /* قد تظهر مجموعتا نجوم في الصفحة نفسها (البطاقة + نتائج التحليل).
+     بدون تسمية فريدة يتشارك الـid واسم المجموعة ⇒ يتقاطع الاختيار بينهما.
+     uid اختياري: غيابه يبقي البنية كما هي حرفياً (star4 / name="rating"). */
+  const name = uid ? `rating-${uid}` : "rating";
+  const idOf = (n) => (uid ? `${uid}-star${n}` : `star${n}`);
 
   const pick = (n) => {
     setValue(n);
@@ -64,8 +70,8 @@ export default function RatingStars({ storageKey = "vv-rating", onChange, classN
           <React.Fragment key={n}>
             <input
               value={String(n)}
-              name="rating"
-              id={`star${n}`}
+              name={name}
+              id={idOf(n)}
               type="radio"
               defaultChecked={value === n}
               aria-checked={value === n}
@@ -73,7 +79,7 @@ export default function RatingStars({ storageKey = "vv-rating", onChange, classN
             />
             <label
               title={n === 1 ? "1 star" : `${n} stars`}
-              htmlFor={`star${n}`}
+              htmlFor={idOf(n)}
               /* input مخفي (display:none) ⇒ لا يمكن الوصول إليه بلوحة المفاتيح،
                  فنجعل label نفسه قابلاً للتركيز ويقبل Enter/مسافة.
                  لا تغيير في CSS أو البنية — سلوك إضافي فقط. */

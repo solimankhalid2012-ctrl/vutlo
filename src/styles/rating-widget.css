@@ -1,0 +1,229 @@
+/* ⭐ بطاقة تقييم المستخدمين — نجوم تفاعلية + عدّاد حيّ
+   كل قاعدة محصورة في .rating-card حتى لا تمسّ نجوم ما بعد التحميل في
+   LinkInput (تبقى كما هي في rating.css).
+   الألوان من متغيّرات الثيم (--c-ink / --emerald / --gold) فتعمل البطاقة
+   في الوضع الليلي والنهاري دون تكرار قواعد. */
+
+.rating-card {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+  padding: 1.75rem 1.5rem;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background: linear-gradient(
+    155deg,
+    rgb(var(--c-ink) / 0.07),
+    rgb(var(--c-ink) / 0.02)
+  );
+  border: 1px solid rgb(var(--c-ink) / 0.12);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgb(var(--c-ink) / 0.08);
+}
+
+/* هالة خضراء رقيقة أعلى البطاقة — نفس لغة الأزرار primary */
+.rating-card::before {
+  content: "";
+  position: absolute;
+  inset: -60% 20% auto;
+  height: 140%;
+  background: radial-gradient(ellipse at 50% 0%, var(--emerald-glow), transparent 65%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.rating-card > * { position: relative; }
+
+@media (min-width: 640px) {
+  .rating-card {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 2rem 2.25rem;
+  }
+}
+
+/* ── الجانب الرقمي: المتوسط + العدّاد ── */
+.rating-card__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.rating-card__avg {
+  font-size: clamp(3rem, 9vw, 4.25rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(115deg, #FFD700 0%, #fff2a8 35%, #FFD700 65%, #ffb703 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 16px rgb(255 215 0 / 0.28));
+  animation: vw-avg-shimmer 4.5s ease-in-out infinite;
+}
+
+.rating-card__avgMax {
+  font-size: 0.35em;
+  font-weight: 800;
+  color: rgb(var(--c-ink) / 0.45);
+  -webkit-text-fill-color: rgb(var(--c-ink) / 0.45);
+  margin-inline-start: 0.15em;
+}
+
+@keyframes vw-avg-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.rating-card__count {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--emerald-light);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--c-emerald) / 0.4);
+  background: rgb(var(--c-emerald) / 0.12);
+}
+
+/* ── التوزيع 1..5 ── */
+.rating-card__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  max-width: 17rem;
+  margin-top: 0.65rem;
+}
+
+.rating-card__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: rgb(var(--c-ink) / 0.55);
+}
+
+.rating-card__barStar {
+  color: #FFD700;
+  font-size: 0.75rem;
+}
+
+.rating-card__barNum { width: 0.55rem; text-align: end; }
+
+.rating-card__track {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--c-ink) / 0.1);
+  overflow: hidden;
+}
+
+.rating-card__fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--emerald), #FFD700);
+  box-shadow: 0 0 10px var(--emerald-glow);
+}
+
+.rating-card__barValue {
+  min-width: 1.4rem;
+  text-align: start;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── جانب التصويت ── */
+.rating-card__vote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.rating-card__hint {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgb(var(--c-ink) / 0.5);
+  text-align: center;
+}
+
+.rating-card__error {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ff8a8a;
+  text-align: center;
+}
+
+/* ═══ أفق النجوم ═══
+   1) رفع + تكبير + هالة ذهبية عند المرور
+   2) ارتداد (pop) عند الاختيار — على الـlabel لا على النجمة كي لا نُلغي
+      دوران 3D الذي يضبطه rating.css في animation الخاص بـ .svgTwo
+   3) وميض (shine) يمرّ فوق النجوم المختارة مرة واحدة */
+.rating-card .rating label {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+}
+
+.rating-card .rating label:hover {
+  transform: translateY(-7px) scale(1.16);
+  z-index: 3;
+}
+
+.rating-card .rating label:hover .svgOne {
+  filter: drop-shadow(0 0 7px rgb(255 215 0 / 0.75));
+}
+
+.rating-card .rating label .svgTwo {
+  fill: #FFD700;
+  filter: drop-shadow(0 0 9px rgb(255 215 0 / 0.5));
+  transition: filter 0.3s ease;
+}
+
+.rating-card .rating input:checked ~ label {
+  animation: vw-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rating-card .rating label::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 12px;
+  background: linear-gradient(115deg, transparent 42%, rgb(255 255 255 / 0.6) 50%, transparent 58%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rating-card .rating input:checked ~ label::after {
+  animation: vw-star-shine 1.3s ease-out 0.12s;
+}
+
+@keyframes vw-star-pop {
+  0% { transform: scale(0.55); }
+  55% { transform: scale(1.3); }
+  75% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+@keyframes vw-star-shine {
+  0% { opacity: 0; transform: translateX(-150%); }
+  30% { opacity: 0.95; }
+  100% { opacity: 0; transform: translateX(150%); }
+}
+
+/* في النهاري: الأحمر الفاتح يصعب قراءته على سطح أبيض */
+:root[data-theme="light"] .rating-card__error { color: #c62828; }
+
+/* بلا حركة — globals.css يُلغي كل المدد أصلاً، وهذه تكمل مسارات framer */
+@media (prefers-reduced-motion: reduce) {
+  .rating-card__avg { animation: none; }
+  .rating-card .rating label,
+  .rating-card .rating input:checked ~ label,
+  .rating-card .rating label::after { animation: none; transition: none; }
+}

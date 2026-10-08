@@ -17,6 +17,7 @@ const mem = {
   history: [],
   users: [],
   schedules: [],
+  ratings: [],
 };
 
 /** خطأ موحّد: 409 للبريد المكرر و400 لبقية أخطاء الإدخال (بدل تسريب Prisma) */
@@ -31,6 +32,22 @@ const dbError = (message, status = 400) => {
 const parseOptions = (raw) => {
   if (raw && typeof raw === "object") return raw;
   try { return JSON.parse(raw || "{}"); } catch { return {}; }
+};
+
+/**
+ * إحصاء صفوف التقييم — عود وسطي لرقم واحد (منزلة عشرية) + التوزيع 1..5
+ * ليبنى عليه الرسم البياني. تُستخدم في المسارين (Prisma والذاكرة) فلا
+ * تتكرّر القاعدة ولن يختلف الرقم بين البيئتين.
+ */
+const statsOf = (rows) => {
+  const by = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  let total = 0;
+  let count = 0;
+  for (const r of rows) {
+    const n = Number(r.stars);
+    if (Number.isInteger(n) && n >= 1 && n <= 5) { by[n]++; total += n; count++; }
+  }
+  return { count, average: count ? Math.round((total / count) * 10) / 10 : 0, by };
 };
 
 export async function initDb() {
@@ -118,12 +135,12 @@ export const db = {
     if (prisma) {
       try {
         return (await prisma.user.findMany({ orderBy: { createdAt: "desc" } }))
-          .map((u) => ({ id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free", createdAt: new Date(u.createdAt).getTime() }));
+          .map((u) => ({ id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free", age: u.age ?? null, createdAt: new Date(u.createdAt).getTime() }));
       } catch {}
     }
     return mem.users.map(({ password, ...u }) => u);
   },
-  async createUser({ email, password = "", role = "user", plan = "free" }) {
+  async createUser({ email, password = "", role = "user", plan = "free", age = null }) {
     const mail = validateEmail(email);
     if (!mail.ok) throw dbError(mail.error);
     // ⚠️ بدون تحقق كان بإمكان الأدن (أو أي نداء داخلي) إنشاء حساب بكلمة سر فارغة
@@ -131,10 +148,17 @@ export const db = {
     if (!pw.ok) throw dbError(pw.error);
     if (!["user", "admin"].includes(role)) throw dbError("دور غير صالح");
     if (!["free", "pro"].includes(plan)) throw dbError("خطة غير صالحة");
+    // العمر: يُقصّ هنا أيضاً (لا نثق بواجهة العميل وحدها)
+    let ageOut = null;
+    if (age !== null && age !== undefined && age !== "") {
+      const n = Number(age);
+      if (!Number.isInteger(n) || n < 13 || n > 120) throw dbError("العمر يجب أن يكون بين 13 و 120");
+      ageOut = n;
+    }
     if (prisma) {
       try {
-        const u = await prisma.user.create({ data: { email: mail.email, password: hashPassword(password), role, plan } });
-        return { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free" };
+        const u = await prisma.user.create({ data: { email: mail.email, password: hashPassword(password), role, plan, age: ageOut } });
+        return { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free", age: u.age ?? null };
       } catch (e) {
         if (/unique|already exists/i.test(String(e?.message))) throw dbError("البريد مسجّل مسبقاً", 409);
         console.error("[db] createUser:", e?.message || e);
@@ -142,7 +166,7 @@ export const db = {
       }
     }
     if (mem.users.some((u) => u.email === mail.email)) throw dbError("البريد مسجّل مسبقاً", 409);
-    const u = { id: uid("u"), email: mail.email, password: hashPassword(password), role, points: 0, plan, createdAt: Date.now() };
+    const u = { id: uid("u"), email: mail.email, password: hashPassword(password), role, points: 0, plan, age: ageOut, createdAt: Date.now() };
     mem.users.push(u);
     const { password: _pw, ...pub } = u;
     return pub;
@@ -171,8 +195,8 @@ export const db = {
         const u = await prisma.user.findUnique({ where: { email } });
         if (!u) return null;
         return withPassword
-          ? { id: u.id, email: u.email, password: u.password, role: u.role, points: u.points, plan: u.plan || "free" }
-          : { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free" };
+          ? { id: u.id, email: u.email, password: u.password, role: u.role, points: u.points, plan: u.plan || "free", age: u.age ?? null }
+          : { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free", age: u.age ?? null };
       } catch { return null; }
     }
     const u = mem.users.find((x) => x.email === email);
@@ -185,7 +209,7 @@ export const db = {
     if (prisma) {
       try {
         const u = await prisma.user.findUnique({ where: { id } });
-        return u ? { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free" } : null;
+        return u ? { id: u.id, email: u.email, role: u.role, points: u.points, plan: u.plan || "free", age: u.age ?? null } : null;
       } catch { return null; }
     }
     // ⚠️ كان يعيد كائن الذاكرة كاملاً ⇒ hash الكلمة ينتقل لأي مستدعٍ (تسريب عرضي)
@@ -275,5 +299,55 @@ export const db = {
     const n = mem.schedules.length;
     mem.schedules = mem.schedules.filter((x) => x.id !== id);
     return mem.schedules.length < n;
+  },
+
+  // ── ⭐ التقييمات ──
+  /** إحصاء التقييمات: المتوسط + العدد + التوزيع 1..5 (يعمل في الوضعين) */
+  async ratingStats() {
+    if (prisma) {
+      try {
+        return statsOf(await prisma.rating.findMany({ select: { stars: true } }));
+      } catch (e) {
+        console.error("[db] ratingStats:", e?.message || e);
+      }
+    }
+    return statsOf(mem.ratings);
+  },
+  /**
+   * صوت واحد لكل معرّف متصفح: لو غيّر رأيه لاحقاً يُحدَّث سطره ولا يُضاف
+   * سطر جديد — وإلا لصار العدّاد = عدد مرّات الضغط لا عدد المستخدمين.
+   */
+  async saveRating(clientId, stars) {
+    const id = String(clientId || "").trim();
+    // uuid من crypto.randomUUID() هو 36 خانة؛ نسمح بـ64 عكس نمط آخر
+    if (!/^[\w:-]{8,64}$/.test(id)) throw dbError("معرّف التقييم غير صالح");
+    const n = Number(stars);
+    if (!Number.isInteger(n) || n < 1 || n > 5) throw dbError("التقييم يجب أن يكون بين 1 و 5 نجوم");
+    if (prisma) {
+      try {
+        await prisma.rating.upsert({
+          where: { clientId: id },
+          create: { clientId: id, stars: n },
+          update: { stars: n },
+        });
+        return statsOf(await prisma.rating.findMany({ select: { stars: true } }));
+      } catch (e) {
+        console.error("[db] saveRating:", e?.message || e);
+        throw dbError("تعذّر حفظ التقييم", 500);
+      }
+    }
+    const row = mem.ratings.find((r) => r.clientId === id);
+    if (row) row.stars = n;
+    else mem.ratings.unshift({ clientId: id, stars: n });
+    if (mem.ratings.length > 5000) mem.ratings.length = 5000;
+    return statsOf(mem.ratings);
+  },
+  /** حذف صوت معين — للاختبارات حتى لا يتلوّث الإحصاء الحقيقي */
+  async deleteRating(clientId) {
+    const id = String(clientId || "");
+    if (prisma) { try { await prisma.rating.delete({ where: { clientId: id } }); return true; } catch { return false; } }
+    const n = mem.ratings.length;
+    mem.ratings = mem.ratings.filter((r) => r.clientId !== id);
+    return mem.ratings.length < n;
   },
 };
