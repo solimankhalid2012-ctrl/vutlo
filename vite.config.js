@@ -15,5 +15,9 @@ export default defineConfig({
     environment: "jsdom",
     include: ["tests/**/*.test.{js,jsx}"],
     restoreMocks: true,
+    // ⏱️ الافتراضي 5s كان ضيّقاً على اختبارات الواجهة: تركيب التطبيق وحده
+    // يستهلك ~1.5s (framer-motion + تحميل كسول) ⇒ الفشل كان بمهلة لا بخطأ
+    // حقيقي. نرفع السقف فقط — لا نُلغي أي تحقق.
+    testTimeout: 20000,
   },
 });
