@@ -46,7 +46,12 @@ async function ureq(path, options = {}, lang) {
   return safeJson(res);
 }
 
-export const register = (email, password, lang) => ureq("/register", { method: "POST", body: JSON.stringify({ email, password }) }, lang);
+/** حدود العمر — نفس أرقام الخادم (server/routes/authRoutes.js) */
+export const AGE_MIN = 13;
+export const AGE_MAX = 120;
+
+export const register = (email, password, lang, age) =>
+  ureq("/register", { method: "POST", body: JSON.stringify({ email, password, age }) }, lang);
 export const loginUser = (email, password, lang) => ureq("/login", { method: "POST", body: JSON.stringify({ email, password }) }, lang);
 export const me = () => ureq("/me");
 export const saveSession = (userToken, user) => {

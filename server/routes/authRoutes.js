@@ -20,14 +20,30 @@ const publicUser = (u = {}) => {
   return pub;
 };
 
+/** العمر المسموح: 13 سنة فأكثر (لأن الحساب يتيح محتوى إنترنت) حتى 120.
+ *  يُقصّ هنا لا في الواجهة: الطلب قد يأتي من أي عميل. */
+export const AGE_MIN = 13;
+export const AGE_MAX = 120;
+function validateAge(age) {
+  const n = Number(age);
+  if (!Number.isFinite(n) || n <= 0) return { ok: false, error: "العمر مطلوب" };
+  // ⚠️ كنّا نقرّب أي كسر (13.4 ⇒ 13) ⇒ عمر غير صحيح يُحفظ كعدد صحيح.
+  // الحقل Int في Prisma، فلنرفض الكسر صراحةً بدل إنقاصه بصمت.
+  if (!Number.isInteger(n)) return { ok: false, error: "أدخل العمر بالسنوات الكاملة" };
+  if (n < AGE_MIN || n > AGE_MAX) return { ok: false, error: `العمر يجب أن يكون بين ${AGE_MIN} و ${AGE_MAX}` };
+  return { ok: true, value: n };
+}
+
 r.post("/register", async (req, res) => {
   try {
-    const { email, password = "" } = req.body || {};
+    const { email, password = "", age } = req.body || {};
     const mail = validateEmail(email);
     if (!mail.ok) return res.status(400).json({ error: mail.error });
     const pw = validatePassword(password);
     if (!pw.ok) return res.status(400).json({ error: pw.error });
-    const u = await db.createUser({ email: mail.email, password, role: "user" });
+    const yrs = validateAge(age);
+    if (!yrs.ok) return res.status(400).json({ error: yrs.error });
+    const u = await db.createUser({ email: mail.email, password, role: "user", age: yrs.value });
     const points = await db.addPoints(u.id, 50); // 🎁 بونص الترحيب
     const pub = publicUser({ ...u, points });
     res.json({ token: signUser(pub), user: pub });
