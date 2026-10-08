@@ -30,7 +30,7 @@ export default function ToolSwitcher({ value, onChange, className = "" }) {
             title={tool.hint[ar ? "ar" : "en"]}
             className={`flex select-none touch-manipulation items-center gap-2 rounded-2xl px-3.5 py-2.5 text-sm font-black transition-colors duration-150 ${
               active
-                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_6px_24px_rgba(29,185,84,0.35)]"
+                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_6px_24px_rgba(13,190,104,0.35)]"
                 : "border border-white/10 bg-white/5 text-white/70 hover:border-emerald/40 hover:bg-emerald/10 hover:text-white"
             }`}
           >

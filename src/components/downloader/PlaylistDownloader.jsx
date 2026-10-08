@@ -134,7 +134,7 @@ export default function PlaylistDownloader() {
                 const st = states[i];
                 return (
                   <div key={i} className="flex items-center gap-2 rounded-xl bg-white/[0.03] px-3 py-2">
-                    <input type="checkbox" checked={selected.has(i)} onChange={() => toggle(i)} className="h-4 w-4 shrink-0 accent-[#1DB954]" />
+                    <input type="checkbox" checked={selected.has(i)} onChange={() => toggle(i)} className="h-4 w-4 shrink-0 accent-[#0DBE68]" />
                     <span className="w-8 shrink-0 text-xs text-white/40">{i + 1}</span>
                     <span className="min-w-0 flex-1 truncate text-sm">{v.title}</span>
                     {st ? (

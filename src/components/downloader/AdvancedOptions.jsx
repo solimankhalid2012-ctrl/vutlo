@@ -54,7 +54,7 @@ export default function AdvancedOptions({ compact = false, defaultOpen = false }
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-bold">
-                  <input type="checkbox" checked={!!adv.subs} onChange={set("subs")} className="h-4 w-4 accent-[#1DB954]" />
+                  <input type="checkbox" checked={!!adv.subs} onChange={set("subs")} className="h-4 w-4 accent-[#0DBE68]" />
                   💬 {t("download.subs")}
                 </label>
                 <label className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-bold">

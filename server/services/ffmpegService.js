@@ -164,13 +164,18 @@ export async function compressVideo(jobIdOrPath, crf = 28) {
   });
 }
 
-/** أنماط الـdithering المدعومة في paletteuse (ن(names فقط، مُنقّاة هنا) */
-export const GIF_DITHERERS = ["none", "bayer", "bayer2", "fs", "sierra2"];
+/** أنماط الـdithering المدعومة في paletteuse (أسماء مقبولة فقط).
+ *  ⚠️ كانت القائمة هنا bayer2 و fs — وهما **غير صالحين** في ffmpeg الحديث
+ *  (اختُبرا على ffmpeg 9 ⇒ "Undefined constant") فكان اختيارهما من الواجهة
+ *  يُفشل عملية التحويل كاملة. القائمةbelow من `ffmpeg -h filter=paletteuse`. */
+export const GIF_DITHERERS = ["none", "bayer", "heckbert", "floyd_steinberg", "sierra2", "sierra2_4a", "sierra3", "burkes", "atkinson"];
+/** أسماء قديمة من الواجهة ⇒ أقرب اسم صالح (حتى لا ينكسر خيار محفوظ) */
+export const DITHER_ALIASES = { bayer2: "bayer", fs: "floyd_steinberg" };
 
 /** القيم الافتراضية لـGIF — مصدر واحد للـAPI والواجهة وتسمية الملفات */
 export const GIF_DEFAULTS = {
   start: 0, duration: 4, width: 480,
-  fps: 12, dither: "bayer", loop: 0, speed: 1,
+  fps: 12, dither: "bayer", bayerScale: 2, loop: 0, speed: 1,
 };
 
 /** تقييد معاملات GIF في مكان واحد (قابل للاختبار).
@@ -181,17 +186,21 @@ export function clampGifArgs({
   width = GIF_DEFAULTS.width,
   fps = GIF_DEFAULTS.fps,
   dither = GIF_DEFAULTS.dither,
+  bayerScale = GIF_DEFAULTS.bayerScale,
   loop = GIF_DEFAULTS.loop,
   speed = GIF_DEFAULTS.speed,
 } = {}) {
   const num = (v, def) => (Number.isFinite(Number(v)) ? Number(v) : def);
   const d = String(dither ?? "").trim().toLowerCase();
+  const dithered = GIF_DITHERERS.includes(d) ? d : DITHER_ALIASES[d] || GIF_DEFAULTS.dither;
   return {
     start: Math.min(Math.max(Math.round(num(start, 0)), 0), 6 * 3600),
     duration: Math.min(Math.max(Math.round(num(duration, GIF_DEFAULTS.duration)), 1), 30),
     width: Math.min(Math.max(Math.round(num(width, GIF_DEFAULTS.width)), 120), 720),
     fps: Math.min(Math.max(Math.round(num(fps, GIF_DEFAULTS.fps)), 5), 30),
-    dither: GIF_DITHERERS.includes(d) ? d : GIF_DEFAULTS.dither,
+    dither: dithered,
+    // خلط Bayer المدقّق (bayer_scale) — الخيار الوحيد الرقمي الذي يقبله paletteuse
+    bayerScale: Math.min(Math.max(Math.round(num(bayerScale, GIF_DEFAULTS.bayerScale)), 0), 5),
     loop: Math.min(Math.max(Math.round(num(loop, 0)), 0), 10), // 0 = تكرار بلا نهاية
     speed: Math.min(Math.max(Number(num(speed, 1).toFixed(2)), 0.25), 4),
   };
@@ -217,34 +226,60 @@ export function gifOutputName(base, o) {
     o.speed === 1 ? "" : `${o.speed}x`,
     o.loop === 0 ? "" : `x${o.loop}`,
     o.dither === GIF_DEFAULTS.dither ? "" : o.dither,
+    o.dither === "bayer" && o.bayerScale !== GIF_DEFAULTS.bayerScale ? `b${o.bayerScale}` : "",
   ]
     .filter(Boolean)
     .join("_");
   return `${base}_${tag}.gif`;
 }
 
+/** 🎞️ لوحتا ألوان مرحلتان (palettegen ثم paletteuse) — جوهر جودة GIF.
+ *  مفصولة عن مسار الملف عمداً ليستخدمها رفعُ الملف المحلي: ما المهم هو
+ *  «مسار دخل + مسار خرج + خيارات» لا أن يكون المصدر مهمة تحميل. */
+/** ترويسة paletteuse: اسم من القائمة الصالحة + bayer_scale عند اللزوم */
+export function buildPaletteUse(o = {}) {
+  const { dither, bayerScale } = clampGifArgs(o);
+  const scale = dither === "bayer" ? `:bayer_scale=${bayerScale}` : "";
+  return `paletteuse=dither=${dither}${scale}:diff_mode=rectangle`;
+}
+
+async function renderGif(input, out, options) {
+  const { start, duration, loop } = options;
+  const palette = path.join(path.dirname(out), `.gifpalette_${Date.now().toString(36)}.png`);
+  const vf = buildGifFilter(options);
+  const use = buildPaletteUse(options);
+  try {
+    await run(["-ss", String(start), "-t", String(duration), "-i", input, "-vf", `${vf},palettegen=stats_mode=diff`, palette], 1000 * 60 * 10, "gif-palette");
+    await run(
+      ["-ss", String(start), "-t", String(duration), "-i", input, "-i", palette, "-lavfi", `${vf} [x]; [x][1:v] ${use}`, "-loop", String(loop), out],
+      1000 * 60 * 10,
+      "gif"
+    );
+  } finally {
+    try { fs.unlinkSync(palette); } catch { /* تجاهُل */ }
+  }
+  return assertOutput(out);
+}
+
 /** 🎞️ تحويل مقطع إلى GIF متحرك (لوحة ألوان مزدوجة لجودة عالية) */
 export async function videoToGif(jobIdOrPath, opts = {}) {
   const options = clampGifArgs(opts);
-  const { start, duration, dither, loop } = options;
   return withSlot(async () => {
     const input = resolveInput(jobIdOrPath);
     const base = input.replace(/\.[^.]+$/, "");
-    const palette = `${base}_palette_${Date.now().toString(36)}.png`;
     const out = gifOutputName(base, options);
-    const vf = buildGifFilter(options);
-    const use = `paletteuse=dither=${dither}:diff_mode=rectangle`;
-    try {
-      await run(["-ss", String(start), "-t", String(duration), "-i", input, "-vf", `${vf},palettegen=stats_mode=diff`, palette], 1000 * 60 * 10, "gif-palette");
-      await run(
-        ["-ss", String(start), "-t", String(duration), "-i", input, "-i", palette, "-lavfi", `${vf} [x]; [x][1:v] ${use}`, "-loop", String(loop), out],
-        1000 * 60 * 10,
-        "gif"
-      );
-    } finally {
-      try { fs.unlinkSync(palette); } catch { /* تجاهُل */ }
-    }
-    const size = assertOutput(out);
+    const size = await renderGif(input, out, options);
     return { file: path.basename(out), fileUrl: `/files/${path.basename(out)}`, size, ...options };
   });
 }
+
+/** 🎞️ GIF من أي مسار فيديو على القرص (للملف المرفوع محلياً).
+ *  لا يمرّ عبر resolveInput لأن الملف ليس مهمة تحميل واسمه مُعرّف غير مسمّى. */
+export async function gifFromPath(inputPath, outPath, opts = {}) {
+  const options = clampGifArgs(opts);
+  return withSlot(async () => {
+    const size = await renderGif(inputPath, outPath, options);
+    return { size, ...options };
+  });
+}
+

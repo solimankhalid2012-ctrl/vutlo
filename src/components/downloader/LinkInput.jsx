@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   detectPlatform,
@@ -17,6 +17,7 @@ import { fmtBytes } from "../../utils/formatters.js";
 import ToolSwitcher from "./ToolSwitcher.jsx";
 import GifOptions from "./GifOptions.jsx";
 import RatingStars from "../ui/RatingStars.jsx";
+import useRating from "../../hooks/useRating.js";
 import AdvancedOptions from "./AdvancedOptions.jsx";
 import ScheduleBox from "./ScheduleBox.jsx";
 import PlaylistDownloader from "./PlaylistDownloader.jsx";
@@ -33,6 +34,16 @@ import PlaylistDownloader from "./PlaylistDownloader.jsx";
  */
 export default function LinkInput({ compact = false, initialUrl = "" }) {
   const { t, lang } = useLang();
+  /* ⭐ تصويت ما بعد التحميل يذهب للخادم أيضاً (نفس المتجر → يتحدّث عدّاد الصفحة) */
+  const { vote } = useRating();
+  const [rateErr, setRateErr] = useState("");
+  /* قد توجد نسختان من LinkInput في الصفحة (الهيرو + الدعوة) ⇒ معرّف فريد
+     للنجوم حتى لا يتشاركا id واسم radio-group مع بطاقة التقييم أو مع بعضهما */
+  const starsUid = useId();
+  const onRate = (n) => {
+    setRateErr("");
+    vote(n).catch((e) => setRateErr(e?.message || ""));
+  };
   const ar = lang === "ar";
   const [url, setUrl] = useState(initialUrl);
   const [tool, setTool] = useState("video");
@@ -42,7 +53,6 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   const [format, setFormat] = useState("mp4");
   const [gifOpts, setGifOpts] = useState(GIF_DEFAULT);
   const [detected, setDetected] = useState(null);
-  const [listening, setListening] = useState(false);
   const [toolBusy, setToolBusy] = useState("");
   const [toolMsg, setToolMsg] = useState(null); // {label, fileUrl, size, savedPct}
   const [deskMsg, setDeskMsg] = useState(null); // نتيجة الحفظ على سطح المكتب
@@ -78,13 +88,6 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
   }, [info, detected, url]);
 
   const noWatermark = detected?.platform ? supportsNoWatermark(detected.platform.id) : false;
-
-  const handlePaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text) { setUrl(text.trim()); inputRef.current?.focus(); }
-    } catch {}
-  };
 
   const handleFetch = () => { if (url.trim() && !isBulk) fetchInfo(url.trim()); };
   const handleDownload = () => {
@@ -144,25 +147,6 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
     }
   };
 
-  // 🎤 Voice Search (Web Speech API)
-  const voiceSearch = () => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    try {
-      const rec = new SR();
-      rec.lang = document.documentElement.lang || "ar";
-      rec.interimResults = false;
-      rec.onstart = () => setListening(true);
-      rec.onend = () => setListening(false);
-      rec.onerror = () => setListening(false);
-      rec.onresult = (e) => {
-        const text = e.results?.[0]?.[0]?.transcript;
-        if (text) setUrl(text.trim());
-      };
-      rec.start();
-    } catch {}
-  };
-
   return (
     <div className="w-full">
       {/* ── 1) الأدوات: كل الميزات في مكان واحد قبل التحميل ── */}
@@ -211,40 +195,18 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                     className="absolute right-3 top-1/2 -translate-y-1/2 badge badge-emerald"
                     style={{ borderColor: detected.platform.color + "66" }}
                   >
+                    {/* ⚠️ الاسم + الزمن كانا يغطيان النص المكتوب على الجوال
+                        (الشارة تتجاوز المساحة المحجوزة pr-12 عند الوضوح الضيق)
+                        ⇒ على <640 نعرض الأيقونة فقط وتظل الكتابة ظاهرة. */}
                     <span className="text-xl">{detected.platform.icon}</span>
-                    {detected.platform.name}
-                    <span className="opacity-60 text-[10px]">· {detected.ms}ms</span>
+                    <span className="hidden sm:inline">{detected.platform.name}</span>
+                    <span className="hidden sm:inline opacity-60 text-[10px]">· {detected.ms}ms</span>
                   </motion.span>
                 )}
               </AnimatePresence>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <button
-                onClick={handlePaste}
-                className="btn-ghost btn-icon hidden sm:flex"
-                title={t("hero.pasteTooltip") || "Paste from clipboard"}
-                aria-label="Paste"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
-
-              {/* Voice Search */}
-              {(window.SpeechRecognition || window.webkitSpeechRecognition) && (
-                <button
-                  onClick={voiceSearch}
-                  className={`btn-ghost btn-icon ${listening ? "border-red-500/50 bg-red-500/10 animate-pulse" : ""}`}
-                  title={t("hero.voiceTooltip") || "Voice search"}
-                  aria-label="Voice search"
-                >
-                  {listening ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-6 0z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-6 0z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-                  )}
-                </button>
-              )}
-
               <button
                 onClick={handleFetch}
                 disabled={!url.trim() || status === "fetching"}
@@ -412,7 +374,7 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                             aria-pressed={quality === q}
                             className={`select-none touch-manipulation rounded-xl px-3 py-2 text-xs font-black transition-colors duration-150 ${
                               quality === q
-                                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_4px_20px_rgba(29,185,84,0.4)]"
+                                ? "bg-gradient-to-r from-emerald to-emerald-dark text-on-accent shadow-[0_4px_20px_rgba(13,190,104,0.4)]"
                                 : "bg-white/5 text-white/70 hover:bg-emerald/15 hover:text-white hover:border-emerald/30 border border-white/10"
                             }`}
                           >
@@ -480,6 +442,16 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                           ✕ {t("preview.cancel") || "إلغاء"}
                         </button>
                       </div>
+                      {/* 🚀 بيانات حيّة من yt-dlp: الحجم/السرعة/المتبقّي — تظهر أن
+                          التحميل ينساب فعلاً حتى لو كان الشريط يتحرك ببطء على ملف ضخم */}
+                      {job?.progressInfo?.speed && (
+                        <div className="flex items-center justify-between text-[10px] font-mono text-white/40" dir="ltr">
+                          <span>
+                            {job.progressInfo.size ? <>{job.progressInfo.size} @ </> : null}{job.progressInfo.speed}
+                          </span>
+                          {job.progressInfo.eta && <span>ETA {job.progressInfo.eta}</span>}
+                        </div>
+                      )}
                     </div>
                   ) : status === "done" ? (
                     <motion.div
@@ -552,8 +524,11 @@ export default function LinkInput({ compact = false, initialUrl = "" }) {
                         )
                       )}
 
-                      {/* ⭐ نجوم التقييم — CSS وHTML كما ورد الطلب */}
-                      <RatingStars className="mt-1" />
+                      {/* ⭐ نجوم التقييم — نفس النجوم، ويُرصد تصويتها في الخادم */}
+                      <RatingStars className="mt-1" onChange={onRate} uid={starsUid} />
+                      {rateErr && (
+                        <p className="text-xs font-bold text-red-300" role="alert">{rateErr}</p>
+                      )}
 
                       <button onClick={reset} className="btn-ghost !py-2 text-xs">{t("preview.newLink")}</button>
                     </motion.div>

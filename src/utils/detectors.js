@@ -56,7 +56,7 @@ export function detectPlatform(url) {
   const ms = (performance.now?.() ?? Date.now()) - t0;
   if (isUrl) {
     return {
-      platform: { id: "generic", name: "رابط عام (1000+ موقع)", color: "#1DB954", icon: "🔗" },
+      platform: { id: "generic", name: "رابط عام (1000+ موقع)", color: "#0DBE68", icon: "🔗" },
       ms: Math.round(ms * 100) / 100, isUrl, videoId: null,
     };
   }

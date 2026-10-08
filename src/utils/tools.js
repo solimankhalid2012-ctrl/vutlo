@@ -105,18 +105,23 @@ export const GIF_MAX_HEIGHT = 480;
 
 /** ⚙️ خيارات GIF — القيم الافتراضية تطابق clampGifArgs في الخادم.
  *  speed: معامل تسريع (2 = ضعف السرعة), loop: 0 = تكرار لا نهائي */
-export const GIF_DEFAULT = { start: 0, duration: 4, width: 480, fps: 12, dither: "bayer", loop: 0, speed: 1 };
+export const GIF_DEFAULT = { start: 0, duration: 4, width: 480, fps: 12, dither: "bayer", bayerScale: 2, loop: 0, speed: 1 };
 
 /** نطاقات العرض في الواجهة (الخادم يقصّ 120–720) */
 export const GIF_WIDTHS = [240, 320, 360, 480, 640, 720];
 export const GIF_FPS = [8, 10, 12, 15, 20, 25];
 export const GIF_SPEEDS = [0.5, 0.75, 1, 1.5, 2, 3];
 export const GIF_DITHERERS = [
-  { id: "bayer", ar: "ناعم (Bayer)", en: "Smooth (Bayer)" },
-  { id: "bayer2", ar: "أنعم (Bayer 2×2)", en: "Smoother (Bayer 2×2)" },
-  { id: "fs", ar: "حِدّة أعلى (FS)", en: "Sharper (FS)" },
-  { id: "sierra2", ar: "توازن (Sierra)", en: "Balanced (Sierra)" },
   { id: "none", ar: "بلا تدرّج (أصغر حجماً)", en: "No dither (smaller)" },
+  { id: "bayer", ar: "ناعم (Bayer)", en: "Smooth (Bayer)" },
+  { id: "bayer", scale: 5, ar: "أنعم (Bayer 5×5)", en: "Smoother (Bayer 5×5)" },
+  { id: "sierra2", ar: "توازن (Sierra 2)", en: "Balanced (Sierra 2)" },
+  { id: "sierra2_4a", ar: "سريع وخفيف (Sierra Lite)", en: "Fast light (Sierra Lite)" },
+  { id: "floyd_steinberg", ar: "حِدّة أعلى (Floyd)", en: "Sharper (Floyd)" },
+  { id: "sierra3", ar: "تدرّج عميق (Sierra 3)", en: "Deep gradient (Sierra 3)" },
+  { id: "burkes", ar: "ناعم جداً (Burkes)", en: "Very smooth (Burkes)" },
+  { id: "atkinson", ar: "توازن حِدّة/نعومة (Atkinson)", en: "Balanced (Atkinson)" },
+  { id: "heckbert", ar: "انتشار بسيط (Heckbert)", en: "Simple diffusion (Heckbert)" },
 ];
 
 /** مجموعات جاهزة بنقرة واحدة — أشهر استخدامات GIF */

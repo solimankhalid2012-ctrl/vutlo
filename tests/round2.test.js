@@ -12,7 +12,7 @@
 import { describe, it, expect } from "vitest";
 
 // ── 1) حدود معاملات FFmpeg ──
-import { clampGifArgs, buildGifFilter, gifOutputName, ffmpegDepth, MAX_FFMPEG } from "../server/services/ffmpegService.js";
+import { clampGifArgs, buildGifFilter, gifOutputName, ffmpegDepth, MAX_FFMPEG, GIF_DITHERERS, buildPaletteUse } from "../server/services/ffmpegService.js";
 // ── 2) أخطاء الجدولة: status + expose ──
 import { scheduleDownload } from "../server/services/schedulerService.js";
 // ── 3) أخطاء إدخال yt-dlp آمنة للعرض ──
@@ -54,6 +54,26 @@ describe("FFmpeg — حدود المعاملات", () => {
     // السرعة العادية ⇒ بلا setpts (لا إعادة حساب الزمن)
     expect(buildGifFilter({ fps: 12, width: 480, speed: 1 }))
       .toBe("fps=12,scale=480:-1:flags=lanczos");
+  });
+  it("كل أنماط التدرّج صالحة لـffmpeg (bayer2/fs كانت تُفشل العملية)", () => {
+    // ⚠️ ffmpeg الحديث لا يعرف bayer2 ولا fs ⇒ "Undefined constant" ⇒ فشل كامل.
+    // القائمة الآن مستخرجة من `ffmpeg -h filter=paletteuse`، وهذا الاختبار
+    // يمنع عودة أي اسم قديم إلى الواجهة.
+    const KNOWN_FFMPEG_DITHER = new Set([
+      "none", "bayer", "heckbert", "floyd_steinberg", "sierra2",
+      "sierra2_4a", "sierra3", "burkes", "atkinson",
+    ]);
+    for (const d of GIF_DITHERERS) expect(KNOWN_FFMPEG_DITHER.has(d), d).toBe(true);
+    expect(GIF_DITHERERS).not.toContain("bayer2");
+    expect(GIF_DITHERERS).not.toContain("fs");
+    // أسماء الواجهة القديمة تُحوَّل لأقرب اسم صالح بدل رفضها
+    expect(clampGifArgs({ dither: "fs" }).dither).toBe("floyd_steinberg");
+    expect(clampGifArgs({ dither: "bayer2" }).dither).toBe("bayer");
+    // bayer_scale يُقصّ 0..5 ويظهر في الفلتر مع bayer فقط
+    expect(buildPaletteUse({ dither: "bayer", bayerScale: 5 })).toBe("paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle");
+    expect(buildPaletteUse({ dither: "bayer", bayerScale: 2 })).toBe("paletteuse=dither=bayer:bayer_scale=2:diff_mode=rectangle");
+    expect(buildPaletteUse({ dither: "sierra2", bayerScale: 5 })).toBe("paletteuse=dither=sierra2:diff_mode=rectangle");
+    expect(clampGifArgs({ bayerScale: 99 }).bayerScale).toBe(5);
   });
   it("اسم ملف GIF يميّز وقت البدء والمدة (لا استبدال بين المقاطع)",
     () => {

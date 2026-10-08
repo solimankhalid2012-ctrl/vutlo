@@ -6,7 +6,7 @@
 // - أخطاء مفهومة بالعربية (stderr يُقرأ ويُترجم) بدل "انتهى بالكود 1"
 // يتطلب على السيرفر: yt-dlp + ffmpeg في PATH (أو YTDLP_BIN في .env)
 // ─────────────────────────────────────────────
-import { execFile, spawn } from "child_process";
+import { execFile, spawn, spawnSync } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
@@ -28,6 +28,24 @@ const COOKIES = process.env.YTDLP_COOKIES || "";
 const JS_RUNTIME = (process.env.YTDLP_JS_RUNTIME || "node").trim();
 const jsRuntimeArgs = () =>
   !JS_RUNTIME || JS_RUNTIME.toLowerCase() === "none" ? [] : ["--js-runtimes", JS_RUNTIME];
+
+// 🚀 aria2c: سكربت تنزيل خارجي يجزّئ الملف إلى اتصالات متوازية (-x / -s 16).
+// متوفّر محلياً في bin/aria2c (يُشحن مع المشروع) أو في PATH. يضاعف سرعة
+// التحميلات التي ترسلها المنصات كملفٍ واحد — الحالة التي لا يساعدها
+// --concurrent-fragments (خاصّ بمقاطع HLS/DASH المجزّأة فقط).
+let _aria2c;
+export function aria2cCommand() {
+  if (_aria2c !== undefined) return _aria2c;
+  const local = path.join(process.cwd(), "bin", "aria2c", process.platform === "win32" ? "aria2c.exe" : "aria2c");
+  const ok = (cmd) => {
+    try { return spawnSync(cmd, ["--version"], { windowsHide: true, stdio: "ignore" }).status === 0; }
+    catch { return false; }
+  };
+  _aria2c = ok(local) ? local : (ok("aria2c") ? "aria2c" : "");
+  return _aria2c;
+}
+/** وسائط aria2c: جزءّي الملف إلى n اتصالاً (مع حد أدنى للجزء كي لا يفشل على الملفات الصغيرة). */
+const aria2Args = (n) => ["--downloader", "aria2c", "--downloader-args", `aria2c:-x ${n} -s ${n} --min-split-size=1M`];
 
 // عملاء يوتيوب تُجرَّب بالترتيب عند فشل يوتيوب (bot check / 429 / 403).
 // الأول هو الافتراضي (بلا تحديد) لأنه الأكثر موثوق اليوم، والباقي شبكة أمان.
@@ -95,16 +113,23 @@ export function isFormatUnavailable(raw) {
 
 /**
  * يستخرج نسبة التقدّم من سطر yt-dlp ويمنع التراجع.
+ * يلتقط أيضاً الحجم/السرعة/المتبقّي (progressInfo) ليُعرض حيّاً للمستخدم —
+ * فعندما لا يتحرك الشريط يرى أن البيانات تنساب فعلاً (أو يتوقف الحارس).
  *
  * تنزيل الفيديو والصوت يتم كتدفّقين منفصلين، وكلٌّ يطبع نسبته من 0% ⇒ بلا
  * حارس الرتابة تقفز النسبة إلى الخلف (81% ثم 61%) وتبدو للمستخدم معطوبة.
  * يبقى السقف 99% لأن 100% تُضبط في finishJob بعد اكتمال الدمج فعلياً.
  */
 export function parseProgress(job, line) {
-  const m = String(line).match(/\[download\]\s*(\d+(?:\.\d+)?)%/);
+  const m = /\[download\]\s*(\d+(?:\.\d+)?)%(?: of\s+(?:~\s*)?([\d.]+\s*\S+))?(?: at\s+([\d.]+\s*\S+))?(?:\s+ETA\s+(\d{1,2}:\d{2}))?/.exec(String(line));
   if (!m) return false;
   const p = Math.min(99, parseFloat(m[1]));
   if (p > job.progress) job.progress = p;
+  job.progressInfo = job.progressInfo || {};
+  if (m[2]) job.progressInfo.size = m[2];
+  if (m[3]) job.progressInfo.speed = m[3];
+  if (m[4]) job.progressInfo.eta = m[4];
+  if (p > job.progressInfo.pct || job.progressInfo.pct === undefined) job.progressInfo.pct = p;
   return true;
 }
 
@@ -207,15 +232,19 @@ export async function ytdlpStatus() {
 export function buildYtdlpArgs(jobId, {
   quality = "1080p", format = "mp4",
   password = "", trimStart = "", trimEnd = "",
-  subs = false, threads = 8,
+  subs = false, threads = 16,
 } = {}) {
   const h = HEIGHT[quality] ?? 1080;
   if (!["mp4", "webm", "mkv", "mp3", "gif"].includes(format))
     throw httpError(400, `صيغة غير مدعومة: ${format}`);
   const out = path.join(DOWNLOAD_DIR, `${jobId}.%(ext)s`);
+  const n = Math.min(Math.max(Number(threads) || 8, 1), 16);
+  // 🚀 مع aria2c: نخفّف --concurrent-fragments ولا فائدة من إيقافه،
+  // لكن التجزئة الحقيقية للملف الواحد تصبح على عاتق aria2c (-x/-s).
   const args = [
     "--newline", "--progress", "--no-warnings", "--no-playlist",
-    "--concurrent-fragments", String(Math.min(Math.max(Number(threads) || 8, 1), 16)),
+    "--concurrent-fragments", String(n),
+    ...(aria2cCommand() ? aria2Args(n) : []),
     "--retries", "10", "--fragment-retries", "10",
     "--extractor-retries", "5", "--retry-sleep", "linear=1::5",
     "--socket-timeout", "30",
@@ -354,7 +383,8 @@ export async function queueDownload(url, opts = {}) {
     // 🎞️ خيارات GIF التي اختارها المستخدم — تُستخدم بعد انتهاء التنزيل.
     // ⚠️ كانت hardcoded ({0, 4s, 480}) ⇒ كل خيارات المستخدم في الواجهة بلا أثر!
     gif: opts.format === "gif" ? clampGifArgs(opts.gif || {}) : null,
-    file: null, fileName: null, fileUrl: null, size: 0, error: null,
+    file: null, fileName: null, fileUrl: null, size: 0, error: null, notice: null,
+    progressInfo: { pct: 0, size: null, speed: null, eta: null },
     userId: opts.userId || null, createdAt: Date.now(),
   };
   jobs.set(jobId, job);
@@ -428,6 +458,8 @@ function runAttempt(job, args, attempt) {
   job.status = "downloading";
   job.stage = "downloading";
   job.attempt = attempt + 1;
+  job.notice = null;
+  job.progressInfo = { pct: 0, size: null, speed: null, eta: null };
   const stderrTail = [];
   let child;
   try {
@@ -443,7 +475,23 @@ function runAttempt(job, args, attempt) {
   }
   job.child = child;
 
+  /* ⏰ حارس التجمّد: يوتيوب أحياناً يقطع الاتصال بصمت بلا أي سطر خروج —
+     كان التحميل يعلق "جارٍ التحميل" بنسبة 0% حتى ساعة كاملة بلا تفسير.
+     إذا مرّ STALL_MS بلا أي إخراج (نحن في مرحلة التنزيل فقط، لا المعالجة
+     لأن الدمج/التحويل يعمل بصمت وقد يطول) → نوقفه ونعيد المحاولة بعميل بديل. */
+  const STALL_MS = 120000;
+  let lastLineAt = Date.now();
+  job.stallTimer = setInterval(() => {
+    if (job.child !== child || job.status !== "downloading") return;
+    if (job.stage !== "downloading") return;
+    if (Date.now() - lastLineAt <= STALL_MS) return;
+    job.stalled = true;
+    console.warn(`[job ${job.jobId}] لا بيانات من الموقع منذ ${STALL_MS / 1000}s — إيقاف ومحاولة عميل بديل`);
+    try { child.kill("SIGKILL"); } catch { /* قد يكون انتهى قبل الكيل */ }
+  }, 10000);
+
   const onData = (d) => {
+    lastLineAt = Date.now();
     const text = String(d);
     for (const line of text.split(/\r?\n/)) {
       if (parseProgress(job, line)) continue;
@@ -465,6 +513,7 @@ function runAttempt(job, args, attempt) {
 
   child.on("close", (code, signal) => {
     delete job.child;
+    if (job.stallTimer) { clearInterval(job.stallTimer); delete job.stallTimer; }
     if (job.status === "cancelled") { releaseSlot(job.jobId); return; }
     if (code === 0) {
       finishJob(job, stderrTail).catch((e) => {
@@ -475,6 +524,26 @@ function runAttempt(job, args, attempt) {
     }
     if (job.status === "error") { releaseSlot(job.jobId); return; }
     if (signal === "SIGTERM" || signal === "SIGKILL") {
+      // 🔄 تجمّد/قتل من حارس التجمّد ⇒ إعادة محاولة بعميل بديل قبل إظهار الخطأ
+      if (job.stalled) {
+        delete job.stalled;
+        if (attempt + 1 < YT_FALLBACKS.length) {
+          job.stage = "retrying";
+          job.progress = 0;
+          job.progressInfo = { pct: 0, size: null, speed: null, eta: null };
+          job.error = null;
+          job.notice = `التحميل تجمّد (الموقع توقف عن الإرسال) — إعادة محاولة بعميل بديل (${attempt + 2}/${YT_FALLBACKS.length})`;
+          job.retryTimer = setTimeout(() => {
+            delete job.retryTimer;
+            if (job.status !== "cancelled") runAttempt(job, args, attempt + 1);
+          }, 2000);
+          return;
+        }
+        job.status = "error";
+        job.error = "توقّف مصدر الفيديو عن إرسال البيانات ولم تنجح المحاولات — جرّب لاحقاً أو رابطاً آخر";
+        releaseSlot(job.jobId);
+        return;
+      }
       job.status = "error";
       job.error = "أُلغيت المهمة";
       releaseSlot(job.jobId);
@@ -492,6 +561,7 @@ function runAttempt(job, args, attempt) {
         job.formatRelaxed = true;
         job.stage = "retrying";
         job.progress = 0;
+        job.progressInfo = { pct: 0, size: null, speed: null, eta: null };
         job.error = null;
         job.notice = "الجودة المطلوبة غير متاحة لهذا الفيديو — جارٍ التحميل بأفضل صيغة متاحة";
         console.warn(`[job ${job.jobId}] الصيغة غير متاحة — إعادة محاولة بمحدد متساهل`);
@@ -507,7 +577,9 @@ function runAttempt(job, args, attempt) {
       const wait = BACKOFF[Math.min(attempt + 1, BACKOFF.length - 1)];
       job.stage = "retrying";
       job.progress = 0;
+      job.progressInfo = { pct: 0, size: null, speed: null, eta: null };
       job.error = null;
+      job.notice = `يوتيوب حظر المحاولة ${attempt + 1} — إعادة محاولة بعميل بديل بعد ${Math.round(wait / 1000)} ثانية`;
       console.warn(`[job ${job.jobId}] يوتيوب رفض المحاولة ${attempt + 1} — إعادة محاولة بعميل بديل بعد ${wait / 1000}s`);
       job.retryTimer = setTimeout(() => {
         delete job.retryTimer;
@@ -622,11 +694,11 @@ function cleanupPartials(jobId) {
 }
 
 /** الإصدار العام للمهمة — نقطة واحدة للتسلسل.
- *  نستبعد: child (عملية yt-dlp حيّة)، retryTimer (كائن Node Timeout حيّ،
- *  و JSON.stringify عليه يرمي "Converting circular structure to JSON" فيفشل
+ *  نستبعد: child (عملية yt-dlp حيّة)، retryTimer و stallTimer (كائنات Node حيّة،
+ *  و JSON.stringify عليها يرمي "Converting circular structure to JSON" فيفشل
  *  /api/job/:id و /api/admin/jobs)، و userId (لا يُعرض للعملاء). */
 export function publicJob(j) {
-  const { child, retryTimer, userId, ...pub } = j;
+  const { child, retryTimer, stallTimer, userId, ...pub } = j;
   return pub;
 }
 

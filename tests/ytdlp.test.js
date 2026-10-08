@@ -20,6 +20,7 @@ import {
   listJobs,
   queueDownload,
   cancelJob,
+  aria2cCommand,
 } from "../server/services/ytdlpService.js";
 
 const after = (args, flag) => {
@@ -106,6 +107,16 @@ describe("buildYtdlpArgs", () => {
     expect(after(buildYtdlpArgs("j", { threads: 1 }), "--concurrent-fragments")).toBe("1");
     expect(after(buildYtdlpArgs("j", { threads: "abc" }), "--concurrent-fragments")).toBe("8");
     expect(after(buildYtdlpArgs("j", { threads: 0 }), "--concurrent-fragments")).toBe("8");
+  });
+
+  it("يستخدم aria2c عند توفّره لتجزئة الملف إلى اتصالات متوازية", () => {
+    const available = !!aria2cCommand();
+    const args = buildYtdlpArgs("j", { format: "mp4" });
+    expect(after(args, "--downloader") === "aria2c").toBe(available);
+    if (available) {
+      expect(after(args, "--downloader-args")).toBe("aria2c:-x 16 -s 16 --min-split-size=1M");
+      expect(args).toContain("--concurrent-fragments");
+    }
   });
 
   it("يضيف كلمة السر والقص والترجمة عند الطلب", () => {
@@ -197,6 +208,20 @@ describe("تقدّم رتيب (منع قفز النسبة للخلف)", () => {
   it("يوقف السقف عند 99% حتى تُكمل مرحلة الدمج", () => {
     const job = { progress: 0 };
     expect(run(job, ["[download] 100.0% of 84MiB"])).toBe(99);
+  });
+
+  it("يلتقط الحجم/السرعة/المتبقّي حيّاً في progressInfo", () => {
+    const job = { progress: 0 };
+    parseProgress(job, "[download]  12.3% of    1.05GiB at    2.34MiB/s ETA 07:31");
+    expect(job.progressInfo.pct).toBeCloseTo(12.3);
+    expect(job.progressInfo.size).toBe("1.05GiB");
+    expect(job.progressInfo.speed).toBe("2.34MiB/s");
+    expect(job.progressInfo.eta).toBe("07:31");
+    // سطر لاحق أسرع يحدّث السرعة ويبقي الحجم على آخر قيمة مؤكدة
+    parseProgress(job, "[download]  58.0% of    1.05GiB at    4.10MiB/s ETA 01:52");
+    expect(job.progress).toBeCloseTo(58);
+    expect(job.progressInfo.speed).toBe("4.10MiB/s");
+    expect(job.progressInfo.eta).toBe("01:52");
   });
 });
 

@@ -181,12 +181,18 @@ export default function GifOptions({ value, onChange, durationSec = 0, compact =
           {ar ? "التدرّج اللوني" : "Dithering"}
           <select
             className="input-smart mt-1 !py-2"
-            value={opts.dither || "bayer"}
-            onChange={(e) => set({ dither: e.target.value })}
+            value={`${opts.dither || "bayer"}:${opts.bayerScale ?? 2}`}
+            onChange={(e) => {
+              const [d, s] = String(e.target.value).split(":");
+              set({ dither: d, bayerScale: Number(s) || 2 });
+            }}
           >
-            {GIF_DITHERERS.map((d) => (
-              <option key={d.id} value={d.id} className="bg-void-200">{ar ? d.ar : d.en}</option>
-            ))}
+            {GIF_DITHERERS.map((d) => {
+              const key = `${d.id}:${d.scale ?? 2}`;
+              return (
+                <option key={key} value={key} className="bg-void-200">{ar ? d.ar : d.en}</option>
+              );
+            })}
           </select>
         </label>
 

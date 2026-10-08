@@ -101,8 +101,8 @@ describe("خيارات GIF 🎞️", () => {
     };
     await setSelect(selects[0], "2"); // السرعة
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ speed: 2 }));
-    await setSelect(selects[1], "fs"); // التدرّج
-    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ dither: "fs" }));
+    await setSelect(selects[1], "floyd_steinberg:2"); // التدرّج (اسم + مقياس Bayer)
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ dither: "floyd_steinberg", bayerScale: 2 }));
     await setSelect(selects[2], "3"); // التكرار
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ loop: 3 }));
   });
@@ -165,6 +165,6 @@ describe("خيارات GIF 🎞️", () => {
     const arg = startDownload.mock.calls[0][1];
     expect(arg.format).toBe("gif");
     expect(arg.gif).toMatchObject({ width: 360, fps: 15, duration: GIF_DEFAULT.duration });
-    expect(Object.keys(arg.gif).sort()).toEqual(["dither", "duration", "fps", "loop", "speed", "start", "width"]);
+    expect(Object.keys(arg.gif).sort()).toEqual(["bayerScale", "dither", "duration", "fps", "loop", "speed", "start", "width"]);
   });
 });
