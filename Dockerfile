@@ -20,13 +20,13 @@ FROM node:22-bookworm-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 
-# أدوات التحميل + فحص المختبر + HTTPS (لتنزيل yt-dlp هنا)
+# أدوات التحميل + فحص المختبر + HTTPS
+# yt-dlp يُركَّب عبر pip (مستقل عن المعمارية: يعمل على amd64 وarm64
+# على خلاف الملف المبنّي المنزّل من GitHub الذي يفشل بنِمط ENOEXEC)
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-       ffmpeg aria2 python3 ca-certificates curl \
-  && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
-       -o /usr/local/bin/yt-dlp \
-  && chmod a+rx /usr/local/bin/yt-dlp \
+       ffmpeg aria2 python3 python3-pip ca-certificates curl \
+  && pip3 install --break-system-packages --no-cache-dir -U yt-dlp \
   && rm -rf /var/lib/apt/lists/*
 
 # الاعتماديات الإنتاجية فقط
