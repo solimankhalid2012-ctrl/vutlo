@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// VideoVault Pro — Backend (Node + Express + yt-dlp + FFmpeg)
+// Vutlo — Backend (Node + Express + yt-dlp + FFmpeg)
 // Endpoints: info | download | job | playlist | schedule | convert | compress | gif | docs | bot
 // ─────────────────────────────────────────────
 // ⚠️ يجب أن يكون أول استيراد — وإلا قُرئ YTDLP_BIN فارغاً (ESM hoisting)
@@ -19,6 +19,7 @@ import { handleTelegramUpdate } from "./services/telegramBot.js";
 import { initDb, db } from "./services/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
 import { requireAdmin, tryUser, hasBearer } from "./middleware/adminAuth.js";
 import { securityReport } from "./config/security.js";
 import { verifyWhatsappWebhook, whatsappPostAllowed, handleWhatsappUpdate } from "./services/whatsappService.js";
@@ -28,6 +29,9 @@ import { ipKey, loginKey } from "./config/rateKeys.js";
 import { startRetention } from "./services/retention.js";
 import { saveToDesktop, jobIdFromFileName } from "./services/desktopSave.js";
 import { resolveTrustedHops, clientIpFromRequest } from "./config/trustProxy.js";
+import { uploadApiRoutes, uploadPublicRoutes, uploadDocs } from "./routes/uploadRoutes.js";
+import { labScanRoutes } from "./routes/labScanRoutes.js";
+import { ensureUploadDir } from "./services/uploadStore.js";
 
 // مستخدم اختياري من توكن المستخدم (للنقاط) — لا يفشل بدونه.
 // يقرأ من middleware الموحّد (algorithms مقيدة + سر من config) بدل تكرار المنطق.
@@ -87,6 +91,15 @@ app.use(cors({
   credentials: true,
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
 }));
+
+// 📤 الرفع + الرابط الدائم: تُركَّب **قبل** express.json عمداً.
+// لو كانت بعده لأمرر express.json أي ملف مرفوع نوعه application/json
+// (فيلتهمه ويحوّله إلى كائن بدل Buffer، فيضيع الملف ويُرفض صامتاً).
+app.use("/api", uploadApiRoutes);
+// فحص الملفات بمحرك Python+C++ — قبل express.json العام بتحليل JSON خاص به
+// (سقف أكبر من base64 لرأس 256KB).
+app.use("/api", labScanRoutes);
+app.use(uploadPublicRoutes);
 app.use(express.json({ limit: "256kb" }));
 
 /** ينظّف أي نص قادم من المستخدم قبل تسجيله أو عرضه (يمنع حقن السجل).
@@ -366,7 +379,7 @@ app.post("/api/client-error", clientErrorLimiter, (req, res) => {
 
 // ── 🧑‍💻 توثيق API العام (REST) ──
 app.get("/api/docs", (req, res) => res.json({
-  name: "VideoVault Pro Public API",
+  name: "Vutlo Public API",
   version: "1.1.0",
   base: "/api",
   auth: "Authorization: Bearer <token> — مطلوب للمهام الخاصة (مستخدم) ولوحة الإدارة",
@@ -375,6 +388,7 @@ app.get("/api/docs", (req, res) => res.json({
     "/api/info|/api/download|/api/playlist": `${Number(process.env.HEAVY_MAX_PER_MIN || 15)}/min`,
     "/api/auth/*|/api/admin/login": `${Number(process.env.LOGIN_MAX_ATTEMPTS || 5)}/15min`,
     "/api/contact": `${Number(process.env.CONTACT_MAX_PER_HOUR || 5)}/hour`,
+    "/api/rating": `${Number(process.env.RATING_MAX_PER_10MIN || 30)}/10min`,
   },
   plan: "بلا حدود جودة — كل الجودات (حتى 8K) متاحة للجميع؛ حقل plan باقٍ في الأدمن كبيانات فقط",
   endpoints: [
@@ -391,6 +405,8 @@ app.get("/api/docs", (req, res) => res.json({
     { method: "POST", path: "/compress", body: { jobId: "string", crf: "18-40" }, desc: "Compress video" },
     { method: "POST", path: "/gif", body: { jobId: "string", start: "sec 0-21600", duration: "sec 1-30", width: "px 120-720", fps: "5-30", dither: "none|bayer|bayer2|fs|sierra2", loop: "0=∞|1-10", speed: "0.25-4" }, desc: "Video → animated GIF" },
     { method: "POST", path: "/contact", body: { name: "string", email: "string", message: "string" }, desc: "نموذج التواصل (5 رسائل/ساعة لكل IP)" },
+    { method: "GET", path: "/rating", desc: "إحصاء نجوم التقييم: { count, average, by: 1..5 }" },
+    { method: "POST", path: "/rating", body: { stars: "1-5", clientId: "8-64 chars" }, desc: "تصويت الزائر — صوت واحد لكل معرّف متصفح (upsert)" },
     { method: "POST", path: "/auth/register", body: { email: "string", password: "4+ chars" }, desc: "تسجيل جديد ⇒ token + 50 نقطة" },
     { method: "POST", path: "/auth/login", body: { email: "string", password: "string" }, desc: "دخول ⇒ token" },
     { method: "GET", path: "/auth/me", desc: "بيانات المستخدم الحالي (يتطلب token)" },
@@ -398,7 +414,10 @@ app.get("/api/docs", (req, res) => res.json({
     { method: "GET", path: "/bot/whatsapp", desc: "GET verification لـ Meta (hub.mode=subscribe)" },
     { method: "POST", path: "/bot/telegram", desc: "Telegram webhook (يتطلب X-Telegram-Bot-Api-Secret-Token)" },
     { method: "GET", path: "/health", desc: "Health check" },
+    ...uploadDocs.routes,
   ],
+  uploads: uploadDocs.limits,
+  gifOptions: { defaults: uploadDocs.gif.defaults, dither: uploadDocs.gif.dither },
 }));
 
 /**
@@ -429,6 +448,8 @@ app.get("/api/health", async (req, res) => {
 // ── لوحة الإدارة + حسابات المستخدمين ──
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
+// ⭐ التقييم بالنجوم: GET مفتوح للجميع، وPOST له حدّ خاص به (ratingRoutes)
+app.use("/api/rating", ratingRoutes);
 
 // ── ✉️ نموذج التواصل ──
 // ⚠️ messages كانت مصفوفة بلا حدّ ⇒ spam بلا حدود يستنزف الذاكرة،
@@ -492,7 +513,7 @@ if (fs.existsSync(DIST_DIR)) {
     },
   }));
   app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api") || req.path.startsWith("/files")) return next();
+    if (req.path.startsWith("/api") || req.path.startsWith("/files") || req.path.startsWith("/u/")) return next();
     res.sendFile(path.join(DIST_DIR, "index.html"));
   });
 }
@@ -513,6 +534,7 @@ app.use((err, req, res, _next) => {
 
 await initDb();
 await restoreSchedules().catch((e) => console.error("[scheduler] فشل الاستعادة:", e.message));
+ensureUploadDir(); // 📤 مجلد الملفات الدائمة (خارج نطاق منظّف الاستبقاء)
 startRetention(); // حذف الملفات المنتهية (قرص + روابط عامة لا تنتهي)
 securityReport();
 // 🔐 127.0.0.1 افتراضياً: مع nginx على نفس الجهاز لا داعي لفتح المنفذ للعالم.
@@ -521,4 +543,4 @@ securityReport();
 //    شبكة المضيف مع الـproxy.
 const HOST = process.env.HOST || "127.0.0.1";
 app.listen(PORT, HOST, () =>
-  console.log(`✅ VideoVault API on http://${HOST}:${PORT} (db: ${db.mode()})`));
+  console.log(`✅ Vutlo API on http://${HOST}:${PORT} (db: ${db.mode()})`));
