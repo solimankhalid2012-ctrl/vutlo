@@ -9,6 +9,7 @@
 import { execFile, spawn, spawnSync } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { db } from "./db.js"; // نقاط المكافآت عند اكتمال التحميل
 import { videoToGif, FFMPEG, clampGifArgs } from "./ffmpegService.js";
@@ -21,8 +22,26 @@ const YTDLP = process.env.YTDLP_BIN || "yt-dlp";
 // ويُسقط和保护 من المنع لكنه يسرّب بيانات شخصية من متصفح أي زائر.
 //
 const DOWNLOAD_DIR = DOWNLOADS_DIR;
-// اختياري: كوكيز يوتيوب تتجاوز حظر الـIP (YTDLP_COOKIES=./cookies.txt)
-const COOKIES = process.env.YTDLP_COOKIES || "";
+// اختياري: كوكيز يوتيوب تتجاوز حظر الـIP.
+// المدخلان متاحان (اختر واحداً):
+//   YTDLP_COOKIES      = مسار ملف cookies.txt داخل الصورة (يَنْشُر حسابك في
+//                        المستودع العام إن وُضع فيه — غير محبّذ!)
+//   YTDLP_COOKIES_B64  = محتوى cookies.txt معرفاً base64 — الآمن: يُفك إلى
+//                        ملف في /tmp عند الإقلاع، فلا تُنشر بيانات جلستك أبداً.
+const COOKIES = (() => {
+  const raw = (process.env.YTDLP_COOKIES_B64 || "").replace(/\s+/g, "");
+  if (raw) {
+    try {
+      const f = path.join(os.tmpdir(), `vutlo-cookies-${process.pid}.txt`);
+      fs.writeFileSync(f, Buffer.from(raw, "base64").toString("utf8"), "utf8");
+      return f;
+    } catch {
+      console.error("[yt-dlp] تعذّر فك YTDLP_COOKIES_B64 — تابع بلا كوكيز");
+      return "";
+    }
+  }
+  return process.env.YTDLP_COOKIES || "";
+})();
 // محرّك JavaScript الذي يستخدمه yt-dlp لفك تشفير التواقيع (n-sig).
 // بدونه يفشل يوتيوب برسالة "The page needs to be reloaded".
 // Node مثبّت عادةً؛ يمكن تغييره أو تعطيله عبر YTDLP_JS_RUNTIME=none
@@ -49,11 +68,14 @@ export function aria2cCommand() {
 const aria2Args = (n) => ["--downloader", "aria2c", "--downloader-args", `aria2c:-x ${n} -s ${n} --min-split-size=1M`];
 
 // عملاء يوتيوب تُجرَّب بالترتيب عند فشل يوتيوب (bot check / 429 / 403).
-// الأول هو الافتراضي (بلا تحديد) لأنه الأكثر موثوق اليوم، والباقي شبكة أمان.
+// الأول هو الافتراضي (بلا تحديد). عملاء embedded/android أضيفوا أولاً بعد
+// الافتراضي لأنهم يجتازون فحص "Sign in to confirm you're not a bot" في
+// مراكز البيانات غالباً بلا كوكيز، و tv/web_safari شبكة أمان أوسع.
 const YT_FALLBACKS = [
   [],
+  ["--extractor-args", "youtube:player_client=android_embedded"],
+  ["--extractor-args", "youtube:player_client=web_embedded"],
   ["--extractor-args", "youtube:player_client=tv"],
-  ["--extractor-args", "youtube:player_client=android_vr"],
   ["--extractor-args", "youtube:player_client=web_safari"],
 ];
 
@@ -357,7 +379,7 @@ export async function getPlaylist(url) {
   const safe = await assertUrl(url);
   try {
     const { stdout } = await exec(
-      YTDLP, ["--flat-playlist", "-J", "--no-warnings", safe],
+      YTDLP, ["--flat-playlist", "-J", "--no-warnings", ...jsRuntimeArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), safe],
       { timeout: 60000, maxBuffer: 32 * 1024 * 1024 }
     );
     const data = JSON.parse(stdout);
