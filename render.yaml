@@ -33,9 +33,9 @@ services:
         sync: false
       # اختياري — رابط الموقع الكامل بعد الإنشاء (للواجهة/CORS الصريحة)
       - key: CLIENT_URL
-        sync: false
+        value: https://vutlo.onrender.com
       - key: VITE_SITE_URL
-        sync: false
+        value: https://vutlo.onrender.com
       # اتركها فارغة دائماً (منع SSRF). الـ"1" مخرج للأنظمة التي تريد
       # التحميل من شبكتها الداخلية عمداً فقط.
       - key: VUTLO_ALLOW_PRIVATE_URLS

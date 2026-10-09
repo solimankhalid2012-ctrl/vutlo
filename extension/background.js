@@ -20,7 +20,7 @@ chrome.runtime.onStartup.addListener(buildMenu);
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== MENU_ID) return;
-  const { vvBase = "https://vutlo.com/download" } = await chrome.storage.sync.get("vvBase");
+  const { vvBase = "https://vutlo.onrender.com/download" } = await chrome.storage.sync.get("vvBase");
   const u = encodeURIComponent(info.linkUrl || info.srcUrl || tab?.url || "");
   chrome.tabs.create({ url: `${vvBase}?url=${u}` });
 });

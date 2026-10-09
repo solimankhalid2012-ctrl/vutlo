@@ -1,92 +1,88 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ⚠️ كان يحوي 3 روابط فقط (/) و/features و/blog) بينما التطبيق فيه 18 مساراً
-  قابلاً للفهرسة ⇒ 10 صفحات valuable لم يكتشفها محرك البحث.
-  لا نضع /admin/* ولا /login ولا /register (حسابات/لوحة ⇒ لا فائدة من فهرستها).
--->
+<!-- خريطة الموقع — النطاق الحيّ للفهرسة (vutlo.onrender.com) -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://videovaultpro.com/</loc>
+    <loc>https://vutlo.onrender.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/download</loc>
+    <loc>https://vutlo.onrender.com/download</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/features</loc>
+    <loc>https://vutlo.onrender.com/features</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/pricing</loc>
+    <loc>https://vutlo.onrender.com/lab</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog</loc>
+    <loc>https://vutlo.onrender.com/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/tiktok-no-watermark</loc>
+    <loc>https://vutlo.onrender.com/blog/tiktok-no-watermark</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/youtube-8k-guide</loc>
+    <loc>https://vutlo.onrender.com/blog/youtube-8k-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/mp3-320kbps</loc>
+    <loc>https://vutlo.onrender.com/blog/mp3-320kbps</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/playlist-downloader</loc>
+    <loc>https://vutlo.onrender.com/blog/playlist-downloader</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/is-downloading-legal</loc>
+    <loc>https://vutlo.onrender.com/blog/is-downloading-legal</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/compress-video</loc>
+    <loc>https://vutlo.onrender.com/blog/compress-video</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/gif-from-video</loc>
+    <loc>https://vutlo.onrender.com/blog/gif-from-video</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/blog/schedule-downloads</loc>
+    <loc>https://vutlo.onrender.com/blog/schedule-downloads</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/about</loc>
+    <loc>https://vutlo.onrender.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/contact</loc>
+    <loc>https://vutlo.onrender.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/privacy</loc>
+    <loc>https://vutlo.onrender.com/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://videovaultpro.com/terms</loc>
+    <loc>https://vutlo.onrender.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

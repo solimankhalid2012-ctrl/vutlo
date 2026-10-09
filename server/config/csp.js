@@ -31,7 +31,7 @@ export function sha256Base64(text) {
  */
 export const SCRIPT_DIGESTS = {
   lang: "oNT7OWkOi8QRFNbp9DA7k2F08BIQf5Uij15lkXgeSc0=", // ضبط lang/dir قبل الرسم
-  jsonld: "Ii5kBp7PJaWQpb2r7yU0DSqxZeH4HGJiFhP1OZ5LFys=", // JSON-LD (SEO)
+  jsonld: "eTCt49RN4ks4zeo4U2ciP9k8CfuG/lcRAD702r7FUJ8=", // JSON-LD (SEO)
 };
 
 /** رموز CSP الجاهزة: 'sha256-<base64>' */

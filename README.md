@@ -86,7 +86,7 @@ npm run server   # الباكند على 4001
 
 - الواجهة: **Vercel** — `npm run build` → مجلد `dist`
 - الباكند: **Railway / Render** — الأمر `npm run server` (ثبّت `yt-dlp` + `ffmpeg` على السيرفر)
-- أضِف `VITE_API_URL=https://api.vutlo.com` في بيئة Vercel
+- أضِف `VITE_SITE_URL=https://vutlo.onrender.com` في بيئة Render/Vercel
 - متغيّرات مطلوبة على السيرفر: أسرار `.env` كلها (راجع `.env.example`)،
   و`ADMIN_PASS_HASH` بصيغة scrypt
 - روابط الملفات النسبية `/files/...` تُحوَّل لمطلقة تلقائياً في الواجهة
