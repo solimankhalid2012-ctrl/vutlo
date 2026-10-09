@@ -345,16 +345,26 @@ const infoCache = new Map();
 const INFO_TTL = 10 * 60_000;
 const INFO_CACHE_MAX = 200;
 
+/** نمط حاجز "إثبات إنسان" على يوتيوب (شائع جداً من عناوين مراكز البيانات). */
+const WALL_RE = /Sign in to confirm|not a bot|Failed to extract (any )?player/i;
+
 export async function getVideoInfo(url) {
   const safe = await assertUrl(url);
   const hit = infoCache.get(safe);
   if (hit && Date.now() - hit.at < INFO_TTL) return hit.data;
 
   let lastErr = null;
+  let wallFlagged = false;
+  let attempt = 0;
   for (const extra of YT_FALLBACKS) {
+    // 🔒 عند حاجز IP مُسجَّل (not a bot): فشلت المحاولتان الأوليان وسيفشل
+    // الباقي بالمثل — لا نحرق 5× 20ث+ (كان التحليل يعلق ~2 دقيقة). نوقف فوراً
+    // ونُعطي رسالة واضحة. أما الأعطال المؤقتة العادية فنُكمل الشلال كاملاً.
+    if (attempt >= 2 && wallFlagged) break;
+    attempt++;
     try {
-      const args = ["--dump-json", "--no-playlist", "--no-warnings", "--socket-timeout", "20", ...jsRuntimeArgs(), ...proxyArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), ...extra, safe];
-      const { stdout } = await exec(YTDLP, args, { timeout: 40000, maxBuffer: 16 * 1024 * 1024 });
+      const args = ["--dump-json", "--no-playlist", "--no-warnings", "--socket-timeout", "10", ...jsRuntimeArgs(), ...proxyArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), ...extra, safe];
+      const { stdout } = await exec(YTDLP, args, { timeout: 25000, maxBuffer: 16 * 1024 * 1024 });
       const data = JSON.parse(stdout.split("\n").filter(Boolean)[0]);
       const info = {
         id: data.id, title: data.title || "Untitled",
@@ -371,12 +381,20 @@ export async function getVideoInfo(url) {
       lastErr = e;
       // لا نُعيد المحاولة إلا لأخطاء يوتيوب المؤقتة
       if (!isUpstreamBlock(e.stderr)) break;
+      if (WALL_RE.test(e.stderr || "")) wallFlagged = true;
     }
   }
   const stderr = lastErr?.stderr || "";
-  const message = lastErr?.code === "ENOENT"
-    ? "yt-dlp غير مثبّت على السيرفر — اضبط YTDLP_BIN في .env"
-    : explainFailure(stderr, lastErr?.code);
+  let message;
+  if (lastErr?.code === "ENOENT") {
+    message = "yt-dlp غير مثبّت على السيرفر — اضبط YTDLP_BIN في .env";
+  } else if (wallFlagged) {
+    message = COOKIES
+      ? "يوتيوب يرفض طلبنا حتى مع الكوكيز الحالية — أعِد تصدير ملف كوكيز جديد (انتهت صلاحيته أو حُظر الحساب) أو جرّب رابطاً من موقع آخر."
+      : "يوتيوب يحجب عنوان خادمنا (فحص \"لست روبوت\") — فعّل ملف الكوكيز YTDLP_COOKIES_B64 في الإعدادات ثم أعد المحاولة، أو جرّب رابطاً من موقع آخر. أما بقية المواقع فتعمل فوراً.";
+  } else {
+    message = explainFailure(stderr, lastErr?.code);
+  }
   console.error("[yt-dlp info] failed:", message);
   throw httpError(422, message);
 }
@@ -606,6 +624,17 @@ function runAttempt(job, args, attempt) {
         }, 300);
         return;
       }
+    }
+
+    // 🔒 حاجز "لست روبوت" (IP مُسجَّل): بعد محاولتين سيفشل الباقي بالمثل —
+    // ننهي بسرعة برسالة واضحة بدل دقائق من الانتظار بلا فائدة.
+    if (attempt >= 2 && WALL_RE.test(raw)) {
+      job.status = "error";
+      job.error = COOKIES
+        ? "يوتيوب يرفض تلبية طلبنا (فحص روبوت) حتى مع كوكيزنا الحالية — أعِد تصدير كوكيز جديد أو جرّب رابطاً من موقع آخر."
+        : "يوتيوب يحجب عنوان خادمنا (فحص \"لست روبوت\") — فعّل ملف الكوكيز YTDLP_COOKIES_B64 ثم أعد المحاولة، أو جرّب رابطاً من موقع آخر.";
+      releaseSlot(job.jobId);
+      return;
     }
 
     if (attempt + 1 < YT_FALLBACKS.length && isUpstreamBlock(raw)) {
