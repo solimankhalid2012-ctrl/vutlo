@@ -49,6 +49,12 @@ const JS_RUNTIME = (process.env.YTDLP_JS_RUNTIME || "node").trim();
 const jsRuntimeArgs = () =>
   !JS_RUNTIME || JS_RUNTIME.toLowerCase() === "none" ? [] : ["--js-runtimes", JS_RUNTIME];
 
+// 🕵️ وكيل اختياري (YTDLP_PROXY=http://user:pass@host:port) — مفيد عندما
+// يحجب مزود الاستضافة (مثل مراكز بيانات Render) IP السيرفر على يوتيوب:
+// يُمرَّر إلى yt-dlp عبر --proxy دون تغيير أي منطق.
+const PROXY = process.env.YTDLP_PROXY || "";
+const proxyArgs = () => (PROXY ? ["--proxy", PROXY] : []);
+
 // 🚀 aria2c: سكربت تنزيل خارجي يجزّئ الملف إلى اتصالات متوازية (-x / -s 16).
 // متوفّر محلياً في bin/aria2c (يُشحن مع المشروع) أو في PATH. يضاعف سرعة
 // التحميلات التي ترسلها المنصات كملفٍ واحد — الحالة التي لا يساعدها
@@ -279,6 +285,7 @@ export function buildYtdlpArgs(jobId, {
     "--continue", // ⏸️ استئناف التحميل بعد الانقطاع
 // بلا محرّك JS يفشل يوتيوب برسالة "The page needs to be reloaded"
     ...jsRuntimeArgs(),
+    ...proxyArgs(),
     "-o", out,
   ];
   // 🍪 كوكيز يوتيوب (اختياري) — تساعد على تجاوز حظر الـIP
@@ -346,7 +353,7 @@ export async function getVideoInfo(url) {
   let lastErr = null;
   for (const extra of YT_FALLBACKS) {
     try {
-      const args = ["--dump-json", "--no-playlist", "--no-warnings", "--socket-timeout", "20", ...jsRuntimeArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), ...extra, safe];
+      const args = ["--dump-json", "--no-playlist", "--no-warnings", "--socket-timeout", "20", ...jsRuntimeArgs(), ...proxyArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), ...extra, safe];
       const { stdout } = await exec(YTDLP, args, { timeout: 40000, maxBuffer: 16 * 1024 * 1024 });
       const data = JSON.parse(stdout.split("\n").filter(Boolean)[0]);
       const info = {
@@ -379,7 +386,7 @@ export async function getPlaylist(url) {
   const safe = await assertUrl(url);
   try {
     const { stdout } = await exec(
-      YTDLP, ["--flat-playlist", "-J", "--no-warnings", ...jsRuntimeArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), safe],
+      YTDLP, ["--flat-playlist", "-J", "--no-warnings", ...jsRuntimeArgs(), ...proxyArgs(), ...(COOKIES ? ["--cookies", COOKIES] : []), safe],
       { timeout: 60000, maxBuffer: 32 * 1024 * 1024 }
     );
     const data = JSON.parse(stdout);
