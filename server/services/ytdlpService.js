@@ -83,7 +83,7 @@ const YT_FALLBACKS = [
 export function isUpstreamBlock(raw) {
   // ملاحظة: لا نضع "unavailable" هنا عن قصد — فيديو محذوف/خاص خطأ دائم،
   // وإعادة المحاولة عليه تضيّع ~45 ثانية قبل إعطاء نفس النتيجة النهائية.
-  return /429|Too Many Requests|HTTP Error 403|Forbidden|not a bot|Sign in to confirm|nsig|PO Token|The page needs to be reloaded|Unable to extract (player|initial data|video)/i.test(String(raw || ""));
+  return /429|Too Many Requests|HTTP Error 403|Forbidden|not a bot|Sign in to confirm|nsig|PO Token|The page needs to be reloaded|Unable to extract (player|initial data|video)|Failed to extract (any )?player/i.test(String(raw || ""));
 }
 
 // (إنشاء مجلد التنزيل يتم في services/paths.js — مصدر واحد للجميع)
